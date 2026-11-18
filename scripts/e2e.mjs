@@ -17,6 +17,7 @@ const BASE = process.env.BASE_URL || "http://localhost:3000";
 const LEADS = process.env.LEADS_FILE;
 const SHOTS = process.argv[2];
 const ORIGINAL = path.resolve("private/the-square-brochure.pdf");
+const UR_REVISED = path.resolve("private/urban-ranch-brochure-squarefoot-revised.pdf");
 const results = [];
 const ok = (name, cond, detail = "") => {
   results.push({ name, pass: !!cond, detail });
@@ -56,7 +57,7 @@ const viewports = [
   ["desktop-1440", { viewport: { width: 1440, height: 900 } }],
   ["large-1920", { viewport: { width: 1920, height: 1080 } }],
 ];
-const pages = ["/", "/about", "/contact", "/privacy-policy", "/disclaimer"];
+const pages = ["/", "/urban-ranch", "/about", "/contact", "/privacy-policy", "/disclaimer"];
 for (const [label, opts] of viewports) {
   const ctx = await browser.newContext({ ...opts, deviceScaleFactor: 1 });
   const page = await ctx.newPage();
@@ -107,7 +108,7 @@ for (const [label, opts] of viewports) {
   const dlg = page.locator("dialog.modal");
   await dlg.waitFor({ state: "visible" });
   ok("brochure CTA opens modal", await dlg.isVisible());
-  ok("modal explains contact details are required", (await dlg.innerText()).includes("share your contact details to download the brochure"));
+  ok("modal explains contact details are required", (await dlg.innerText()).toLowerCase().includes("share your contact details to download the brochure"));
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/flow-1-modal.png` });
 
   await dlg.locator("button[type=submit]").click();
@@ -214,8 +215,8 @@ for (const [label, opts] of viewports) {
   await page.keyboard.press("Escape");
 
   await page.locator("#amenities").scrollIntoViewIfNeeded();
-  await page.locator(".amen__nav button", { hasText: "Play & fitness" }).click();
-  ok("amenity category switches", (await page.locator(".amen__title").innerText()).includes("Reclaim your freedom"));
+  await page.locator(".amen__tabs button", { hasText: "Play & fitness" }).click();
+  ok("amenity category switches", (await page.locator(".amen__copy .h3").innerText()).includes("Reclaim your freedom"));
 
   await page.locator("#gallery").scrollIntoViewIfNeeded();
   await page.locator(".filters button", { hasText: "Interiors" }).click();
@@ -246,12 +247,42 @@ for (const [label, opts] of viewports) {
   await m.close();
 }
 
+/* ---------- 5b. Urban Ranch: page, enquiry, project-specific brochure ---------- */
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
+  const page = await ctx.newPage();
+  await page.goto(BASE + "/urban-ranch", { waitUntil: "networkidle" });
+  ok("Urban Ranch page shows RERA", (await page.content()).includes("P02400009631"));
+  ok("Urban Ranch uses official Squarefoot logo", (await page.locator('img[src*="squarefoot-logo-horizontal"]').count()) >= 1);
+  ok("Urban Ranch facts from brochure", await page.evaluate(() => { const t = document.body.innerText; return t.includes("163") && t.includes("19.5") && t.includes("4,927.97") && t.includes("3,807.55"); }));
+  const before = leads().length;
+  await page.locator(".ur-hero .btn--brochure").click();
+  const dlg = page.locator("dialog.modal");
+  await dlg.waitFor({ state: "visible" });
+  ok("UR brochure modal names Urban Ranch", (await dlg.innerText()).toLowerCase().includes("urban ranch brochure"));
+  ok("UR form offers UR villa types", (await dlg.locator("select option").allTextContents()).some((o) => o.includes("Urban Ranch – Type 3")));
+  await fillForm(page, "dialog.modal", { name: "Kiran Kumar", email: "kiran@example.com", phone: "9000012345", config: "Urban Ranch – Type 2 (301 Sq. Yds)" });
+  await page.waitForTimeout(2600);
+  await dlg.locator("button[type=submit]").click();
+  await dlg.locator(".form-success").waitFor({ timeout: 10000 });
+  const lead = leads().slice(before).pop();
+  ok("UR lead tagged with project", lead?.body.project === "urban-ranch" && lead?.body.projectName === "Urban Ranch", lead?.body.project);
+  const [dl] = await Promise.all([page.waitForEvent("download"), dlg.locator("a.btn--brochure").click()]);
+  ok("UR download is the revised Urban Ranch brochure", sha(await dl.path()) === sha(UR_REVISED), dl.suggestedFilename());
+  await page.keyboard.press("Escape");
+  const fresh = await browser.newContext();
+  const r = await fresh.request.get(BASE + "/api/brochure?project=urban-ranch", { maxRedirects: 0 });
+  ok("UR brochure gated without enquiry", r.status() === 303 && r.headers()["location"].includes("/urban-ranch?brochure=1"));
+  await fresh.close();
+  await ctx.close();
+}
+
 /* ---------- 6. Reduced motion renders content ---------- */
 {
   const ctx = await browser.newContext({ reducedMotion: "reduce", viewport: { width: 1280, height: 800 } });
   const page = await ctx.newPage();
   await page.goto(BASE + "/");
-  const op = await page.locator(".intro__lead").evaluate((e) => getComputedStyle(e).opacity);
+  const op = await page.locator(".intro__text").evaluate((e) => getComputedStyle(e).opacity);
   ok("reduced motion shows content without scrolling", op === "1");
   await ctx.close();
 }

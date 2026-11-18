@@ -14,12 +14,12 @@ export default function Gallery() {
   return (
     <section id="gallery" className="gallery section" aria-labelledby="gal-title">
       <div className="wrap">
-        <div className="section-head section-head--split">
+        <div className="split">
           <div>
             <p className="eyebrow" data-reveal>
               <span className="eyebrow__num">05</span> Gallery
             </p>
-            <h2 id="gal-title" className="display-2" data-split>
+            <h2 id="gal-title" className="h2" data-split>
               Squarely in the lap <em>of abundance.</em>
             </h2>
           </div>
@@ -46,7 +46,7 @@ export default function Gallery() {
             </li>
           ))}
         </ul>
-        <p className="gallery__note">All images are artist&rsquo;s impressions from the project brochure, for illustration only.</p>
+        <p className="meta gallery__note">All images are artist&rsquo;s impressions from the project brochure, for illustration only.</p>
       </div>
       <Lightbox items={items} index={open} setIndex={setOpen} />
     </section>

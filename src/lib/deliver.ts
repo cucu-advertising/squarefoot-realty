@@ -1,6 +1,6 @@
 import "server-only";
 import type { EnquiryInput } from "./validation";
-import { contact, site } from "@/content/site";
+import { contact, projectOptions, site } from "@/content/site";
 
 export interface Lead extends EnquiryInput {
   submittedAt: string; // ISO
@@ -16,6 +16,7 @@ const esc = (s: string) =>
 
 function rows(lead: Lead): [string, string][] {
   return [
+    ["Project", projectOptions[lead.project].label],
     ["Name", lead.name],
     ["Email", lead.email],
     ["Mobile", lead.phone],
@@ -30,12 +31,12 @@ function rows(lead: Lead): [string, string][] {
 }
 
 export function renderEmail(lead: Lead) {
-  const subject = `New enquiry — ${site.name} — ${lead.source} — ${lead.name}`;
+  const subject = `New enquiry — ${projectOptions[lead.project].label} — ${lead.source} — ${lead.name}`;
   const text = rows(lead).map(([k, v]) => `${k}: ${v}`).join("\n");
   const html = `<!doctype html><html><body style="margin:0;background:#f5f3ec;font-family:Arial,Helvetica,sans-serif;color:#171a14">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px"><tr><td align="center">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;background:#fff;border:1px solid #e3dfd3">
-<tr><td style="background:#1c2418;color:#fff;padding:20px 24px;font-size:13px;letter-spacing:.16em;text-transform:uppercase">${esc(site.name)} · New enquiry</td></tr>
+<tr><td style="background:#1c2418;color:#fff;padding:20px 24px;font-size:13px;letter-spacing:.16em;text-transform:uppercase">${esc(projectOptions[lead.project].label)} · New enquiry</td></tr>
 <tr><td style="padding:8px 24px 24px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;line-height:1.5">
 ${rows(lead)
@@ -97,7 +98,7 @@ async function sendWebhook(lead: Lead) {
       "Content-Type": "application/json",
       ...(process.env.CRM_WEBHOOK_SECRET ? { Authorization: `Bearer ${process.env.CRM_WEBHOOK_SECRET}` } : {}),
     },
-    body: JSON.stringify({ project: site.name, ...lead }),
+    body: JSON.stringify({ projectName: projectOptions[lead.project].label, ...lead }),
     signal: AbortSignal.timeout(15000),
   });
   if (!res.ok) throw new Error(`CRM webhook failed: ${res.status}`);

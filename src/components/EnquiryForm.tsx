@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { configurationOptions, contact } from "@/content/site";
+import { contact, projectOptions, type ProjectId } from "@/content/site";
 import { validateEnquiry, type EnquiryInput, type EnquirySource, type FieldErrors } from "@/lib/validation";
-import { useEnquiry } from "./EnquiryProvider";
+import { brochureHref, useEnquiry } from "./EnquiryProvider";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
 interface Props {
+  project?: ProjectId;
   source: EnquirySource;
   intent?: "enquiry" | "brochure";
   defaultConfiguration?: string;
@@ -17,7 +18,7 @@ interface Props {
   idPrefix?: string;
 }
 
-export default function EnquiryForm({ source, intent = "enquiry", defaultConfiguration = "", compact = false, idPrefix = "f" }: Props) {
+export default function EnquiryForm({ project = "the-square", source, intent = "enquiry", defaultConfiguration = "", compact = false, idPrefix = "f" }: Props) {
   const { markUnlocked } = useEnquiry();
   const [values, setValues] = useState({
     name: "",
@@ -38,7 +39,8 @@ export default function EnquiryForm({ source, intent = "enquiry", defaultConfigu
   const successRef = useRef<HTMLDivElement>(null);
   const id = (n: string) => `${idPrefix}-${n}`;
 
-  const data = (): EnquiryInput => ({ ...values, source });
+  const data = (): EnquiryInput => ({ ...values, source, project });
+  const meta = projectOptions[project];
 
   const set = (k: keyof typeof values) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const v = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
@@ -118,13 +120,19 @@ export default function EnquiryForm({ source, intent = "enquiry", defaultConfigu
         </p>
         <div className="brochure-card">
           <div className="brochure-card__cover">
-            <Image src="/images/brand/brochure-cover.jpg" alt="Cover of The Square project brochure" width={864} height={864} sizes="120px" />
+            <Image
+              src={project === "urban-ranch" ? "/images/urban-ranch/villa-cover.jpg" : "/images/brand/brochure-cover.jpg"}
+              alt={`Cover of the ${meta.label} brochure`}
+              width={project === "urban-ranch" ? 1345 : 864}
+              height={project === "urban-ranch" ? 670 : 864}
+              sizes="120px"
+            />
           </div>
           <div className="brochure-card__meta">
-            <p className="brochure-card__name">The Square — Project Brochure</p>
-            <p className="brochure-card__info">PDF · 27 pages · 17.9 MB</p>
+            <p className="brochure-card__name">{meta.label} — Project Brochure</p>
+            <p className="brochure-card__info">PDF · {meta.brochure.pages} pages · {meta.brochure.size}</p>
             <a
-              href="/api/brochure"
+              href={brochureHref(project)}
               className={`btn btn--solid btn--brochure ${downloaded ? "is-done" : ""}`}
               rel="nofollow"
               onClick={() => setDownloaded(true)}
@@ -175,7 +183,7 @@ export default function EnquiryForm({ source, intent = "enquiry", defaultConfigu
           <div className="select">
             <select id={id("configuration")} name="configuration" value={values.configuration} onChange={set("configuration")} onBlur={blur("configuration")} {...aria("configuration")}>
               <option value="">Select a residence type</option>
-              {configurationOptions.map((o) => (
+              {meta.options.map((o) => (
                 <option key={o} value={o}>
                   {o}
                 </option>

@@ -29,10 +29,7 @@ export default function Hero() {
           <span className="line"><span>Everything</span></span>
           <span className="line"><span>and <em>Beyond.</em></span></span>
         </h1>
-        <p className="hero__sub">
-          131 East &amp; West facing 4-BHK duplex villas on 13.5 acres, a few steps from the ORR on Kongara Kalan Road — homes that
-          hold everything within their walls, and open out to the sky and the green beyond.
-        </p>
+        <p className="hero__sub">131 East &amp; West facing luxury duplex villas on 13.5 acres, a few steps from the ORR.</p>
         <div className="hero__ctas">
           <Link href="/#project" className="btn btn--light btn--lg">
             <span>Explore Project</span>

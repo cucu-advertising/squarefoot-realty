@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 export default function DisclaimerPage() {
   return (
     <div className="page legal">
-      <section className="page-hero page-hero--legal">
+      <section className="page-hero">
         <div className="wrap">
           <p className="eyebrow">Legal</p>
-          <h1 className="display-1" data-split>Terms &amp; disclaimer</h1>
+          <h1 className="h1" data-split>Terms &amp; disclaimer</h1>
         </div>
       </section>
       <article className="wrap legal__body">

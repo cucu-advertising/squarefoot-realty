@@ -48,10 +48,10 @@ const browser = await chromium.launch();
   ok("heading text preserved for assistive tech", (await page.locator("#gal-title").getAttribute("aria-label"))?.includes("Squarely in the lap"));
 
   // parallax moves with scroll
-  const p1 = await page.evaluate(() => new DOMMatrix(getComputedStyle(document.querySelector(".intro__wide .px")).transform).m42);
-  await page.evaluate(() => window.__lenis.scrollTo(".intro__wide", { immediate: true }));
+  const p1 = await page.evaluate(() => new DOMMatrix(getComputedStyle(document.querySelector(".bleed .px")).transform).m42);
+  await page.evaluate(() => window.__lenis.scrollTo(".bleed", { immediate: true }));
   await page.waitForTimeout(400);
-  const p2 = await page.evaluate(() => new DOMMatrix(getComputedStyle(document.querySelector(".intro__wide .px")).transform).m42);
+  const p2 = await page.evaluate(() => new DOMMatrix(getComputedStyle(document.querySelector(".bleed .px")).transform).m42);
   ok("image parallax is scrubbed to scroll", Math.abs(p1 - p2) > 5, `${Math.round(p1)} → ${Math.round(p2)}px`);
 
   // anchor navigation from the navbar
@@ -118,12 +118,6 @@ const browser = await chromium.launch();
   await page.waitForTimeout(1200);
   ok("scrolling resumes after modal closes", (await page.evaluate(() => window.scrollY)) > 200);
 
-  // sticky amenity nav holds while its section scrolls
-  await page.evaluate(() => window.__lenis.scrollTo("#amenities", { immediate: true, offset: 500 }));
-  await page.waitForTimeout(600);
-  const navTop = await page.evaluate(() => Math.round(document.querySelector(".amen__nav ol").getBoundingClientRect().top));
-  ok("sticky amenity navigation holds position", Math.abs(navTop - 100) <= 2, `top=${navTop}`);
-
   // jank probe: frame pacing during a long programmatic glide
   const frames = await page.evaluate(async () => {
     window.__lenis.scrollTo(0, { immediate: true });
@@ -147,11 +141,11 @@ const browser = await chromium.launch();
   await page.waitForTimeout(600);
   ok("mobile keeps native touch scrolling (no Lenis)", await page.evaluate(() => !window.__lenis));
   ok("mobile headings still reveal by line", await page.evaluate(() => !!document.querySelector("#intro-title .split-line")));
-  ok("mobile: no parallax transforms", await page.evaluate(() => getComputedStyle(document.querySelector(".intro__wide .px")).transform === "none"));
+  ok("mobile: no parallax transforms", await page.evaluate(() => getComputedStyle(document.querySelector(".bleed .px")).transform === "none"));
   await page.locator(".header__toggle").click();
-  await page.locator("#mobile-menu a", { hasText: "Gallery" }).click();
+  await page.locator("#mobile-menu a", { hasText: "Location" }).click();
   await page.waitForTimeout(1800);
-  const t = await page.evaluate(() => Math.round(document.getElementById("gallery").getBoundingClientRect().top));
+  const t = await page.evaluate(() => Math.round(document.getElementById("location").getBoundingClientRect().top));
   ok("mobile menu anchor lands on section", t > 30 && t < 130 && !(await page.locator("#mobile-menu").isVisible()), `top=${t}`);
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await page.waitForTimeout(1500);

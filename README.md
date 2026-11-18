@@ -25,8 +25,10 @@ npm start
 
 | What | Where |
 |---|---|
-| **Every project fact** (areas, amenities, distances, RERA, contact details, copy) | `src/content/site.ts` — edit here only; each value is tagged with its source document |
-| Pages | `src/app/` — `/`, `/about`, `/contact`, `/privacy-policy`, `/disclaimer`, `sitemap.xml`, `robots.txt` |
+| **Every project fact** (areas, amenities, distances, RERA, contact details, copy) — The Square **and Urban Ranch** | `src/content/site.ts` — edit here only; each value is tagged with its source document |
+| Pages | `src/app/` — `/`, `/urban-ranch`, `/about`, `/contact`, `/privacy-policy`, `/disclaimer`, `sitemap.xml`, `robots.txt` |
+| Brochures (gated) | `private/the-square-brochure.pdf` (original), `private/urban-ranch-brochure-squarefoot-revised.pdf` (served), `private/urban-ranch-brochure-original.pdf` (untouched original) |
+| Official logos | `public/images/brand/` — extracted from the brand guide and brochures; see `src/components/Brand.tsx` |
 | Home sections | `src/components/sections/*` |
 | Enquiry modal, brochure buttons | `src/components/EnquiryProvider.tsx`, `EnquiryForm.tsx` |
 | Floor-plan / map zoom viewer | `src/components/ZoomViewer.tsx` |
@@ -34,7 +36,7 @@ npm start
 | Gated brochure download | `src/app/api/brochure/route.ts` → streams `private/the-square-brochure.pdf` |
 | Email / CRM delivery | `src/lib/deliver.ts` |
 | Validation (shared client + server) | `src/lib/validation.ts` |
-| Design tokens & styles | `src/app/globals.css` |
+| Design tokens & styles | `src/app/globals.css` — one type scale (`--fs-*`, `.h1`–`.h4`, `.lead`, `.label`, `.meta`) and one spacing scale (`--s1`–`--s9`, `--section-y`, `--head-gap`, `--block-gap`) |
 | Images | `public/images/project` (renders), `public/images/plans` (floor plans, site plan, map), `public/images/brand` |
 | Floor-plan PDFs | `public/downloads/floor-plans/` (vector pages extracted from the brochure) |
 
@@ -44,7 +46,7 @@ npm start
 2. `POST /api/enquiry` checks the request origin, rate-limits (5 per 10 minutes per IP), checks the honeypot and minimum fill time, and validates every field on the server.
 3. The lead goes to **every configured channel** (email and/or CRM webhook). The API answers `ok: true` **only after the provider has accepted it**. If nothing is configured, or delivery fails, the visitor sees an error with the phone number and email. It never shows a false success.
 4. On success the server sets a signed, HttpOnly cookie (`tsq_brochure`, 7 days). The confirmation reads *"Thank you for your interest. Explore the project in more detail through our brochure."* and shows **Download Brochure ↓**.
-5. `GET /api/brochure` streams the **original, unmodified PDF** (byte-identical, 17.9 MB) as an attachment. Anyone without the cookie is redirected to `/contact?brochure=1`.
+5. `GET /api/brochure?project=the-square|urban-ranch` streams that project's PDF unmodified (byte-identical, 17.9 MB) as an attachment. Anyone without the cookie is redirected to `/contact?brochure=1`.
 6. Later brochure clicks in the same session download straight away, without the form again.
 
 Each lead contains: name, email, mobile, residence type, preferred visit time, message, **source** (`Contact Page`, `Brochure Request`, `Residences`, `Home Page`), timestamp (ISO + IST), page and user agent. Emails set **Reply-To** to the visitor.

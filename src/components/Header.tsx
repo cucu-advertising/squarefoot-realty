@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { nav, contact, rera } from "@/content/site";
-import { TheSquareLogo, SquarefootMark } from "./Brand";
+import { TheSquareLogo, SquarefootLogo } from "./Brand";
 import { BrochureButton, EnquireButton } from "./EnquiryProvider";
 
 export default function Header() {
@@ -17,6 +17,8 @@ export default function Header() {
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const overHero = pathname === "/";
+  // Developer-level pages carry the Squarefoot Realty logo instead of The Square's
+  const sfBrand = pathname.startsWith("/about") || pathname.startsWith("/urban-ranch");
 
   useEffect(() => {
     const onScroll = () => {
@@ -37,7 +39,7 @@ export default function Header() {
       setActive(pathname);
       return;
     }
-    const ids = ["project", "residences", "amenities", "gallery", "location"];
+    const ids = ["project", "residences", "amenities", "location"];
     const els = ids.map((i) => document.getElementById(i)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver(
       (entries) => {
@@ -83,13 +85,23 @@ export default function Header() {
   return (
     <header className={`header ${solid ? "header--solid" : "header--clear"} ${hidden && !open ? "header--hidden" : ""} ${open ? "header--open" : ""}`}>
       <div className="header__inner wrap">
-        <Link href="/" className="header__brand" aria-label="The Square by Squarefoot Realty — home">
-          <TheSquareLogo tone={solid && !open ? "color" : "light"} priority />
-          <span className="header__by">
-            <span className="header__by-label">by</span>
-            <SquarefootMark />
-          </span>
-        </Link>
+        {sfBrand ? (
+          <Link href="/" className="header__brand header__brand--sf" aria-label="Squarefoot Realty — home">
+            {open ? (
+              <SquarefootLogo variant="mark" sizes="40px" className="header__mark header__mark--lg" />
+            ) : (
+              <SquarefootLogo variant="horizontal" sizes="180px" className="header__sf" />
+            )}
+          </Link>
+        ) : (
+          <Link href="/" className="header__brand" aria-label="The Square by Squarefoot Realty — home">
+            <TheSquareLogo tone={solid && !open ? "color" : "light"} priority />
+            <span className="header__by">
+              <span className="header__by-label">by</span>
+              <SquarefootLogo variant="mark" sizes="28px" className="header__mark" />
+            </span>
+          </Link>
+        )}
 
         <nav className="header__nav" aria-label="Primary">
           <ul>

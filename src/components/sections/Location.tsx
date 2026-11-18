@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import { distances, location, locationStory } from "@/content/site";
+import { distances, keyDistances, location, locationStory } from "@/content/site";
 import ZoomViewer, { type ZoomImage } from "../ZoomViewer";
 
 const MAP: ZoomImage = {
@@ -15,42 +15,42 @@ const MAP: ZoomImage = {
 
 export default function Location() {
   const [tab, setTab] = useState(0);
+  const [open, setOpen] = useState(false);
   const [zoom, setZoom] = useState<ZoomImage | null>(null);
   const close = useCallback(() => setZoom(null), []);
-  const max = Math.max(...distances.flatMap((d) => d.items.map((i) => i[1])));
   const coords = location.coordinates;
+  const d = distances[tab];
 
   return (
     <section id="location" className="location section" aria-labelledby="loc-title">
       <div className="wrap">
-        <div className="location__grid">
-          <div className="location__copy">
+        <div className="split">
+          <div>
             <p className="eyebrow" data-reveal>
-              <span className="eyebrow__num">06</span> Location &amp; connectivity
+              <span className="eyebrow__num">06</span> Location
             </p>
-            <h2 id="loc-title" className="display-2" data-split>
-              The world’s happening at <em>Hyderabad’s South.</em>
+            <h2 id="loc-title" className="h2" data-split>
+              The world’s happening <em>at Hyderabad’s South.</em>
             </h2>
-            <p className="location__text" data-reveal>{locationStory.text}</p>
-            <address className="location__addr" data-reveal>
-              <span className="location__pin" aria-hidden="true" />
-              <span>
-                <strong>The Square</strong>
-                {location.full}
-              </span>
-            </address>
-            <div className="location__ctas" data-reveal>
-              <a href={location.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn--solid">
-                <span>Get Directions</span>
-                <span className="btn__icon btn__icon--ne" aria-hidden="true"><span>↗</span></span>
-              </a>
-              <button type="button" className="btn btn--ghost" onClick={() => setZoom(MAP)}>
-                <span>View location map</span>
-                <span className="btn__icon btn__icon--ne" aria-hidden="true"><span>↗</span></span>
-              </button>
-            </div>
           </div>
+          <p className="lead" data-reveal>
+            {locationStory.text}
+          </p>
+        </div>
 
+        <ul className="key-dist" data-reveal>
+          {keyDistances.map(([name, mins]) => (
+            <li key={name}>
+              <span className="key-dist__min">
+                {mins}
+                <small>min</small>
+              </span>
+              <span className="key-dist__name">{name}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="location__grid">
           <div className="location__map" data-reveal="mask">
             {coords ? (
               <iframe
@@ -61,48 +61,56 @@ export default function Location() {
               />
             ) : (
               <button type="button" className="location__mapbtn" onClick={() => setZoom(MAP)} aria-label="Open location map in zoom viewer">
-                <Image src={MAP.src} alt={MAP.alt} width={MAP.width} height={MAP.height} sizes="(max-width: 960px) 100vw, 55vw" />
-                <span className="plan__zoom" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" /><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6" /></svg>
+                <Image src={MAP.src} alt={MAP.alt} width={MAP.width} height={MAP.height} sizes="(max-width: 960px) 100vw, 58vw" />
+                <span className="chip" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <circle cx="10.5" cy="10.5" r="6.5" />
+                    <path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6" />
+                  </svg>
                   Zoom map
                 </span>
               </button>
             )}
-            <p className="location__mapnote">Location map from the project brochure · not to scale</p>
           </div>
-        </div>
 
-        <div className="dist" data-reveal>
-          <div className="dist__head">
-            <h3 className="display-3">Distance from the site</h3>
-            <p>Approximate drive times, as stated in the project brochure.</p>
-          </div>
-          <div className="dist__tabs" role="group" aria-label="Show distances for">
-            {distances.map((d, i) => (
-              <button key={d.title} aria-pressed={i === tab} aria-controls={`dp-${i}`} onClick={() => setTab(i)} type="button">
-                {d.title}
+          <div className="location__side">
+            <address className="location__addr" data-reveal>
+              <strong>The Square</strong>
+              {location.full}
+            </address>
+            <div className="cta-row" data-reveal>
+              <a href={location.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn--solid">
+                <span>Get Directions</span>
+                <span className="btn__icon btn__icon--ne" aria-hidden="true">
+                  <span>↗</span>
+                </span>
+              </a>
+            </div>
+
+            <div className="dist" data-reveal>
+              <button type="button" className="dist__toggle" aria-expanded={open} aria-controls="dist-panel" onClick={() => setOpen((o) => !o)}>
+                <span>All drive times</span>
+                <span className="plus" aria-hidden="true" />
               </button>
-            ))}
-          </div>
-          <div className="dist__cols">
-            {distances.map((d, i) => (
-              <div key={d.title} className={`dist__col ${i === tab ? "is-active" : ""}`} id={`dp-${i}`}>
-                <h4 className="dist__title">{d.title}</h4>
-                <ul>
+              <div id="dist-panel" className="dist__panel" hidden={!open}>
+                <div className="dist__tabs" role="group" aria-label="Show drive times for">
+                  {distances.map((x, i) => (
+                    <button key={x.title} type="button" aria-pressed={i === tab} onClick={() => setTab(i)}>
+                      {x.title}
+                    </button>
+                  ))}
+                </div>
+                <ul className="dist__list" key={d.title}>
                   {d.items.map(([name, mins]) => (
                     <li key={name}>
-                      <span className="dist__name">{name}</span>
-                      <span className="dist__bar" aria-hidden="true">
-                        <span style={{ ["--w" as string]: `${(mins / max) * 100}%` }} />
-                      </span>
-                      <span className="dist__min">
-                        {mins} <small>min</small>
-                      </span>
+                      <span>{name}</span>
+                      <span className="dist__min">{mins} min</span>
                     </li>
                   ))}
                 </ul>
+                <p className="meta">Approximate drive times, as stated in the project brochure.</p>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>

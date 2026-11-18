@@ -1,58 +1,52 @@
 import Image from "next/image";
-import { intro } from "@/content/site";
+import { intro, highlights } from "@/content/site";
 
+/** Concise project introduction + the four headline figures (one section, not two). */
 export default function Intro() {
   return (
     <section id="project" className="intro section" aria-labelledby="intro-title">
       <div className="wrap">
-        <div className="intro__head">
-          <p className="eyebrow" data-reveal>
-            <span className="eyebrow__num">01</span> The Project
-          </p>
-          <h2 id="intro-title" className="intro__lead display-2" data-split>
-            An intriguing invitation to explore <em>a new dimension</em> of luxury living — where boundaries are pushed and expectations exceeded, all within the confines of The Square.
-          </h2>
-        </div>
-
-        <div className="intro__grid">
-          <figure className="intro__fig frame" data-reveal="mask">
-            <Image
-              src="/images/project/villa-elevation.jpg"
-              alt="Duplex villa with terrace pergola, glazed balconies and two-car porch — artist's impression"
-              width={881}
-              height={880}
-              sizes="(max-width: 860px) 100vw, 42vw"
-            />
-            <figcaption>Your villa — artist&rsquo;s impression</figcaption>
-          </figure>
-
-          <div className="intro__text">
-            {intro.body.map((p, i) => (
-              <p key={i} data-reveal style={{ ["--d" as string]: `${i * 90}ms` }}>
-                {p}
-              </p>
-            ))}
-            <blockquote className="intro__quote" data-reveal>
-              <p>{intro.brandLine}</p>
-              <cite>Squarefoot Realty</cite>
-            </blockquote>
+        <div className="split">
+          <div>
+            <p className="eyebrow" data-reveal>
+              <span className="eyebrow__num">01</span> {intro.eyebrow}
+            </p>
+            <h2 id="intro-title" className="h2" data-split>
+              A new dimension <em>of luxury.</em>
+            </h2>
           </div>
+          <p className="lead intro__text" data-reveal>
+            {intro.body}
+          </p>
         </div>
+
+        <ul className="stats" data-reveal>
+          {highlights.map((h) => (
+            <li key={h.label} className="stat">
+              <span className="stat__value">
+                <span data-count={h.value}>{h.value}</span>
+                <span className="stat__unit">{h.unit}</span>
+              </span>
+              <span className="stat__label">{h.label}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      <figure className="intro__wide" data-reveal="wipe">
-        <div className="intro__wide-clip">
-          <div className="px" data-parallax="7">
+      <figure className="bleed" data-reveal="wipe">
+        <div className="bleed__clip">
+          <div className="px" data-parallax="6">
             <Image
-              src="/images/project/avenue-palms.jpg"
-              alt="Palm-lined internal avenue between villas — artist's impression"
+              src="/images/the-square-hd/aerial-day.jpg"
+              alt="Aerial view of The Square — 131 villas, the clubhouse and landscaped spine beside the ORR — artist's impression"
               fill
               sizes="100vw"
+              quality={80}
             />
           </div>
         </div>
-        <figcaption className="wrap">
-          <span>Where every square foot exudes luxury</span>
+        <figcaption className="wrap caption">
+          <span>13.5 acres beside the Outer Ring Road</span>
           <span>Artist&rsquo;s impression</span>
         </figcaption>
       </figure>

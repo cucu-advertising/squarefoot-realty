@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { developer, contact } from "@/content/site";
-import { SquarefootLogo, Sunrise } from "@/components/Brand";
+import Link from "next/link";
+import { developer } from "@/content/site";
+import { SquarefootLogo } from "@/components/Brand";
 import { EnquireButton } from "@/components/EnquiryProvider";
 
 export const metadata: Metadata = {
@@ -13,66 +14,51 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="page page--about">
-      <section className="page-hero page-hero--about">
-        <div className="wrap page-hero__grid">
+    <div className="page">
+      <section className="page-hero" aria-labelledby="about-title">
+        <div className="wrap split">
           <div>
             <p className="eyebrow">About Squarefoot Realty</p>
-            <h1 className="display-1" data-split>
+            <h1 id="about-title" className="h1" data-split>
               A square. A sun. <em>A bigger idea of home.</em>
             </h1>
           </div>
-          <p className="page-hero__text">{developer.intro} Everything a space should be, and then some.</p>
+          <p className="lead">{developer.intro}</p>
         </div>
       </section>
 
-      <section className="about-story section" aria-labelledby="evo-title">
-        <div className="wrap about-story__grid">
-          <div className="about-story__logo" data-reveal>
-            <SquarefootLogo />
+      {/* Story + brand */}
+      <section className="section section--stone" aria-labelledby="story-title">
+        <div className="wrap about-story">
+          <div className="about-story__logo" data-reveal="mask">
+            <div className="developer__plate">
+              <SquarefootLogo variant="stacked" sizes="280px" />
+            </div>
           </div>
-          <div>
-            <h2 id="evo-title" className="display-3" data-reveal>Our evolution</h2>
-            <p className="about-lead" data-reveal>{developer.evolution}</p>
-            <h2 className="display-3" data-reveal>The minds behind it</h2>
-            {developer.minds.map((p) => (
-              <p key={p} data-reveal>{p}</p>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="brand-story section section--dark" aria-labelledby="brand-title">
-        <div className="wrap brand-story__grid">
-          <div className="brand-story__visual" data-reveal aria-hidden="true">
-            <Sunrise large />
-            <ul className="brand-story__legend">
-              <li><i className="sw sw--coral" />Square — stability</li>
-              <li><i className="sw sw--sun" />Sun — warmth &amp; optimism</li>
-            </ul>
-          </div>
-          <div>
-            <p className="eyebrow eyebrow--light" data-reveal>Brand story</p>
-            <h2 id="brand-title" className="display-2" data-split>
-              Everything <em>and Beyond.</em>
+          <div className="stack">
+            <h2 id="story-title" className="h3" data-split>
+              Our evolution
             </h2>
-            {developer.brandStory.map((p) => (
-              <p key={p} data-reveal>{p}</p>
-            ))}
+            <p data-reveal>{developer.evolution}</p>
+            <p data-reveal>{developer.minds[0]}</p>
+            <p data-reveal>{developer.brandStory[0]}</p>
           </div>
         </div>
       </section>
 
-      <section className="vision section" aria-labelledby="vision-title">
+      {/* Vision + values */}
+      <section className="section" aria-labelledby="vision-title">
         <div className="wrap">
-          <p className="eyebrow" data-reveal>Our vision</p>
-          <h2 id="vision-title" className="display-1 vision__line" data-split>
+          <p className="eyebrow" data-reveal>
+            Our vision
+          </p>
+          <h2 id="vision-title" className="h2 measure" data-split>
             To create living environments where <em>every possibility</em> is within reach.
           </h2>
           <ul className="values">
             {developer.values.map(([t, d], i) => (
-              <li key={t} data-reveal style={{ ["--d" as string]: `${i * 90}ms` }}>
-                <h3>{t}</h3>
+              <li key={t} data-reveal style={{ ["--d" as string]: `${i * 80}ms` }}>
+                <h3 className="h4">{t}</h3>
                 <p>{d}</p>
               </li>
             ))}
@@ -80,100 +66,81 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="approach section section--stone" aria-labelledby="approach-title">
-        <div className="wrap approach__grid">
-          <div>
-            <p className="eyebrow" data-reveal>What we do</p>
-            <h2 id="approach-title" className="display-2" data-split>
-              From the first plan <em>to the last handover.</em>
-            </h2>
-            <p data-reveal>
-              For three decades we have developed apartments, villas, commercial addresses and planned layouts in Hyderabad. One team looks after every
-              stage, so buyers and landowners deal with people they can trust.
-            </p>
-            <ul className="standard" data-reveal>
-              {developer.standard.map((s) => (
-                <li key={s}>{s}</li>
-              ))}
-            </ul>
-          </div>
-          <ol className="steps">
-            {developer.approach.map(([t, d], i) => (
-              <li key={t} data-reveal style={{ ["--d" as string]: `${i * 90}ms` }}>
-                <span className="steps__num">{String(i + 1).padStart(2, "0")}</span>
-                <div>
-                  <h3>{t}.</h3>
-                  <p>{d}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="portfolio section" aria-labelledby="portfolio-title">
+      {/* Projects */}
+      <section className="section section--stone" aria-labelledby="portfolio-title">
         <div className="wrap">
-          <div className="section-head section-head--split">
+          <div className="split">
             <div>
-              <p className="eyebrow" data-reveal>Projects</p>
-              <h2 id="portfolio-title" className="display-2" data-split>
+              <p className="eyebrow" data-reveal>
+                Projects
+              </p>
+              <h2 id="portfolio-title" className="h2" data-split>
                 Spaces we are <em>building.</em>
               </h2>
             </div>
-            <p className="section-head__text" data-reveal>Three communities taking shape on the Outer Ring Road corridor.</p>
+            <p className="lead" data-reveal>
+              Three communities taking shape on the Outer Ring Road corridor.
+            </p>
           </div>
+
           <ul className="unfolding">
             {developer.unfolding.map((p, i) => (
-              <li key={p.name} data-reveal style={{ ["--d" as string]: `${i * 90}ms` }} className={p.name === "The Square" ? "is-current" : ""}>
-                {p.name === "The Square" && (
+              <li key={p.name} data-reveal style={{ ["--d" as string]: `${i * 80}ms` }} className={p.image ? "has-img" : ""}>
+                {p.image && (
                   <div className="unfolding__img">
-                    <Image src="/images/project/villas-dusk.jpg" alt="The Square villas, artist's impression" fill sizes="(max-width: 860px) 100vw, 33vw" />
+                    <Image src={p.image} alt={`${p.name} — artist's impression`} fill sizes="(max-width: 860px) 100vw, 33vw" />
                   </div>
                 )}
-                <span className="unfolding__status">Now unfolding</span>
-                <h3>{p.name}</h3>
-                <p className="unfolding__place">{p.place}</p>
-                <p className="unfolding__note">{p.note}</p>
-                {p.name === "The Square" && (
-                  <a href="/#project" className="link-btn">Explore The Square ↗</a>
+                <span className="label unfolding__status">Now unfolding</span>
+                <h3 className="h3">{p.name}</h3>
+                <p className="meta">{p.place}</p>
+                <p className="small">{p.note}</p>
+                {p.href && (
+                  <Link href={p.href} className="link-btn">
+                    Explore {p.name} ↗
+                  </Link>
                 )}
               </li>
             ))}
           </ul>
 
-          <div className="delivered delivered--light" data-reveal>
-            <div className="delivered__head">
-              <div>
-                <h3>Delivered. Occupied. Trusted.</h3>
-                <p>Projects that have received their occupancy certificates (OC).</p>
-              </div>
+          <div className="portfolio">
+            <div className="portfolio__head" data-reveal>
+              <h3 className="h3">Delivered. Occupied. Trusted.</h3>
+              <p className="meta">Projects that have received their occupancy certificates (OC)</p>
             </div>
-            <ul className="delivered__list">
-              {developer.delivered.map(([n, p]) => (
-                <li key={n}>
-                  <strong>{n}</strong>
-                  <span>{p}</span>
+            <ul className="portfolio__grid">
+              {developer.delivered.map((p, i) => (
+                <li key={p.name} className={`pcard ${p.image ? "" : "pcard--text"}`} data-reveal style={{ ["--d" as string]: `${i * 80}ms` }}>
+                  {p.image && (
+                    <div className="pcard__img">
+                      <Image src={p.image} alt={`${p.name}, ${p.place} — artist's impression`} fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 25vw" />
+                    </div>
+                  )}
+                  <div className="pcard__body">
+                    <h4 className="h4">{p.name}</h4>
+                    <p className="meta">
+                      {p.place}
+                      {p.note ? ` · ${p.note}` : ""}
+                    </p>
+                  </div>
                 </li>
               ))}
-              <li className="delivered__more">
-                <strong>+ Layouts</strong>
-                <span>A series of layout and plotting ventures</span>
-              </li>
             </ul>
           </div>
-
-          <p className="promoter-note" data-reveal>
-            The Square is promoted by {contact.promoter} and Squarefoot Realty, as stated in the project brochure.
-          </p>
         </div>
       </section>
 
-      <section className="cta-plain section section--dark">
-        <div className="wrap cta-plain__inner">
-          <h2 className="display-2" data-split>
+      <section className="section section--dark">
+        <div className="wrap cta-plain">
+          <h2 className="h2" data-split>
             Whatever you are building, <em>we will help you build it well.</em>
           </h2>
-          <EnquireButton className="btn btn--light btn--lg" source="Home Page">Get in Touch</EnquireButton>
+          <div className="cta-row" data-reveal>
+            <EnquireButton className="btn btn--light btn--lg" source="Home Page">
+              Get in Touch
+            </EnquireButton>
+          </div>
         </div>
       </section>
     </div>

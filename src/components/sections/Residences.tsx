@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
-import { residences, specifications, configurationOptions, type FloorKey } from "@/content/site";
+import { residences, configurationOptions, type FloorKey } from "@/content/site";
 import { EnquireButton } from "../EnquiryProvider";
 import ZoomViewer, { type ZoomImage } from "../ZoomViewer";
 
@@ -27,16 +27,17 @@ export default function Residences() {
   return (
     <section id="residences" className="residences section" aria-labelledby="res-title">
       <div className="wrap">
-        <div className="section-head">
-          <p className="eyebrow" data-reveal>
-            <span className="eyebrow__num">03</span> Residences &amp; floor plans
-          </p>
-          <h2 id="res-title" className="display-2" data-split>
-            East &amp; west facing duplex villas, <em>every one 3,700 sft.</em>
-          </h2>
-          <p className="section-head__text" data-reveal>
-            Step into villas that display the finest space planning, where a symphony of indoors and outdoors charms you with thoughtful additions and
-            meticulous craftsmanship.
+        <div className="split">
+          <div>
+            <p className="eyebrow" data-reveal>
+              <span className="eyebrow__num">03</span> Residences
+            </p>
+            <h2 id="res-title" className="h2" data-split>
+              4-BHK duplex villas, <em>3,700 sft each.</em>
+            </h2>
+          </div>
+          <p className="lead" data-reveal>
+            East and west facing, on plots of 267, 300 and 330 sq. yds — with the finest space planning.
           </p>
         </div>
 
@@ -89,7 +90,6 @@ export default function Residences() {
               ))}
             </dl>
 
-            <h4 className="res-info__h">Key spaces</h4>
             <ul className="res-rooms">
               {r.rooms.map((x) => (
                 <li key={x}>{x}</li>
@@ -137,73 +137,31 @@ export default function Residences() {
               </span>
             </button>
             <div className="plan__foot">
-              <button
-                type="button"
-                className="link-btn"
-                onClick={() => setZoom({ img: { ...r.sheet, alt: `${r.type} ${r.name} — complete floor plan sheet`, title: `${r.type} · ${r.name} · All floors` }, dl: r.download })}
-              >
-                View all floors together ↗
-              </button>
+              <div className="plan__links">
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={() => setZoom({ img: { ...r.sheet, alt: `${r.type} ${r.name} — complete floor plan sheet`, title: `${r.type} · ${r.name} · All floors` }, dl: r.download })}
+                >
+                  All floors ↗
+                </button>
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={() =>
+                    setZoom({
+                      img: { src: "/images/plans/site-layout.jpg", width: 4800, height: 2120, alt: "The Square site layout plan with villa plot numbers and legend", title: "Site layout plan" },
+                    })
+                  }
+                >
+                  Site layout plan ↗
+                </button>
+              </div>
               <span>Plans from the project brochure. Not to scale.</span>
             </div>
           </div>
         </div>
 
-        <div className="masterplan" data-reveal>
-          <div className="masterplan__text">
-            <h3 className="display-3">Site layout plan</h3>
-            <p>
-              131 villas along 40&prime; &amp; 30&prime; wide internal BT roads with avenue plantation, alongside the clubhouse, a commercial space and a
-              landscaped strip of 26 activity and seating zones, numbered as in the brochure legend.
-            </p>
-            <button
-              type="button"
-              className="btn btn--ghost"
-              onClick={() =>
-                setZoom({
-                  img: { src: "/images/plans/site-layout.jpg", width: 4800, height: 2120, alt: "The Square site layout plan with villa plot numbers and legend", title: "Site layout plan" },
-                })
-              }
-            >
-              <span>Explore the site plan</span>
-              <span className="btn__icon btn__icon--ne" aria-hidden="true"><span>↗</span></span>
-            </button>
-          </div>
-          <button
-            type="button"
-            className="masterplan__img frame"
-            onClick={() =>
-              setZoom({
-                img: { src: "/images/plans/site-layout.jpg", width: 4800, height: 2120, alt: "The Square site layout plan with villa plot numbers and legend", title: "Site layout plan" },
-              })
-            }
-            aria-label="Open site layout plan in zoom viewer"
-          >
-            <Image src="/images/plans/site-layout.jpg" alt="Site layout plan of The Square" width={4800} height={2120} sizes="(max-width: 860px) 100vw, 60vw" />
-          </button>
-        </div>
-
-        <div className="specs" data-reveal>
-          <div className="specs__head">
-            <h3 className="display-3">Specifications</h3>
-            <p>As detailed in the project brochure. Makes are indicative: “or equivalent” applies throughout.</p>
-          </div>
-          <div className="specs__list">
-            {specifications.map((s) => (
-              <details key={s.title} className="spec">
-                <summary>
-                  <span>{s.title}</span>
-                  <span className="plus" aria-hidden="true" />
-                </summary>
-                <ul>
-                  {s.items.map((i) => (
-                    <li key={i}>{i}</li>
-                  ))}
-                </ul>
-              </details>
-            ))}
-          </div>
-        </div>
       </div>
 
       <ZoomViewer image={zoom?.img ?? null} download={zoom?.dl} onClose={closeZoom} />

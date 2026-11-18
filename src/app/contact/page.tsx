@@ -14,10 +14,10 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
   const wantsBrochure = brochure === "1";
   return (
     <div className="page page--contact">
-      <section className="page-hero page-hero--contact">
+      <section className="page-hero">
         <div className="wrap">
           <p className="eyebrow">Contact</p>
-          <h1 className="display-1" data-split>
+          <h1 className="h1" data-split>
             Let’s find <em>your place.</em>
           </h1>
           <p className="page-hero__text">
@@ -27,10 +27,10 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
         </div>
       </section>
 
-      <section className="contact section" aria-label="Enquiry form and contact details">
+      <section className="section section--flush-top" aria-label="Enquiry form and contact details">
         <div className="wrap contact__grid">
           <div className="contact__form" id="enquire">
-            <h2 className="display-3">{wantsBrochure ? "Download the brochure" : "Send an enquiry"}</h2>
+            <h2 className="h3">{wantsBrochure ? "Download the brochure" : "Send an enquiry"}</h2>
             <p className="contact__lede">
               {wantsBrochure
                 ? "The brochure is shared with visitors who leave their contact details. Submit the form and your download will be ready immediately."
@@ -40,16 +40,16 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           </div>
 
           <aside className="contact__card" aria-label="Contact details">
-            <div className="contact__block">
-              <h2 className="contact__h">Call</h2>
+            <div>
+              <h2 className="label">Call</h2>
               <a href={contact.phoneHref} className="contact__big">{contact.phoneDisplay}</a>
             </div>
-            <div className="contact__block">
-              <h2 className="contact__h">Email</h2>
+            <div>
+              <h2 className="label">Email</h2>
               <a href={`mailto:${contact.email}`} className="contact__big">{contact.email}</a>
             </div>
-            <div className="contact__block">
-              <h2 className="contact__h">Office</h2>
+            <div>
+              <h2 className="label">Office</h2>
               <address>
                 <strong>{contact.promoter}</strong>
                 {contact.addressLines.map((l) => (
@@ -57,8 +57,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                 ))}
               </address>
             </div>
-            <div className="contact__block">
-              <h2 className="contact__h">Project site</h2>
+            <div>
+              <h2 className="label">Project site</h2>
               <address>
                 <strong>The Square</strong>
                 <span>{location.full}</span>

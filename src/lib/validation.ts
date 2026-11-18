@@ -1,4 +1,6 @@
-import { configurationOptions } from "@/content/site";
+import { allConfigurationOptions, type ProjectId } from "@/content/site";
+
+export const PROJECTS: ProjectId[] = ["the-square", "urban-ranch"];
 
 /** Shared between the browser (instant feedback) and the API route (authoritative). */
 
@@ -11,6 +13,7 @@ export const ENQUIRY_SOURCES = [
 export type EnquirySource = (typeof ENQUIRY_SOURCES)[number];
 
 export interface EnquiryInput {
+  project: ProjectId;
   name: string;
   email: string;
   phone: string;
@@ -45,6 +48,7 @@ const clean = (v: unknown, max: number) =>
 
 export function parseEnquiry(body: Record<string, unknown>): { data: EnquiryInput; errors: FieldErrors } {
   const data: EnquiryInput = {
+    project: PROJECTS.includes(body.project as ProjectId) ? (body.project as ProjectId) : "the-square",
     name: clean(body.name, 80),
     email: clean(body.email, 120).toLowerCase(),
     phone: clean(body.phone, 24),
@@ -67,7 +71,7 @@ export function validateEnquiry(d: EnquiryInput): FieldErrors {
   else if (!EMAIL_RE.test(d.email)) e.email = "Please enter a valid email address, e.g. name@example.com.";
   if (!d.phone) e.phone = "Please enter your mobile number.";
   else if (!isValidPhone(d.phone)) e.phone = "Please enter a valid 10-digit mobile number (or include your country code).";
-  if (d.configuration && !(configurationOptions as readonly string[]).includes(d.configuration))
+  if (d.configuration && !(allConfigurationOptions as readonly string[]).includes(d.configuration))
     e.configuration = "Please choose an option from the list.";
   if (d.message.length > 1000) e.message = "Please keep your message under 1,000 characters.";
   if (!d.consent) e.consent = "Please confirm that we may contact you about your enquiry.";

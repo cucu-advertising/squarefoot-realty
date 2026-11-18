@@ -121,3 +121,62 @@ Content audit, design decisions, completed work and open items.
 - Frame pacing in headless Chromium during a 9,000 px glide: p95 19 ms. Real-device performance should be confirmed on the deployed site.
 
 **Deployment status:** not deployed. A Vercel token was not provided to this session; see README → Deployment.
+
+## 10. Refinement pass: typography, spacing, content, renders, Urban Ranch
+
+**Typography.** One scale replaces 49 ad-hoc font sizes: hero display, `.h1`–`.h4`, `.lead`, body, `.small`, `.label` (eyebrows, navigation, buttons, tabs, form labels) and `.meta` (captions, units). Every section heading uses `.h2`; every eyebrow, button and tab shares one 12 px / 600 / 0.16em label style.
+
+**Spacing.** An 8-pt scale plus three rhythm tokens: section padding (80–132 px), heading-to-content (40–64 px) and block gap (48–88 px). Every section opens with the same heading block (title left, one supporting line right). Container is 1,360 px; mobile margins are 20 px throughout.
+
+**Content reduced.** The home page is 21% shorter on desktop (16,209 → 12,738 px) and 32% shorter on mobile (21,155 → 14,442 px).
+- Introduction and key figures merged into one section; the highlights section, its 20-item list and the 7-row facts table were removed.
+- The 19-group specification accordion was replaced by three signature features plus an "Explore Complete Specifications" CTA to the brochure.
+- Residences: room lists cut from 11 items to 4; the site plan moved behind a link to the zoom viewer.
+- Amenities: 4 groups of 8–11 items became 3 groups of 6 essentials.
+- Location: 4 headline drive times shown; all 38 sit behind "All drive times".
+- About page roughly halved.
+
+**Signature features — wording checked against the brochure.**
+1. **Smart living & home automation.** "Fully Automated Homes" was *not* used: the brochure says "Provision for Home Automation (Lights, Fans & A/C's)" and "*Provision of Automation Technology Solutions is optional". The site keeps the optional-provision note.
+2. **High-end aluminium windows** (p.22: anodised aluminium frames and shutters for windows and French doors).
+3. **25,000 sft+ clubhouse** (p.7 / p.16: "4-Level Exclusive Clubhouse with 25,000 Sft + area").
+
+**Google Drive renders.** In folder "Jpeg" (14 files), 7 were downloaded at 4000×2250 and are used at 2560 px: Aerial cam, Aerial Night Hires, Club house, Club Pool View, East villa_Aerial, West Villa Aerial, Skating rink (1).jpg.
+
+Not retrieved, because they exceed the Drive connector's 10 MB limit and direct Drive downloads are blocked by this environment's network policy:
+- Entrance_Hi Res.jpg (22 MB)
+- Aerial view_Hi Res.jpg (14.9 MB)
+- Cam 28_Rowhouse_Hi Res.jpg (13.9 MB) — likely a higher-resolution version of the current hero
+- Club Cam-05_Hi Res.jpg (13.4 MB)
+- East villa.jpg (11.6 MB)
+- Skating rink (1).tif (36 MB) — duplicate of the JPEG
+- MLP Top down.pdf (31 MB)
+
+Drop them into `public/images/the-square-hd/` to use them.
+
+Check with the client: the Drive clubhouse render is signed "IRA SQUARE CLUBHOUSE", and its angular design matches both brochure aerials. The brochure also contains a different, timber-fronted "Club The Square" render. The Drive version is now used; confirm which design is current.
+
+**Urban Ranch** (new page `/urban-ranch`, from Digital_UR_Mini_Brochure.pdf).
+- Facts: 163 villas, 19.5 acres, plots of 292/301/351 sq. yds, 3,807–4,927 sft built-up, RCC Mivan G+2, 11.5 ft ceilings, ~30,000 sft clubhouse.
+- Also shown: the three villa types with East/West built-up areas, the clubhouse and community features, 8 drive times, and TG RERA P02400009631.
+- The directions link is decoded from the brochure's QR code. The page's phone number (+91 8001 345 345) and email come from that brochure.
+- Images are 900–1,850 px, so they are shown in contained layouts rather than full-bleed.
+- Brochure: `private/urban-ranch-brochure-squarefoot-revised.pdf` adds the official Squarefoot logo, with a divider, beside the IRA and Ironhorse logos on the cover and back page. It is otherwise unchanged. The untouched original is kept at `private/urban-ranch-brochure-original.pdf`; switch between them in `src/app/api/brochure/route.ts`.
+- Check with the client: the brochure itself shows only IRA and Ironhorse as promoters. The site adds the Squarefoot logo as instructed and states the brochure's promoters factually.
+
+**Official Squarefoot logo everywhere.** The hand-drawn SVG mark, the typeset wordmark and the animated "sunrise" mark were removed. The logo now comes from the brand guide in four variants: mark, stacked, horizontal, and reversed (white type, for dark backgrounds). The favicon is made from the official mark. Logos from white backgrounds are cut out as opaque shapes, so their colours stay true on dark backgrounds.
+
+**Portfolio imagery.**
+- Challa Elite: the supplied render, which matches the Challa Elite brochure.
+- Trans Elite: the render from Challa Elite's "previous projects" panel, which matches the Trans Elite brochure. The architect's watermark was cropped out.
+- The commercial render (signage reads "TRANS ELITE") was *not* used: no source names it, so it isn't labelled Trans Arcade.
+- Trans Arcade and Lokeshwari Residency are text-only cards, because there is no verified imagery for them.
+
+**Fixes found during testing.**
+- Images at quality 75/82 returned HTTP 400 because those values were missing from `images.qualities`.
+- Logo colours were wrong on dark backgrounds.
+- The footer wrapped "ORR Exit-13" at the hyphen.
+
+**Tests.**
+- `scripts/e2e.mjs`: 104/104, now covering the Urban Ranch page, lead tagging, the revised-PDF checksum and brochure gating.
+- `scripts/motion-test.mjs`: 34/34; frame pacing p95 18.5 ms.

@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
   }
 
   const dedupeKey = createHash("sha256")
-    .update([data.email, data.phone.replace(/\D/g, ""), data.source, data.configuration, data.message].join("|"))
+    .update([data.project, data.email, data.phone.replace(/\D/g, ""), data.source, data.configuration, data.message].join("|"))
     .digest("hex");
   const duplicate = wasDelivered(dedupeKey);
 
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!duplicate) markDelivered(dedupeKey);
-  const res = NextResponse.json({ ok: true, brochureUrl: "/api/brochure", duplicate: duplicate || undefined });
+  const res = NextResponse.json({ ok: true, brochureUrl: `/api/brochure?project=${data.project}`, duplicate: duplicate || undefined });
   res.cookies.set(BROCHURE_COOKIE, issueToken(), {
     httpOnly: true,
     sameSite: "lax",

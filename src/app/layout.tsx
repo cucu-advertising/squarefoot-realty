@@ -27,7 +27,6 @@ export const metadata: Metadata = {
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Duplex villas at The Square, artist's impression" }],
   },
   twitter: { card: "summary_large_image", images: ["/og-image.jpg"] },
-  icons: { icon: "/icon.svg" },
   formatDetection: { telephone: false },
 };
 
@@ -47,7 +46,7 @@ const jsonLd = {
       alternateName: "Sai Teja Developers",
       slogan: "Everything and Beyond",
       url: site.url,
-      logo: `${site.url}/images/brand/squarefoot-realty-logo.png`,
+      logo: `${site.url}/images/brand/squarefoot-logo-stacked.png`,
     },
     {
       "@type": "Residence",
