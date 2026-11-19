@@ -1,124 +1,115 @@
-# The Square — Squarefoot Realty
+# Squarefoot Realty — website
 
-Production website for **The Square**: 131 East & West facing 4-BHK luxury duplex villas on 13.5 acres, Kongara Kalan Road, Adibatla, Hyderabad (TS RERA P02400005775).
+Next.js 16 (App Router, TypeScript) · GSAP + ScrollTrigger + SplitText · Lenis · server-side enquiry handling and gated brochures.
 
-Built with **Next.js 15 (App Router) + React 19 + TypeScript**, plain CSS (one design-system stylesheet), no UI framework. Four runtime dependencies besides Next/React: two self-hosted font packages, `nodemailer` (SMTP option) and `server-only`.
-
----
-
-## Quick start
+## Run it
 
 ```bash
 npm install
-cp .env.example .env.local      # EMAIL_PROVIDER=console is fine for local development
+cp .env.example .env.local      # then fill in values
 npm run dev                     # http://localhost:3000
 ```
 
-Production build:
+Production:
 
 ```bash
 npm run build
-npm start
+BROCHURE_TOKEN_SECRET=$(openssl rand -hex 32) npm start
 ```
+
+Tests (against a running server):
+
+```bash
+BASE=http://localhost:3000 node tests/e2e.mjs          # 88 functional, security and device checks
+node tests/screens.mjs http://localhost:3000            # full-page screenshots → tests/screens
+```
+
+**Hosting.** This needs a Node.js host (Vercel, Render, or a VPS running `next start`), not static hosting, because the enquiry API and brochure gating run on the server. On serverless hosts the local leads file does not persist, so configure the webhook or SMTP destination.
 
 ## Where things live
 
 | What | Where |
 |---|---|
-| **Every project fact** (areas, amenities, distances, RERA, contact details, copy) — The Square **and Urban Ranch** | `src/content/site.ts` — edit here only; each value is tagged with its source document |
-| Pages | `src/app/` — `/`, `/urban-ranch`, `/about`, `/contact`, `/privacy-policy`, `/disclaimer`, `sitemap.xml`, `robots.txt` |
-| Brochures (gated) | `private/the-square-brochure.pdf` (original), `private/urban-ranch-brochure-squarefoot-revised.pdf` (served), `private/urban-ranch-brochure-original.pdf` (untouched original) |
-| Official logos | `public/images/brand/` — extracted from the brand guide and brochures; see `src/components/Brand.tsx` |
-| Home sections | `src/components/sections/*` |
-| Enquiry modal, brochure buttons | `src/components/EnquiryProvider.tsx`, `EnquiryForm.tsx` |
-| Floor-plan / map zoom viewer | `src/components/ZoomViewer.tsx` |
-| Enquiry API | `src/app/api/enquiry/route.ts` |
-| Gated brochure download | `src/app/api/brochure/route.ts` → streams `private/the-square-brochure.pdf` |
-| Email / CRM delivery | `src/lib/deliver.ts` |
-| Validation (shared client + server) | `src/lib/validation.ts` |
-| Design tokens & styles | `src/app/globals.css` — one type scale (`--fs-*`, `.h1`–`.h4`, `.lead`, `.label`, `.meta`) and one spacing scale (`--s1`–`--s9`, `--section-y`, `--head-gap`, `--block-gap`) |
-| Images | `public/images/project` (renders), `public/images/plans` (floor plans, site plan, map), `public/images/brand` |
-| Floor-plan PDFs | `public/downloads/floor-plans/` (vector pages extracted from the brochure) |
+| Project facts, highlights, images, exploration views, plans, brochure keys | `src/lib/projects.ts` (single source of truth) |
+| Company copy, nav, contact details (from env) | `src/lib/site.ts` |
+| Design tokens (colour, type scale, spacing, radius, motion) | top of `src/app/globals.css` |
+| Motion system (Lenis, reveals, pinned sequences) | `src/components/Motion.tsx` |
+| Brochure slug → PDF mapping | `src/lib/brochures.ts` |
+| Gated PDFs (never public) | `private/brochures/` |
+| Web images | `public/images/<project>/` |
+| Original Drive downloads (not deployed) | `source-assets/drive/` (The Square), `source-assets/origin/` (Squarefoot Origin) |
+| Lead delivery (webhook / email / file) | `src/lib/leads.ts` |
 
-## How enquiries and the brochure work
+## Design system (v3, benchmarked against stillform.homes)
 
-1. A visitor clicks any **Download Brochure** button (hero, header, footer, CTA band) or **Enquire Now**. A modal opens with a short form. The brochure version says clearly that contact details are needed.
-2. `POST /api/enquiry` checks the request origin, rate-limits (5 per 10 minutes per IP), checks the honeypot and minimum fill time, and validates every field on the server.
-3. The lead goes to **every configured channel** (email and/or CRM webhook). The API answers `ok: true` **only after the provider has accepted it**. If nothing is configured, or delivery fails, the visitor sees an error with the phone number and email. It never shows a false success.
-4. On success the server sets a signed, HttpOnly cookie (`tsq_brochure`, 7 days). The confirmation reads *"Thank you for your interest. Explore the project in more detail through our brochure."* and shows **Download Brochure ↓**.
-5. `GET /api/brochure?project=the-square|urban-ranch` streams that project's PDF unmodified (byte-identical, 17.9 MB) as an attachment. Anyone without the cookie is redirected to `/contact?brochure=1`.
-6. Later brochure clicks in the same session download straight away, without the form again.
+- **Canvas:** warm sand `#EFE9DF` and ink `#1A1A18` (the logo wordmark colour). Brand red, brick and yellow are used for accents, progress and states only.
+- **Type:** one scale (`--f-hero`, `--f-display`, `--f-h2`, `--f-h3`, `--f-statement`, `--f-lead`, `--f-body`, `--f-label`, `--f-link`). Large headlines are light (300) with tight tracking. Labels are 11px uppercase, spaced 0.2em. Montserrat stands in for Gotham.
+- **Space:** `--sp-1`…`--sp-7`, `--section-y`, `--gutter`, `--gap`, one container (max 1680px) and one radius (`--radius`).
+- **Components:** sticky hero with a fog edge on the section that slides over it; text links with an underline and arrow; pill buttons; nav labels that roll over on hover; rounded image cards.
 
-Each lead contains: name, email, mobile, residence type, preferred visit time, message, **source** (`Contact Page`, `Brochure Request`, `Residences`, `Home Page`), timestamp (ISO + IST), page and user agent. Emails set **Reply-To** to the visitor.
+## Motion inventory
 
-## Environment variables
+| Where | What it does |
+|---|---|
+| First visit | Preloader: brand, a 00→100 counter tied to real image loading, then a wipe up (once per session) |
+| Hero | Image unmasks from an inset rounded frame and settles from 1.25× scale; headline rises line by line; links, meta and caption follow. While the next section slides over, the image slowly scales |
+| Headlines | Masked line-by-line reveal (SplitText), staggered |
+| Statements | Words brighten in sync with scroll (reversible) |
+| Images | Wipe-up reveal with scale settle; parallax on selected media |
+| Philosophy collage | Scattered images converge, grow to near full screen, then peel away one by one. Caption, counter and prev/next buttons included |
+| Project discovery | Giant brand marquee; the first project grows from a card to full screen; later projects wipe up over it; index rail jumps between them |
+| Explore The Square | Pinned 6-view exploration of real renders: directional wipes, push-in, dot rail, big number and progress bar |
+| Signature details | Statement → image rises → full-bleed with overlay → split composition, with each detail taking its turn |
+| Delivered reel | Horizontal reel driven by vertical scroll, with a progress line |
+| Closing | Frame grows from a card to full screen, then the invitation appears |
+| Project features | Paired cards slide up over each other (where every feature has its own render) |
+| Gallery | Focus image with Ken Burns, next-image preview, counter, swipe, keyboard and lightbox |
+| Header | Hides on scroll down and returns on scroll up; colour follows whatever is under it |
 
-See `.env.example`. Nothing here is exposed to the browser.
+Pinned sequences run only for fine pointers at 1024px and wider (`html.pin`). Phones, tablets and iPads keep native scrolling, and each sequence falls back to a deliberate static layout (swipe rows, stacked cards, tap-to-switch exploration). Reduced-motion visitors get the static layouts with no reveals.
 
-| Variable | Required | Notes |
+## How the brochure gating works
+
+1. **Download brochure** opens the enquiry drawer: name, email, mobile and consent. The project is pre-selected, or a picker appears for general CTAs.
+2. The form is validated in the browser **and** on the server (`/api/enquiry`). Spam protection is a honeypot, a minimum fill time, a per-IP rate limit and a same-origin check. Duplicate submissions are idempotent.
+3. The lead is delivered to every configured destination. The visitor sees success **only if at least one destination confirms**; otherwise they get HTTP 502 and a real error.
+4. The server returns a signed, 15-minute download token for that one project and sets an httpOnly 12-hour session cookie, so the same visitor isn't asked again.
+5. `/api/brochure/[slug]` streams the PDF only with a valid token or cookie for **that** slug. PDFs live outside `/public`, so no public URL exists.
+
+## Lead destinations (set at least one in production)
+
+- `LEADS_WEBHOOK_URL` (+ optional `LEADS_WEBHOOK_TOKEN`): a JSON POST to a CRM, Zapier, Make or Google Apps Script.
+- SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `LEADS_EMAIL_TO`, `LEADS_EMAIL_FROM`): one email per lead, with reply-to set to the visitor.
+- `LEADS_FILE_STORE=on` (default): appends to `data/leads.jsonl`. Works on a VPS.
+
+All three were verified locally against a test webhook receiver and a local SMTP sink, and so was the all-destinations-down failure path. They have **not** been tested against the client's real CRM or mailbox, because none was supplied.
+
+## Content and asset inventory
+
+| Item | Source | Status |
 |---|---|---|
-| `SITE_URL` | yes | Canonical domain, used for sitemap, OG and canonical tags |
-| `BROCHURE_TOKEN_SECRET` | **yes in production** | 32+ random chars. Without it, enquiries return 503 *before* anything is sent |
-| `EMAIL_PROVIDER` | yes* | `resend`, `smtp`, or `console` (development only; refused in production) |
-| `ENQUIRY_TO` | no | Defaults to `info@irarealty.in`, the address on the brochure's back cover |
-| `ENQUIRY_CC` | no | e.g. a Squarefoot Realty inbox |
-| `ENQUIRY_FROM` | yes for email | Sender on a **verified** domain, e.g. `The Square <enquiries@yourdomain.com>` |
-| `RESEND_API_KEY` | if `resend` | https://resend.com → API Keys; verify the sending domain first |
-| `SMTP_HOST/PORT/SECURE/USER/PASS` | if `smtp` | Google Workspace, Zoho, Amazon SES SMTP, etc. |
-| `CRM_WEBHOOK_URL`, `CRM_WEBHOOK_SECRET` | no | Every lead is also POSTed as JSON (Zapier, Make, Google Apps Script, CRM). Sent as `Authorization: Bearer <secret>` |
+| Brand (logo vector, colours, Gotham, "Everything and Beyond") | Branding PDF | Used |
+| Company copy | Website copy .docx | Used, condensed |
+| The Square: facts, RERA P02400005775, highlights, amenities, plans, distances | The Square brochure | Used. Brochure gated |
+| The Square renders | **Google Drive folder: all 13 files** (12 renders at 4000px + master-plan PDF) | Used. Originals in `source-assets/drive/`, web exports in `public/images/the-square/` |
+| Squarefoot Origin: 27 villas, 2.8 acres, G+2, 8,500 sft clubhouse | Website copy | Used |
+| Squarefoot Origin renders and plans | **Google Drive folder: all 15 files** (site aerial, entrance, clubhouse, 9 villa renders, East facing ground/first/second floor plans) | Used: hero, highlights, 5-view exploration, gallery, amenities, floor plans, closing, plus the cards on the home and projects pages and the menus. Originals in `source-assets/origin/`, web exports in `public/images/squarefoot-origin/`. The white margins on the entrance and clubhouse sheets were trimmed; nothing else was altered. Room names on the plan tabs are read directly off the plans |
+| The Urban Ranch | Copy + The Square location map | Name, location and "upcoming" only |
+| Trans Elite, Challa Elite | Brochures (Challa Elite PDF; Trans Elite spreads supplied as images) | Used. Brochures gated |
+| Trans Arcade, Lokeshwari Residency | Copy | Listed as delivered; no detail pages |
 
-\* At least one of an email provider or `CRM_WEBHOOK_URL` must be configured, or the form shows its error state.
+## Needs client confirmation
 
-Generate a secret:
+1. **Signature highlights** (automation, aluminium windows, 25,000 sft+ clubhouse) are from **The Square** brochure, not Urban Ranch; nothing has been supplied for Urban Ranch.
+2. The brochure says "**provision** for home automation (optional)", so the site says "Automation-ready homes".
+3. **Commercial render**: the render signed "Trans Elite" is attributed to **Trans Arcade**. Please confirm.
+4. The "Aluminium windows" image is a **crop of the real east-facing villa render**, not a separate render.
+5. Footer disclaimer and Privacy Policy need legal review.
 
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
+## Missing
 
-## Motion system
-
-All scrolling and animation lives in `src/components/Motion.tsx` (mounted once in the layout):
-
-- **Smooth scrolling:** one Lenis instance (`lerp: 0.1`), driven by GSAP's ticker and synced to ScrollTrigger. Desktop/fine-pointer only; phones and tablets keep native touch scrolling. Paused while a dialog or the mobile menu is open.
-- **Heading reveals:** add `data-split` to a heading and it reveals line by line from behind a mask (GSAP SplitText, `expo.out`, 85 ms stagger, triggers at 88% of the viewport, re-splits on resize and font load).
-- **Supporting content:** `data-reveal` fades up; `data-reveal="mask"` and `"wipe"` reveal images; `data-count` counts up.
-- **Parallax:** wrap an image in `<div class="px" data-parallax="7">` for a scrubbed drift (desktop only).
-- **Navigation:** same-page anchors glide and land below the header (offset comes from `scroll-padding-top` in `globals.css`); Back/Forward/reload restore the exact scroll position per history entry.
-- `prefers-reduced-motion` disables Lenis, splitting, parallax and transitions.
-
-`scripts/motion-test.mjs` runs 35 checks on this (`BASE_URL=http://localhost:3000 node scripts/motion-test.mjs`).
-
-## Deployment
-
-**Vercel (recommended).** Either:
-
-1. Push this folder to a GitHub repository, then at vercel.com choose *Add New → Project*, import the repository and add the environment variables above; or
-2. From this folder run `npx vercel` (log in when prompted), then `npx vercel --prod`.
-
-Set at least `SITE_URL`, `BROCHURE_TOKEN_SECRET`, and an email provider (`EMAIL_PROVIDER` + its keys + `ENQUIRY_FROM`) in *Project → Settings → Environment Variables*, then redeploy. Until an email provider is set, the live form shows its error state rather than a false success. After the first deploy, submit one real enquiry and download the brochure on the live URL to confirm both. `next.config.mjs` already includes `private/the-square-brochure.pdf` in the brochure function bundle.
-
-**Any Node 20+ host:** `npm ci && npm run build && npm start` behind HTTPS (Nginx, Caddy, Render, Railway, a VM). Pass the client IP in `X-Forwarded-For` so rate limiting works.
-
-The rate limiter is in memory. That suits a single server. For multi-instance or serverless scale, swap `src/lib/rate-limit.ts` for a shared store such as Upstash Redis.
-
-## Testing
-
-`scripts/e2e.mjs` runs 90 Playwright checks against a running production server: brochure flow (byte-identical download), contact flow, lead contents, gating, residences, zoom, gallery, mobile menu, horizontal overflow at 390/768/1280/1440/1920 px, every internal link, SEO tags, alt text and reduced motion.
-
-```bash
-node scripts/mock-crm.mjs /tmp/leads.jsonl 4010 &
-npm run build
-CRM_WEBHOOK_URL=http://127.0.0.1:4010/lead CRM_WEBHOOK_SECRET=test-secret \
-  BROCHURE_TOKEN_SECRET=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))") \
-  EMAIL_PROVIDER= npm start &
-BASE_URL=http://localhost:3000 LEADS_FILE=/tmp/leads.jsonl node scripts/e2e.mjs
-```
-
-## Updating content
-
-- **Text, figures, contact details, RERA:** `src/content/site.ts`.
-- **Interactive Google map:** set `location.coordinates = { lat, lng }` in `site.ts`. An embedded map then replaces the brochure map image. Until then, "Get Directions" uses the brochure's own Google Maps link.
-- **New brochure:** replace `private/the-square-brochure.pdf` and update the page count and size line in `EnquiryForm.tsx`.
-- **WhatsApp, office hours, site-office address:** fields exist in `contact` and stay hidden while `null`.
-
-See `docs/PROJECT-REPORT.md` for the content audit, decisions and open items.
+- **Verified contact details** (office address, phone, email, WhatsApp, hours). The blocks stay hidden until these are set in env vars.
+- **Real lead destination** (CRM webhook or SMTP credentials).
+- Squarefoot Origin West facing floor plans, RERA number and brochure; Urban Ranch details.
+- Exact site map pins (maps currently search by locality).
+- Gotham webfont licence.

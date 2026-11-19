@@ -3,7 +3,8 @@ node_modules
 out
 .env
 .env.local
-.env*.local
+data/*.jsonl
+source-assets
 *.tsbuildinfo
 next-env.d.ts
-.vercel
+tests/screens

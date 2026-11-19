@@ -1,171 +1,185 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { nav, contact, rera } from "@/content/site";
-import { TheSquareLogo, SquarefootLogo } from "./Brand";
-import { BrochureButton, EnquireButton } from "./EnquiryProvider";
+import { LogoHorizontal, Mark } from "./Logo";
+import { EnquireButton } from "./Enquiry";
+import { Roll } from "./ui";
+import { site } from "@/lib/site";
+import { pageProjects } from "@/lib/projects";
 
+/**
+ * Minimal bar (wordmark left, navigation right). Its colour follows whatever is directly
+ * beneath it — the nearest [data-head] under the bar's centre ("dark", "light" or "red") — so it
+ * stays legible over imagery, brand panels and light sections, including inside pinned sequences.
+ */
 export default function Header() {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [solid, setSolid] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState<string>("");
+  const [dark, setDark] = useState(true);
+  const [onRed, setOnRed] = useState(false);
+  const [dropOpen, setDropOpen] = useState(false);
   const lastY = useRef(0);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const toggleRef = useRef<HTMLButtonElement>(null);
-  const overHero = pathname === "/";
-  // Developer-level pages carry the Squarefoot Realty logo instead of The Square's
-  const sfBrand = pathname.startsWith("/about") || pathname.startsWith("/urban-ranch");
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 40);
-      setHidden(y > 400 && y > lastY.current + 4);
-      if (y < lastY.current - 4) setHidden(false);
-      lastY.current = y;
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Highlight the section currently in view (home page only)
-  useEffect(() => {
-    if (pathname !== "/") {
-      setActive(pathname);
-      return;
-    }
-    const ids = ["project", "residences", "amenities", "location"];
-    const els = ids.map((i) => document.getElementById(i)).filter(Boolean) as HTMLElement[];
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) if (e.isIntersecting) setActive(`/#${e.target.id}`);
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    setMenu(false);
+    setDropOpen(false);
+    setHidden(false);
   }, [pathname]);
 
-  // Mobile menu: lock scroll, Esc to close, keep focus inside
   useEffect(() => {
-    document.documentElement.classList.toggle("is-menu-open", open);
-    if (!open) return;
-    const panel = menuRef.current;
-    panel?.querySelector<HTMLElement>("a,button")?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        toggleRef.current?.focus();
-      }
-      if (e.key === "Tab" && panel) {
-        const f = Array.from(panel.querySelectorAll<HTMLElement>("a,button")).concat(toggleRef.current!);
-        const i = f.indexOf(document.activeElement as HTMLElement);
-        if (e.shiftKey && i <= 0) {
-          e.preventDefault();
-          f[f.length - 1].focus();
-        } else if (!e.shiftKey && i === f.length - 1) {
-          e.preventDefault();
-          f[0].focus();
+    let raf = 0;
+    const sample = () => {
+      raf = 0;
+      const x = window.innerWidth / 2;
+      const y = 30;
+      const stack = document.elementsFromPoint(x, y);
+      let theme: string | null = null;
+      for (const el of stack) {
+        if (headerRef.current?.contains(el)) continue;
+        const host = el.closest<HTMLElement>("[data-head]");
+        if (host) {
+          theme = host.dataset.head ?? null;
+          break;
         }
       }
+      // "red" panels take ink text like light ones, and the logo's red square switches to paper.
+      setDark(theme !== "light" && theme !== "red");
+      setOnRed(theme === "red");
     };
+    const onScroll = () => {
+      const y = window.scrollY;
+      setSolid(y > 80);
+      if (y > 500 && y > lastY.current + 4) setHidden(true);
+      else if (y < lastY.current - 4 || y < 500) setHidden(false);
+      lastY.current = y;
+      if (!raf) raf = requestAnimationFrame(sample);
+    };
+    onScroll();
+    const t = window.setTimeout(sample, 120);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!menu) return;
+    window.__lenis?.stop();
+    document.documentElement.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenu(false);
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+    return () => {
+      document.documentElement.style.overflow = "";
+      window.__lenis?.start();
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menu]);
 
-  useEffect(() => setOpen(false), [pathname]);
-
-  const solid = scrolled || !overHero || open;
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const onDark = menu || dark;
 
   return (
-    <header className={`header ${solid ? "header--solid" : "header--clear"} ${hidden && !open ? "header--hidden" : ""} ${open ? "header--open" : ""}`}>
-      <div className="header__inner wrap">
-        {sfBrand ? (
-          <Link href="/" className="header__brand header__brand--sf" aria-label="Squarefoot Realty — home">
-            {open ? (
-              <SquarefootLogo variant="mark" sizes="40px" className="header__mark header__mark--lg" />
-            ) : (
-              <SquarefootLogo variant="horizontal" sizes="180px" className="header__sf" />
-            )}
+    <>
+      <header ref={headerRef} className={`header ${onDark ? "on-dark" : ""} ${solid && !menu ? "is-solid" : ""} ${hidden && !menu ? "is-hidden" : ""}`}>
+        <div className="container header__inner">
+          <Link href="/" className="header__logo" aria-label="Squarefoot Realty home">
+            <LogoHorizontal onRed={onRed && !menu} />
           </Link>
-        ) : (
-          <Link href="/" className="header__brand" aria-label="The Square by Squarefoot Realty — home">
-            <TheSquareLogo tone={solid && !open ? "color" : "light"} priority />
-            <span className="header__by">
-              <span className="header__by-label">by</span>
-              <SquarefootLogo variant="mark" sizes="28px" className="header__mark" />
-            </span>
-          </Link>
-        )}
 
-        <nav className="header__nav" aria-label="Primary">
-          <ul>
-            {nav.map((n) => (
-              <li key={n.href}>
-                <Link href={n.href} className={active === n.href ? "is-active" : undefined} aria-current={active === n.href && !n.href.includes("#") ? "page" : undefined}>
-                  {n.label}
+          <nav className="nav" aria-label="Main">
+            {site.nav.map((item) =>
+              item.href === "/projects" ? (
+                <div
+                  key={item.href}
+                  className={`nav__drop ${dropOpen ? "is-open" : ""}`}
+                  onMouseLeave={() => setDropOpen(false)}
+                  onKeyDown={(e) => e.key === "Escape" && setDropOpen(false)}
+                >
+                  <Link href={item.href} className="nav__link" aria-current={isActive(item.href) ? "page" : undefined}>
+                    <Roll>{item.label}</Roll>
+                  </Link>
+                  <button type="button" className="nav__chev" aria-expanded={dropOpen} aria-controls="nav-projects" aria-label="Show projects" onClick={() => setDropOpen((v) => !v)}>
+                    <svg viewBox="0 0 10 6" aria-hidden>
+                      <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.4" />
+                    </svg>
+                  </button>
+                  <div className="nav__panel" id="nav-projects">
+                    {pageProjects.map((p) => {
+                      const img = p.cover ?? p.hero;
+                      const red = !img && p.status !== "upcoming";
+                      return (
+                        <Link key={p.slug} href={`/projects/${p.slug}`} aria-current={pathname === `/projects/${p.slug}` ? "page" : undefined}>
+                          <span className={`nav__thumb ${red ? "nav__thumb--red" : !img ? "nav__thumb--ink" : ""}`}>
+                            {img ? <Image src={img.src} alt="" fill sizes="72px" /> : <Mark onRed={red} />}
+                          </span>
+                          <span>
+                            <strong>{p.name}</strong>
+                            <small>
+                              {p.locationShort} · {p.status === "delivered" ? "Delivered" : p.statusLabel}
+                            </small>
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <Link key={item.href} href={item.href} className="nav__link" aria-current={isActive(item.href) ? "page" : undefined}>
+                  <Roll>{item.label}</Roll>
+                </Link>
+              ),
+            )}
+            <EnquireButton className="pill header__cta" source="header" icon="">
+              <Roll>Enquire now</Roll>
+            </EnquireButton>
+          </nav>
+
+          <button type="button" className="menu-btn" aria-expanded={menu} aria-controls="mobile-menu" onClick={() => setMenu((m) => !m)}>
+            {menu ? "Close" : "Menu"} <i aria-hidden />
+          </button>
+        </div>
+      </header>
+
+      <div id="mobile-menu" className={`mobile-menu ${menu ? "is-open" : ""}`} aria-hidden={!menu} inert={!menu}>
+        <nav aria-label="Mobile">
+          <ul role="list" className="mobile-menu__links">
+            {site.nav.map((item, i) => (
+              <li key={item.href}>
+                <Link href={item.href} aria-current={isActive(item.href) ? "page" : undefined} onClick={() => setMenu(false)}>
+                  <small>0{i + 1}</small>
+                  {item.label}
                 </Link>
               </li>
             ))}
           </ul>
-        </nav>
-
-        <div className="header__actions">
-          <BrochureButton className="header__brochure">Brochure</BrochureButton>
-          <EnquireButton className="btn btn--solid btn--sm header__cta" source="Home Page" />
-          <button
-            ref={toggleRef}
-            type="button"
-            className="header__toggle"
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((o) => !o)}
-          >
-            <span />
-            <span />
-          </button>
-        </div>
-      </div>
-
-      <div id="mobile-menu" ref={menuRef} className="menu" data-lenis-prevent hidden={!open}>
-        <div className="menu__inner wrap">
-          <nav aria-label="Mobile">
-            <ol className="menu__list">
-              <li style={{ ["--i" as string]: 0 }}>
-                <Link href="/" onClick={() => setOpen(false)}>
-                  <span className="menu__num">00</span>Home
+          <div className="mobile-menu__projects">
+            {pageProjects.map((p) => {
+              const img = p.cover ?? p.hero;
+              return (
+                <Link key={p.slug} href={`/projects/${p.slug}`} onClick={() => setMenu(false)} className={!img && p.status !== "upcoming" ? "is-red" : ""}>
+                  {img ? <Image src={img.src} alt="" fill sizes="45vw" /> : <Mark onRed={p.status !== "upcoming"} className="mobile-menu__mark" />}
+                  <span>{p.name}</span>
                 </Link>
-              </li>
-              {nav.map((n, i) => (
-                <li key={n.href} style={{ ["--i" as string]: i + 1 }}>
-                  <Link href={n.href} onClick={() => setOpen(false)}>
-                    <span className="menu__num">{String(i + 1).padStart(2, "0")}</span>
-                    {n.label}
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </nav>
-          <div className="menu__foot">
-            <div className="menu__ctas">
-              <EnquireButton className="btn btn--light" source="Home Page" />
-              <BrochureButton className="btn btn--outline-light" />
-            </div>
-            <p>
-              <a href={contact.phoneHref}>{contact.phoneDisplay}</a>
-              <br />
-              <a href={`mailto:${contact.email}`}>{contact.email}</a>
-            </p>
-            <p className="menu__rera">TS RERA No. {rera.number}</p>
+              );
+            })}
           </div>
+        </nav>
+        <div className="mobile-menu__foot">
+          <EnquireButton className="pill pill--light pill--block" source="mobile-menu">
+            Enquire now
+          </EnquireButton>
         </div>
       </div>
-    </header>
+    </>
   );
 }

@@ -1,76 +1,80 @@
+import Image from "next/image";
 import type { Metadata } from "next";
-import EnquiryForm from "@/components/EnquiryForm";
-import { contact, location, rera } from "@/content/site";
+import Hero from "@/components/Hero";
+import ContactForm from "@/components/ContactForm";
+import { site, telHref, waHref } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contact & Enquiry",
-  description:
-    "Enquire about The Square luxury villas at Kongara Kalan Road, Adibatla, Hyderabad, and download the project brochure. Call +91 9121 777 777 or email info@irarealty.in.",
+  title: "Contact Squarefoot Realty | Hyderabad",
+  description: "Get in touch to enquire or book a site visit at Squarefoot Origin. We reply promptly.",
   alternates: { canonical: "/contact" },
 };
 
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ brochure?: string }> }) {
-  const { brochure } = await searchParams;
-  const wantsBrochure = brochure === "1";
+export default function Contact() {
+  const c = site.contact;
   return (
-    <div className="page page--contact">
-      <section className="page-hero">
-        <div className="wrap">
-          <p className="eyebrow">Contact</p>
-          <h1 className="h1" data-split>
-            Let’s find <em>your place.</em>
-          </h1>
-          <p className="page-hero__text">
-            Whether you are buying, investing or just starting to look, we would like to hear from you. Share a few details and our team will get back
-            to you shortly. Better still, come see The Square for yourself.
-          </p>
-        </div>
-      </section>
-
-      <section className="section section--flush-top" aria-label="Enquiry form and contact details">
-        <div className="wrap contact__grid">
-          <div className="contact__form" id="enquire">
-            <h2 className="h3">{wantsBrochure ? "Download the brochure" : "Send an enquiry"}</h2>
-            <p className="contact__lede">
-              {wantsBrochure
-                ? "The brochure is shared with visitors who leave their contact details. Submit the form and your download will be ready immediately."
-                : "Fields marked * are required. After submitting, you can download the project brochure straight away."}
-            </p>
-            <EnquiryForm source={wantsBrochure ? "Brochure Request" : "Contact Page"} intent={wantsBrochure ? "brochure" : "enquiry"} idPrefix="contact" />
+    <>
+      <Hero
+        image={{ src: "/images/the-square/clubhouse.jpg", width: 4000, height: 2250, alt: "The Square clubhouse" }}
+        position="50% 40%"
+        mobilePosition="62% 50%"
+        label="Contact"
+        title="Let's find your place."
+        meta={["Buying", "Investing", "Just starting to look", <a key="s" href="#form">Write to us ↓</a>]}
+        caption="Share a few details and our team will get back to you shortly."
+      />
+      <section id="form" className="section s-sand curtain" data-head="light" aria-label="Enquiry form and contact details">
+        <div className="container contact">
+          <div className="contact__form" data-reveal="fade">
+            <ContactForm />
           </div>
-
-          <aside className="contact__card" aria-label="Contact details">
-            <div>
-              <h2 className="label">Call</h2>
-              <a href={contact.phoneHref} className="contact__big">{contact.phoneDisplay}</a>
-            </div>
-            <div>
-              <h2 className="label">Email</h2>
-              <a href={`mailto:${contact.email}`} className="contact__big">{contact.email}</a>
-            </div>
-            <div>
-              <h2 className="label">Office</h2>
-              <address>
-                <strong>{contact.promoter}</strong>
-                {contact.addressLines.map((l) => (
-                  <span key={l}>{l}</span>
-                ))}
-              </address>
-            </div>
-            <div>
-              <h2 className="label">Project site</h2>
-              <address>
-                <strong>The Square</strong>
-                <span>{location.full}</span>
-              </address>
-              <a href={location.mapsUrl} target="_blank" rel="noopener noreferrer" className="link-btn">
-                Get directions ↗
+          <aside className="contact__aside" aria-label="Contact details" data-reveal="fade" data-delay="0.1">
+            <dl>
+              <div>
+                <dt>Office</dt>
+                <dd style={{ whiteSpace: "pre-line" }}>{c.office ?? "Hyderabad, Telangana"}</dd>
+              </div>
+              {c.siteOffice && (
+                <div>
+                  <dt>Site office · Squarefoot Origin</dt>
+                  <dd style={{ whiteSpace: "pre-line" }}>{c.siteOffice}</dd>
+                </div>
+              )}
+              {c.phone && (
+                <div>
+                  <dt>Phone</dt>
+                  <dd>
+                    <a href={telHref(c.phone)}>{c.phone}</a>
+                  </dd>
+                </div>
+              )}
+              {c.email && (
+                <div>
+                  <dt>Email</dt>
+                  <dd>
+                    <a href={`mailto:${c.email}`}>{c.email}</a>
+                  </dd>
+                </div>
+              )}
+              {c.hours && (
+                <div>
+                  <dt>Hours</dt>
+                  <dd>{c.hours}</dd>
+                </div>
+              )}
+            </dl>
+            {c.whatsapp && (
+              <a className="pill pill--ghost" href={waHref(c.whatsapp)} target="_blank" rel="noopener noreferrer">
+                Chat on WhatsApp <span className="arr" aria-hidden>↗</span>
               </a>
-            </div>
-            <p className="contact__rera">TS RERA No. {rera.number}</p>
+            )}
+            <figure className="contact__img">
+              <Image src="/images/the-square/terrace-view.jpg" alt="Gardens seen from a villa terrace at The Square" fill sizes="(max-width: 899px) 100vw, 30vw" quality={75} />
+              <figcaption>Come see it for yourself</figcaption>
+            </figure>
           </aside>
         </div>
       </section>
-    </div>
+    </>
   );
 }

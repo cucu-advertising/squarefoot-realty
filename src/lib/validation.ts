@@ -1,79 +1,62 @@
-import { allConfigurationOptions, type ProjectId } from "@/content/site";
+import { enquiryOptionValues } from "./projects";
 
-export const PROJECTS: ProjectId[] = ["the-square", "urban-ranch"];
-
-/** Shared between the browser (instant feedback) and the API route (authoritative). */
-
-export const ENQUIRY_SOURCES = [
-  "Contact Page",
-  "Brochure Request",
-  "Residences",
-  "Home Page",
-] as const;
-export type EnquirySource = (typeof ENQUIRY_SOURCES)[number];
+export type EnquiryKind = "brochure" | "contact" | "interest";
 
 export interface EnquiryInput {
-  project: ProjectId;
+  kind: EnquiryKind;
   name: string;
   email: string;
   phone: string;
-  configuration: string;
-  visitTime: string;
-  message: string;
+  project: string;
+  message?: string;
+  visitTime?: string;
   consent: boolean;
-  source: EnquirySource;
+  source: string;
 }
 
-export type FieldErrors = Partial<Record<keyof EnquiryInput, string>>;
+export type FieldErrors = Partial<Record<"name" | "email" | "phone" | "project" | "consent" | "message" | "visitTime", string>>;
 
-const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[a-z]{2,}$/i;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-export function normalisePhone(raw: string): string {
+/** Indian mobile (10 digits starting 6–9, optional +91/0), or international 8–15 digits with leading +. */
+export function normalisePhone(raw: string): string | null {
   const trimmed = raw.trim();
-  const plus = trimmed.startsWith("+");
   const digits = trimmed.replace(/\D/g, "");
-  return (plus ? "+" : "") + digits;
-}
-
-export function isValidPhone(raw: string): boolean {
-  const p = normalisePhone(raw);
-  // Indian mobile: 10 digits starting 6–9, optionally prefixed +91 / 91 / 0
-  if (/^(\+?91|0)?[6-9]\d{9}$/.test(p)) return true;
-  // International: + followed by 8–15 digits
-  return /^\+[1-9]\d{7,14}$/.test(p);
+  if (/^(?:91|0)?[6-9]\d{9}$/.test(digits) && !trimmed.startsWith("+") ) return "+91" + digits.slice(-10);
+  if (trimmed.startsWith("+91") && /^91[6-9]\d{9}$/.test(digits)) return "+" + digits;
+  if (trimmed.startsWith("+") && !trimmed.startsWith("+91") && digits.length >= 8 && digits.length <= 15) return "+" + digits;
+  return null;
 }
 
 const clean = (v: unknown, max: number) =>
-  typeof v === "string" ? v.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").trim().slice(0, max) : "";
+  typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max) : "";
 
-export function parseEnquiry(body: Record<string, unknown>): { data: EnquiryInput; errors: FieldErrors } {
-  const data: EnquiryInput = {
-    project: PROJECTS.includes(body.project as ProjectId) ? (body.project as ProjectId) : "the-square",
-    name: clean(body.name, 80),
-    email: clean(body.email, 120).toLowerCase(),
-    phone: clean(body.phone, 24),
-    configuration: clean(body.configuration, 60),
-    visitTime: clean(body.visitTime, 80),
-    message: clean(body.message, 1200),
-    consent: body.consent === true || body.consent === "true" || body.consent === "on",
-    source: (ENQUIRY_SOURCES as readonly string[]).includes(body.source as string)
-      ? (body.source as EnquirySource)
-      : "Contact Page",
+export function validateEnquiry(body: Record<string, unknown>):
+  | { ok: true; data: EnquiryInput }
+  | { ok: false; errors: FieldErrors } {
+  const errors: FieldErrors = {};
+  const kind = (["brochure", "contact", "interest"] as const).includes(body.kind as EnquiryKind)
+    ? (body.kind as EnquiryKind)
+    : "contact";
+  const name = clean(body.name, 80);
+  const email = clean(body.email, 120).toLowerCase();
+  const phoneRaw = clean(body.phone, 24);
+  const project = clean(body.project, 40);
+  const message = typeof body.message === "string" ? body.message.trim().slice(0, 1500) : "";
+  const visitTime = clean(body.visitTime, 80);
+  const consent = body.consent === true;
+  const source = clean(body.source, 120) || "website";
+
+  if (name.length < 2 || !/^[\p{L}][\p{L} .'-]*$/u.test(name)) errors.name = "Please enter your full name.";
+  if (!EMAIL_RE.test(email)) errors.email = "Please enter a valid email address.";
+  const phone = normalisePhone(phoneRaw);
+  if (!phone) errors.phone = "Please enter a valid mobile number.";
+  if (!enquiryOptionValues.has(project)) errors.project = "Please choose a project.";
+  if (!consent) errors.consent = "Please confirm we may contact you.";
+
+  if (Object.keys(errors).length) return { ok: false, errors };
+  return {
+    ok: true,
+    data: { kind, name, email, phone: phone!, project, message: message || undefined, visitTime: visitTime || undefined, consent, source },
   };
-  return { data, errors: validateEnquiry(data) };
-}
-
-export function validateEnquiry(d: EnquiryInput): FieldErrors {
-  const e: FieldErrors = {};
-  if (d.name.length < 2) e.name = "Please enter your full name.";
-  else if (!/^[\p{L}\p{M}.'\- ]+$/u.test(d.name)) e.name = "Please use letters only in your name.";
-  if (!d.email) e.email = "Please enter your email address.";
-  else if (!EMAIL_RE.test(d.email)) e.email = "Please enter a valid email address, e.g. name@example.com.";
-  if (!d.phone) e.phone = "Please enter your mobile number.";
-  else if (!isValidPhone(d.phone)) e.phone = "Please enter a valid 10-digit mobile number (or include your country code).";
-  if (d.configuration && !(allConfigurationOptions as readonly string[]).includes(d.configuration))
-    e.configuration = "Please choose an option from the list.";
-  if (d.message.length > 1000) e.message = "Please keep your message under 1,000 characters.";
-  if (!d.consent) e.consent = "Please confirm that we may contact you about your enquiry.";
-  return e;
 }

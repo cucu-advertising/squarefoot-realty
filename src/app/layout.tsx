@@ -1,111 +1,75 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/montserrat";
-import "@fontsource/instrument-serif/400-italic.css";
+import "@fontsource-variable/montserrat/index.css";
 import "./globals.css";
-import { site, contact, rera, location, residences } from "@/content/site";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { EnquiryProvider } from "@/components/EnquiryProvider";
 import Motion from "@/components/Motion";
+import Cursor from "@/components/Cursor";
+import Preloader from "@/components/Preloader";
+import { EnquiryProvider } from "@/components/Enquiry";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: {
-    default: "The Square | Luxury Villas at Adibatla, Hyderabad | Squarefoot Realty",
-    template: "%s | The Square by Squarefoot Realty",
-  },
+  title: { default: "Squarefoot Realty | Everything and Beyond", template: "%s" },
   description: site.description,
-  applicationName: "The Square",
-  authors: [{ name: "Squarefoot Realty" }],
-  alternates: { canonical: "/" },
+  applicationName: site.name,
   openGraph: {
     type: "website",
-    locale: site.locale,
-    siteName: "The Square by Squarefoot Realty",
-    title: "The Square | Luxury Villas at Adibatla, Hyderabad",
-    description: site.description,
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Duplex villas at The Square, artist's impression" }],
+    siteName: site.name,
+    locale: "en_IN",
+    images: [{ url: "/images/the-square/avenue.jpg", width: 3840, height: 2160, alt: "Squarefoot Realty" }],
   },
-  twitter: { card: "summary_large_image", images: ["/og-image.jpg"] },
+  twitter: { card: "summary_large_image" },
+  icons: { icon: "/icon.svg" },
   formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1c2418",
+  themeColor: "#1a1a18",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
-const jsonLd = {
+// Runs before first paint:
+//  - "motion": reveal states are only applied when JS runs and motion is allowed (failsafe after 5s).
+//  - "pin": pinned scroll sequences only for fine pointers ≥1024px (must match PIN_QUERY in Motion.tsx).
+//  - "no-preload": the preloader plays once per session.
+const motionBoot = `(function(){try{var d=document.documentElement,m=function(q){return matchMedia(q).matches};if(m('(prefers-reduced-motion: reduce)')){d.classList.add('no-motion','no-preload');return}d.classList.add('motion');if(m('(min-width: 1024px) and (hover: hover) and (pointer: fine)'))d.classList.add('pin');try{if(sessionStorage.getItem('sf-loaded'))d.classList.add('no-preload')}catch(e){}setTimeout(function(){if(!window.__motionReady){d.classList.remove('motion','pin');d.classList.add('no-preload')}},5000)}catch(e){}})();`;
+
+const orgJsonLd = {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${site.url}/#org`,
-      name: "Squarefoot Realty",
-      alternateName: "Sai Teja Developers",
-      slogan: "Everything and Beyond",
-      url: site.url,
-      logo: `${site.url}/images/brand/squarefoot-logo-stacked.png`,
-    },
-    {
-      "@type": "Residence",
-      "@id": `${site.url}/#the-square`,
-      name: "The Square",
-      description: site.description,
-      url: site.url,
-      image: `${site.url}/og-image.jpg`,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Kongara Kalan Road",
-        addressLocality: location.locality,
-        addressRegion: location.region,
-        addressCountry: "IN",
-      },
-      hasMap: location.mapsUrl,
-      amenityFeature: ["Clubhouse", "Swimming pool", "Gymnasium", "Badminton court", "Jogging track", "Children's play area"].map(
-        (name) => ({ "@type": "LocationFeatureSpecification", name, value: true }),
-      ),
-      containsPlace: residences.map((r) => ({
-        "@type": "SingleFamilyResidence",
-        name: `${r.type} – ${r.name}`,
-        numberOfRooms: 4,
-        floorSize: { "@type": "QuantitativeValue", value: 3700, unitCode: "FTK" },
-      })),
-      identifier: { "@type": "PropertyValue", propertyID: "TS RERA", value: rera.number },
-    },
-    {
-      "@type": "RealEstateAgent",
-      name: contact.promoter,
-      telephone: contact.phoneDisplay.replace(/\s/g, ""),
-      email: contact.email,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: `${contact.addressLines[0]}, ${contact.addressLines[1]}`,
-        addressLocality: "Hyderabad",
-        postalCode: "500032",
-        addressRegion: "Telangana",
-        addressCountry: "IN",
-      },
-    },
-  ],
+  "@type": "RealEstateAgent",
+  name: "Squarefoot Realty",
+  alternateName: "Sai Teja Developers",
+  url: site.url,
+  logo: `${site.url}/icon.svg`,
+  slogan: "Everything and Beyond",
+  areaServed: { "@type": "City", name: "Hyderabad" },
+  ...(site.contact.phone ? { telephone: site.contact.phone } : {}),
+  ...(site.contact.email ? { email: site.contact.email } : {}),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-IN">
+    <html lang="en-IN" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: "var h=document.documentElement;h.classList.add('js');setTimeout(function(){if(!h.classList.contains('motion-ready'))h.classList.add('motion-fallback')},4000)" }} />
+        <script dangerouslySetInnerHTML={{ __html: motionBoot }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
       </head>
       <body>
-        <a className="skip-link" href="#main">Skip to content</a>
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
+        <Preloader />
         <EnquiryProvider>
           <Header />
           <main id="main">{children}</main>
           <Footer />
-          <Motion />
         </EnquiryProvider>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <Motion />
+        <Cursor />
       </body>
     </html>
   );

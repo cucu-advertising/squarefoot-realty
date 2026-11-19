@@ -2,15 +2,20 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="page legal">
-      <section className="page-hero">
-        <div className="wrap">
-          <p className="eyebrow">404</p>
-          <h1 className="h1" data-split>This page isn’t <em>here.</em></h1>
-          <p className="page-hero__text">The page you were looking for may have moved.</p>
-          <Link href="/" className="btn btn--solid"><span>Back to The Square</span><span className="btn__icon btn__icon--ne" aria-hidden="true"><span>↗</span></span></Link>
+    <section className="s-sand" data-head="light">
+      <div className="container notfound">
+        <span className="label label--dot">404</span>
+        <h1 className="t-display">This square foot is still empty.</h1>
+        <p className="t-lead muted">The page you were looking for doesn&apos;t exist or has moved.</p>
+        <div className="btn-row">
+          <Link href="/" className="pill">
+            Back home <span className="arr" aria-hidden>↗</span>
+          </Link>
+          <Link href="/projects" className="pill pill--ghost">
+            View projects
+          </Link>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }
