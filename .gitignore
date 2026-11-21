@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+.env
+.env.local
+data/*.jsonl
+source-assets
+*.tsbuildinfo
+next-env.d.ts
+tests/screens
+preview-v3
+*.zip
