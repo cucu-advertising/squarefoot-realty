@@ -211,6 +211,16 @@ const heroBrochure = (page) => page.locator(".hero").getByRole("button", { name:
   check("Projects page lists the 3 active projects", active.join("|") === "Squarefoot Origin|The Square|The Urban Ranch", active.join(", "));
   check("Projects page lists the 4 delivered projects", ["Trans Elite", "Challa Elite", "Trans Arcade", "Lokeshwari Residency"].every((n) => delivered.includes(n)), delivered.join(", "));
   check("Projects page: Origin card uses a supplied render", (await page.locator(".stackc__card").first().locator("img").getAttribute("src"))?.includes("squarefoot-origin"));
+  {
+    const btn = page.locator(".stackc__card .pill--light").last(); // earlier cards sit under later ones
+    await btn.scrollIntoViewIfNeeded();
+    await sleep(900);
+    const before = await btn.evaluate((el) => getComputedStyle(el).backgroundColor);
+    await btn.hover();
+    await sleep(600);
+    const after = await btn.evaluate((el) => getComputedStyle(el).backgroundColor);
+    check("Light buttons turn black on hover", after === "rgb(26, 26, 24)" && before !== after, `${before} → ${after}`);
+  }
 
   // Squarefoot Origin: supplied renders and plans are wired in, and every image on the page serves
   await page.goto(`${BASE}/projects/squarefoot-origin`, { waitUntil: "networkidle" });
@@ -239,6 +249,19 @@ const heroBrochure = (page) => page.locator(".hero").getByRole("button", { name:
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
   await ready(page);
   check("Desktop uses pinned sequences", await page.evaluate(() => document.documentElement.classList.contains("pin")));
+
+  // Project discovery: the first card grows evenly from the centre, and the header stays light over the sand stage.
+  const discTop = await page.evaluate(() => document.querySelector(".discover").getBoundingClientRect().top + window.scrollY);
+  await page.evaluate((y) => (window.__lenis ? window.__lenis.scrollTo(y, { immediate: true, force: true }) : window.scrollTo(0, y)), discTop + 4);
+  await sleep(1600);
+  check("Discovery stage at rest: header is not dark", !(await page.locator(".header").getAttribute("class")).includes("on-dark"));
+  await page.evaluate((y) => (window.__lenis ? window.__lenis.scrollTo(y, { immediate: true, force: true }) : window.scrollTo(0, y)), discTop + 0.35 * 900);
+  await sleep(2200);
+  const clip = await page.locator(".disc__panel").first().evaluate((el) => getComputedStyle(el).clipPath);
+  const edges = (clip.match(/inset\(([^)]*?)(?: round|\))/)?.[1] ?? "").trim().split(/\s+/).map(parseFloat);
+  const [t = 0, r = t, b = t, l = r] = edges;
+  check("Discovery card grows evenly from the centre", edges.length > 0 && Math.abs(l - r) < 1.5 && t > 0 && b > 0 && Math.abs(t - b) < 6, clip);
+
   const rail = page.locator(".exp__rail button");
   await page.locator(".explore").scrollIntoViewIfNeeded();
   await sleep(800);

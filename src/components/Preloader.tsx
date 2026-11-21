@@ -40,7 +40,7 @@ export default function Preloader() {
       if (lineRef.current) lineRef.current.style.transform = `scaleX(${state.shown})`;
       if (state.shown >= 1 && !finished) {
         finished = true;
-        gsap.to(ref.current, {
+        gsap.fromTo(ref.current, { clipPath: "inset(0% 0% 0% 0%)" }, {
           clipPath: "inset(0% 0% 100% 0%)",
           duration: 1.1,
           ease: "expo.inOut",

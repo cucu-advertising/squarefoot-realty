@@ -25,4 +25,19 @@ export function scrollToStep(el: HTMLElement, k: number, n: number, map?: (k: nu
   else window.scrollTo({ top: y, behavior: "smooth" });
 }
 
+/**
+ * Project discovery timeline (Motion.tsx › discover). The first card grows over 0–1; each later
+ * project wipes in at at(i) and then holds, fully legible, until the next one arrives.
+ */
+export const DISCOVER = {
+  first: 1.6,
+  gap: 1.5,
+  at: (i: number) => DISCOVER.first + (i - 1) * DISCOVER.gap,
+  duration: (n: number) => DISCOVER.first + (n - 1) * DISCOVER.gap,
+  /** Timeline time at which step k is fully on screen. */
+  rest: (k: number) => (k === 0 ? 1.25 : DISCOVER.at(k) + 1.05),
+  /** Step showing at time t (switches once the next wipe is half way). */
+  index: (t: number, n: number) => (t < DISCOVER.first + 0.4 ? 0 : Math.min(n - 1, 1 + Math.floor((t - DISCOVER.first - 0.4) / DISCOVER.gap))),
+};
+
 export const isPinned = () => typeof document !== "undefined" && document.documentElement.classList.contains("pin");

@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import Lenis from "lenis";
+import { DISCOVER } from "./useSeqIndex";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -73,10 +74,10 @@ function collage(root: HTMLElement) {
   if (!items.length) return;
   // Scattered starting composition around the title (offsets in vw/vh, rotation, scale).
   const scatter = [
-    { x: -33, y: -24, r: -5, s: 0.9 },
-    { x: 31, y: -27, r: 4, s: 0.78 },
-    { x: -35, y: 22, r: 3, s: 0.84 },
-    { x: 33, y: 23, r: -4, s: 1 },
+    { x: -35, y: -24, r: -5, s: 0.9 },
+    { x: 34, y: -26, r: 4, s: 0.8 },
+    { x: -36, y: 23, r: 3, s: 0.86 },
+    { x: 35, y: 22, r: -4, s: 1 },
     { x: 1, y: 33, r: 1, s: 0.7 },
   ];
   items.forEach((el, i) => {
@@ -97,12 +98,12 @@ function collage(root: HTMLElement) {
     },
   });
   tl.to(items, { x: 0, y: 0, rotation: 0, scale: 1, duration: 1, stagger: 0.04 }, 0)
-    .to(head, { opacity: 0, y: -40, duration: 0.5 }, 0.45)
+    .to(head, { opacity: 0, y: -40, duration: 0.4 }, 0.1)
     .to(items, { width: () => 88 * vw(), height: () => 80 * vh(), marginLeft: () => -44 * vw(), marginTop: () => -40 * vh(), duration: 0.6 }, 1)
     .to(desk, { opacity: 1, duration: 0.2 }, 1.45);
   // Peel the stack from the top: each wipe reveals the image beneath.
   for (let i = n - 1, k = 0; i > 0; i--, k++) {
-    tl.to(items[i], { clipPath: "inset(0% 0% 100% 0%)", duration: 0.5 }, 1.6 + k * 0.6);
+    tl.fromTo(items[i], { clipPath: "inset(0% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 100% 0%)", duration: 0.5 }, 1.6 + k * 0.6);
     tl.fromTo(items[i - 1].querySelector("img"), { scale: 1.12 }, { scale: 1, duration: 0.6 }, 1.6 + k * 0.6);
   }
   tl.to({}, { duration: 0.4 });
@@ -112,35 +113,37 @@ function discover(root: HTMLElement) {
   const panels = gsap.utils.toArray<HTMLElement>(".disc__panel", root);
   const row = root.querySelector(".mq__row");
   const ui = root.querySelector(".disc__ui");
+  const intro = root.querySelector(".discover__intro");
   if (!panels.length) return;
   const n = panels.length;
-  gsap.set(panels[0], { clipPath: "inset(31% 37% 31% 37% round 18px)" });
+  // Clip-paths always tween fromTo with all four edges spelled out: browsers serialise
+  // "inset(31% 37% 31% 37%)" as "inset(31% 37%)", which would pair the wrong edges.
   gsap.set(panels[0].querySelector(".disc__content"), { opacity: 0, y: 30 });
-  panels.slice(1).forEach((p) => gsap.set(p, { clipPath: "inset(100% 0% 0% 0%)" }));
   const tl = gsap.timeline({
     defaults: { ease: "none" },
     scrollTrigger: {
       trigger: root, start: "top top", end: "bottom bottom", scrub: 0.9,
       onUpdate(self) {
-        const t = self.progress * tl.duration();
-        const k = Math.max(0, Math.min(n - 1, Math.floor(t - 1.5 + 0.5)));
-        emitIndex(root, t < 1 ? 0 : k);
+        emitIndex(root, DISCOVER.index(self.progress * tl.duration(), n));
       },
     },
   });
   if (row) tl.fromTo(row, { xPercent: 0 }, { xPercent: -22, duration: 1.2 }, 0);
-  tl.to(panels[0], { clipPath: "inset(0% 0% 0% 0% round 0px)", duration: 1 }, 0)
+  if (intro) tl.to(intro, { opacity: 0, y: -40, duration: 0.45 }, 0.15);
+  // The marquee steps back as the card grows, so the transition never reads as clutter.
+  tl.to(root.querySelector(".mq"), { opacity: 0, y: 30, duration: 0.45 }, 0.3);
+  tl.fromTo(panels[0], { clipPath: "inset(34% 33% 31% 33% round 18px)" }, { clipPath: "inset(0% 0% 0% 0% round 0px)", duration: 1 }, 0)
     .fromTo(panels[0].querySelector(".disc__media img, .disc__brand"), { scale: 1.3 }, { scale: 1, duration: 1 }, 0)
     .to(panels[0].querySelector(".disc__content"), { opacity: 1, y: 0, duration: 0.3 }, 0.8)
     .to(ui, { opacity: 1, duration: 0.3 }, 0.8);
-  panels.slice(1).forEach((p, i) => {
-    const at = 1.5 + i;
-    tl.to(p, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8 }, at)
-      .fromTo(p.querySelector(".disc__media img, .disc__brand"), { scale: 1.2 }, { scale: 1, duration: 0.8 }, at)
-      .fromTo(p.querySelector(".disc__content"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.3 }, at + 0.5)
-      .to(panels[i].querySelector(".disc__content"), { opacity: 0, y: -30, duration: 0.3 }, at);
+  // Each project wipes up over the last one (which stays put underneath) and then holds.
+  panels.slice(1).forEach((p, j) => {
+    const at = DISCOVER.at(j + 1);
+    tl.fromTo(p, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8, ease: "power2.inOut" }, at)
+      .fromTo(p.querySelector(".disc__media img, .disc__brand"), { scale: 1.2 }, { scale: 1, duration: 0.9 }, at)
+      .fromTo(p.querySelector(".disc__content"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.3 }, at + 0.5);
   });
-  tl.to({}, { duration: 0.6 });
+  tl.to({}, { duration: Math.max(0, DISCOVER.duration(n) - tl.duration()) });
 }
 
 function explore(root: HTMLElement) {
@@ -148,7 +151,7 @@ function explore(root: HTMLElement) {
   const bar = root.querySelector<HTMLElement>(".exp__bar");
   const n = layers.length;
   if (n < 2) return;
-  layers.forEach((l, i) => gsap.set(l, { opacity: 1, zIndex: i + 1, clipPath: i === 0 ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 0% 100%)" }));
+  layers.forEach((l, i) => gsap.set(l, { opacity: 1, zIndex: i + 1 }));
   const tl = gsap.timeline({
     defaults: { ease: "none" },
     scrollTrigger: {
@@ -163,7 +166,7 @@ function explore(root: HTMLElement) {
   for (let i = 1; i < n; i++) {
     const at = i - 0.5;
     // Clean architectural wipe from the right; the outgoing view drifts left (no double exposure).
-    tl.to(layers[i], { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "power2.inOut" }, at)
+    tl.fromTo(layers[i], { clipPath: "inset(0% 0% 0% 100%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "power2.inOut" }, at)
       .fromTo(layers[i].querySelector("img"), { scale: 1.12, xPercent: 6 }, { scale: 1, xPercent: 0, duration: 1, ease: "power2.out" }, at)
       .to(layers[i - 1].querySelector("img"), { xPercent: -8, duration: 0.7, ease: "power2.inOut" }, at);
   }
@@ -181,7 +184,7 @@ function hseq(root: HTMLElement) {
   const split = { left: () => 3.2 * vw(), top: () => 11 * vh(), width: () => 54 * vw(), height: () => 78 * vh() };
   // First image starts small below the statement; the others wait in the split frame.
   gsap.set(medias[0], { left: () => 38 * vw(), top: () => 108 * vh(), width: () => 24 * vw(), height: () => 30 * vh(), xPercent: 0, yPercent: 0, x: 0, y: 0, borderRadius: 18 });
-  medias.slice(1).forEach((m) => gsap.set(m, { ...split, xPercent: 0, yPercent: 0, x: 0, y: 0, clipPath: "inset(100% 0% 0% 0%)", borderRadius: 18 }));
+  medias.slice(1).forEach((m) => gsap.set(m, { ...split, xPercent: 0, yPercent: 0, x: 0, y: 0, borderRadius: 18 }));
   gsap.set(texts, { yPercent: -50, opacity: 0, y: 30 });
   gsap.set([over, count], { opacity: 0 });
   const tl = gsap.timeline({
@@ -206,7 +209,7 @@ function hseq(root: HTMLElement) {
     .to(count, { opacity: 1, duration: 0.2 }, 2.9);
   for (let i = 1; i < n; i++) {
     const at = 3.2 + (i - 1);
-    tl.to(medias[i], { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7 }, at)
+    tl.fromTo(medias[i], { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7 }, at)
       .fromTo(medias[i].querySelector("img"), { scale: 1.15 }, { scale: 1, duration: 0.8 }, at)
       .to(texts[i - 1], { opacity: 0, y: -30, duration: 0.25 }, at)
       .to(texts[i], { opacity: 1, y: 0, duration: 0.3 }, at + 0.4);

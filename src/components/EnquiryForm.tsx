@@ -158,7 +158,7 @@ export default function EnquiryForm({
       {showVisitTime && (
         <div className="field">
           <label htmlFor={`${uid}-visit`}>Preferred visit time</label>
-          <input id={`${uid}-visit`} name="visitTime" placeholder="Weekday or weekend, morning or evening" value={values.visitTime} onChange={set("visitTime")} />
+          <input id={`${uid}-visit`} name="visitTime" placeholder="e.g. Saturday morning" value={values.visitTime} onChange={set("visitTime")} />
         </div>
       )}
       {showMessage && (

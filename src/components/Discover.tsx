@@ -6,7 +6,7 @@ import { useRef } from "react";
 import type { Project } from "@/lib/projects";
 import { EnquireButton } from "./Enquiry";
 import { Mark } from "./Logo";
-import { useSeqIndex, scrollToStep } from "./useSeqIndex";
+import { useSeqIndex, scrollToStep, DISCOVER } from "./useSeqIndex";
 
 export interface DiscoverItem {
   project: Project;
@@ -24,16 +24,21 @@ export default function Discover({ items, marquee }: { items: DiscoverItem[]; ma
   const ref = useRef<HTMLElement>(null);
   const [k] = useSeqIndex(ref);
   const n = items.length;
-  const goto = (i: number) => ref.current && scrollToStep(ref.current, i, n, (s) => (s === 0 ? 1.1 : 1.5 + s) / (n + 0.9));
+  const goto = (i: number) => ref.current && scrollToStep(ref.current, i, n, (s) => DISCOVER.rest(s) / DISCOVER.duration(n));
   const active = items[k];
   return (
-    <section ref={ref} className="discover pin" data-seq="discover" style={{ ["--len" as string]: `${(n + 2) * 100}vh` }} data-head="dark" aria-labelledby="discover-title">
+    <section ref={ref} className="discover pin" data-seq="discover" style={{ ["--len" as string]: `${(n + 2) * 100}vh` }} data-head="light" aria-labelledby="discover-title">
       <div className="pin__stage">
         <div className="container discover__intro">
-          <span className="label label--dot">Now unfolding</span>
-          <h2 id="discover-title" className="t-display" style={{ marginTop: "var(--sp-3)" }} data-split>
-            Spaces we are building.
-          </h2>
+          <div>
+            <span className="label label--dot">Now unfolding</span>
+            <h2 id="discover-title" className="t-display" style={{ marginTop: "var(--sp-3)" }} data-split>
+              Spaces we are building.
+            </h2>
+          </div>
+          <p className="discover__side t-small muted">
+            {String(n).padStart(2, "0")} communities on Hyderabad&apos;s ORR corridor. Scroll to step inside each one.
+          </p>
         </div>
         <div className="mq" aria-hidden>
           <div className="mq__row">

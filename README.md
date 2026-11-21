@@ -20,7 +20,7 @@ BROCHURE_TOKEN_SECRET=$(openssl rand -hex 32) npm start
 Tests (against a running server):
 
 ```bash
-BASE=http://localhost:3000 node tests/e2e.mjs          # 88 functional, security and device checks
+BASE=http://localhost:3000 node tests/e2e.mjs          # 91 functional, security and device checks
 node tests/screens.mjs http://localhost:3000            # full-page screenshots → tests/screens
 ```
 
@@ -35,7 +35,7 @@ node tests/screens.mjs http://localhost:3000            # full-page screenshots 
 | Design tokens (colour, type scale, spacing, radius, motion) | top of `src/app/globals.css` |
 | Motion system (Lenis, reveals, pinned sequences) | `src/components/Motion.tsx` |
 | Brochure slug → PDF mapping | `src/lib/brochures.ts` |
-| Gated PDFs (never public) | `private/brochures/` |
+| Gated PDFs (never public) | `private/brochures/`. Committed so the host bundles them with `/api/brochure` (see `outputFileTracingIncludes` in `next.config.ts`). **Keep the GitHub repository private**, or anyone can download them from GitHub |
 | Web images | `public/images/<project>/` |
 | Original Drive downloads (not deployed) | `source-assets/drive/` (The Square), `source-assets/origin/` (Squarefoot Origin) |
 | Lead delivery (webhook / email / file) | `src/lib/leads.ts` |
