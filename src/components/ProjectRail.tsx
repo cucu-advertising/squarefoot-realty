@@ -16,7 +16,7 @@ export interface RailItem {
  */
 export default function ProjectRail({ label, title, items, id, curtain }: { label: string; title: string; items: RailItem[]; id?: string; curtain?: boolean }) {
   return (
-    <section id={id} className={`prail pin ${curtain ? "curtain" : ""}`} data-seq="hscroll" data-head="light" aria-labelledby="prail-title">
+    <section id={id} className={`prail pin ${curtain ? "curtain" : ""}`} data-seq="hscroll" data-autoplay data-head="light" aria-labelledby="prail-title">
       <div className="pin__stage prail__stage">
         <div className="container prail__head">
           <div>
@@ -30,8 +30,11 @@ export default function ProjectRail({ label, title, items, id, curtain }: { labe
         <div className="prail__track" data-track>
           {items.map(({ project: p, image }, i) => (
             <article key={p.slug} className="prail__card" aria-labelledby={`pr-${p.slug}`}>
-              <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 88vw, 76vw" quality={80} />
+              <div className="prail__media">
+                <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 88vw, 76vw" quality={80} />
+              </div>
               <span className="prail__shade" aria-hidden />
+              <Link href={`/projects/${p.slug}`} className="prail__hit" tabIndex={-1} aria-hidden data-cursor="View project" />
               <div className="prail__top">
                 <span className="tag">{p.statusLabel}</span>
                 <RailPager names={items.map((it) => it.project.name)} current={i} />

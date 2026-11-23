@@ -14,6 +14,8 @@ declare global {
     __lenis?: Lenis;
     __motionReady?: boolean;
     __sfReady?: boolean;
+    /** Set by tests to keep autoplay out of the way. */
+    __sfNoAutoplay?: boolean;
   }
 }
 
@@ -29,6 +31,11 @@ const vw = () => window.innerWidth / 100;
 const vh = () => window.innerHeight / 100;
 
 /** Tell a component which step a pinned sequence is on (components listen for "sf:index"). */
+/** Publish the progress (0–1) at which each step is fully shown; buttons and autoplay scroll to these. */
+function setStops(root: HTMLElement, times: number[], total: number) {
+  root.dataset.stops = times.map((t) => Math.max(0, Math.min(1, t / total)).toFixed(4)).join(",");
+}
+
 function emitIndex(el: Element, i: number) {
   const prev = (el as HTMLElement).dataset.idx;
   if (prev === String(i)) return;
@@ -108,6 +115,7 @@ function collage(root: HTMLElement) {
       .fromTo(items[i - 1].querySelector("img"), { scale: 1.12, xPercent: 5 }, { scale: 1, xPercent: 0, duration: 0.6 }, at);
   }
   tl.to({}, { duration: 0.4 });
+  setStops(root, items.map((_, s) => 1.6 + s * 0.6 - 0.02), tl.duration());
 }
 
 function explore(root: HTMLElement) {
@@ -134,6 +142,7 @@ function explore(root: HTMLElement) {
       .fromTo(layers[i].querySelector("img"), { scale: 1.12, xPercent: 6 }, { scale: 1, xPercent: 0, duration: 1, ease: "power2.out" }, at)
       .to(layers[i - 1].querySelector("img"), { xPercent: -8, duration: 0.7, ease: "power2.inOut" }, at);
   }
+  setStops(root, layers.map((_, k) => (k === 0 ? 0 : k + 0.25)), tl.duration());
 }
 
 function hseq(root: HTMLElement) {
@@ -150,7 +159,8 @@ function hseq(root: HTMLElement) {
   gsap.set(medias[0], { left: () => 38 * vw(), top: () => 108 * vh(), width: () => 24 * vw(), height: () => 30 * vh(), xPercent: 0, yPercent: 0, x: 0, y: 0, borderRadius: 18 });
   medias.slice(1).forEach((m) => gsap.set(m, { ...split, xPercent: 0, yPercent: 0, x: 0, y: 0, borderRadius: 18 }));
   gsap.set(texts, { yPercent: -50, opacity: 0, y: 30 });
-  gsap.set([over, count], { opacity: 0 });
+  gsap.set(over, { opacity: 0 });
+  gsap.set(count, { autoAlpha: 0 });
   const tl = gsap.timeline({
     defaults: { ease: "none" },
     scrollTrigger: {
@@ -170,7 +180,7 @@ function hseq(root: HTMLElement) {
     .to(over, { opacity: 0, duration: 0.25 }, 2.3)
     .to(medias[0], { ...split, borderRadius: 18, duration: 0.8 }, 2.4)
     .to(texts[0], { opacity: 1, y: 0, duration: 0.3 }, 2.9)
-    .to(count, { opacity: 1, duration: 0.2 }, 2.9);
+    .to(count, { autoAlpha: 1, duration: 0.2 }, 2.9);
   for (let i = 1; i < n; i++) {
     const at = 3.2 + (i - 1);
     tl.fromTo(medias[i], { clipPath: "inset(0% 0% 0% 100%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "power2.inOut" }, at)
@@ -180,6 +190,7 @@ function hseq(root: HTMLElement) {
       .to(texts[i], { opacity: 1, y: 0, duration: 0.3 }, at + 0.4);
   }
   tl.to({}, { duration: 0.5 });
+  setStops(root, items.map((_, k) => (k === 0 ? 3.15 : 3.2 + (k - 1) + 0.85)), tl.duration());
 }
 
 function reel(root: HTMLElement) {
@@ -259,6 +270,7 @@ function slides(root: HTMLElement) {
       .to(items[i - 1], { scale: 0.93, opacity: 0.35, duration: 1 }, i - 1);
   }
   tl.to({}, { duration: 0.3 });
+  setStops(root, items.map((_, k) => k), tl.duration());
 }
 
 /* ---------- Component ---------- */

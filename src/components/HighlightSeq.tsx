@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useRef } from "react";
 import type { Highlight } from "@/lib/projects";
-import { useSeqIndex } from "./useSeqIndex";
+import { useSeqIndex, goToStop } from "./useSeqIndex";
+import SeqNav from "./SeqNav";
 
 /**
  * Signature details as one directed sequence (desktop): a statement, the first image rising from
@@ -13,8 +14,9 @@ import { useSeqIndex } from "./useSeqIndex";
 export default function HighlightSeq({ label, statement, overline, items, children }: { label: string; statement: React.ReactNode; overline: string; items: Highlight[]; children?: React.ReactNode }) {
   const ref = useRef<HTMLElement>(null);
   const [k] = useSeqIndex(ref);
+  const go = (j: number) => ref.current && goToStop(ref.current, j);
   return (
-    <section ref={ref} className="hseq pin" data-seq="hseq" style={{ ["--len" as string]: `${300 + items.length * 100}vh` }} data-head="light" aria-labelledby="hseq-title">
+    <section ref={ref} className="hseq pin" data-seq="hseq" data-autoplay style={{ ["--len" as string]: `${300 + items.length * 100}vh` }} data-head="light" aria-labelledby="hseq-title">
       <div className="pin__stage">
         <div className="hseq__intro">
           <span className="label label--dot" style={{ justifySelf: "center" }}>
@@ -51,9 +53,9 @@ export default function HighlightSeq({ label, statement, overline, items, childr
             </p>
           </div>
         </div>
-        <span className="hseq__count" aria-hidden>
-          {String(k + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
-        </span>
+        <div className="hseq__count">
+          <SeqNav n={items.length} current={k} onGo={go} tone="light" label="Signature details" />
+        </div>
       </div>
     </section>
   );

@@ -3,14 +3,9 @@
 import Image from "next/image";
 import { useRef } from "react";
 import type { Img } from "@/lib/projects";
-import { useSeqIndex, scrollToStep } from "./useSeqIndex";
+import { useSeqIndex, goToStop } from "./useSeqIndex";
 import HArrows from "./HArrows";
-
-const Arrow = ({ dir }: { dir: 1 | -1 }) => (
-  <svg viewBox="0 0 16 16" aria-hidden>
-    <path d={dir > 0 ? "M5 2l6 6-6 6" : "M11 2L5 8l6 6"} fill="none" stroke="currentColor" strokeWidth="1.4" />
-  </svg>
-);
+import SeqNav from "./SeqNav";
 
 /**
  * Desktop: scattered architectural collage around the statement; on scroll the images converge,
@@ -23,12 +18,9 @@ export default function Collage({ label, title, line, images }: { label: string;
   const n = images.length;
   // Stack order: the last image sits on top and is shown first.
   const shown = n - 1 - k;
-  const go = (d: number) => {
-    const next = Math.max(0, Math.min(n - 1, k + d));
-    if (ref.current) scrollToStep(ref.current, next, n, (s) => (1.6 + s * 0.6) / (1.6 + (n - 1) * 0.6 + 0.4));
-  };
+  const go = (j: number) => ref.current && goToStop(ref.current, j);
   return (
-    <section ref={ref} className="collage pin curtain" data-seq="collage" style={{ ["--len" as string]: `${360 + n * 50}vh` }} data-head="light" aria-labelledby="collage-title">
+    <section ref={ref} className="collage pin curtain" data-seq="collage" data-autoplay style={{ ["--len" as string]: `${360 + n * 50}vh` }} data-head="light" aria-labelledby="collage-title">
       <div className="pin__stage">
         <div className="collage__head">
           <span className="label label--dot" data-reveal="fade" style={{ justifySelf: "center" }}>
@@ -52,7 +44,7 @@ export default function Collage({ label, title, line, images }: { label: string;
           ))}
         </div>
         <div className="collage__swipe">
-          <HArrows tone="light" />
+          <HArrows tone="light" numbers />
         </div>
         <div className="collage__desk on-image" aria-live="polite">
           <div className="container">
@@ -63,12 +55,7 @@ export default function Collage({ label, title, line, images }: { label: string;
               <span className="harrows__hint" aria-hidden>
                 Scroll <i>→</i>
               </span>
-              <button type="button" className="circle-btn" aria-label="Previous image" onClick={() => go(-1)}>
-                <Arrow dir={-1} />
-              </button>
-              <button type="button" className="circle-btn" aria-label="Next image" onClick={() => go(1)}>
-                <Arrow dir={1} />
-              </button>
+              <SeqNav n={n} current={k} onGo={go} tone="dark" label="Images" />
             </span>
           </div>
         </div>

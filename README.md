@@ -20,7 +20,7 @@ BROCHURE_TOKEN_SECRET=$(openssl rand -hex 32) npm start
 Tests (against a running server):
 
 ```bash
-BASE=http://localhost:3000 node tests/e2e.mjs          # 107 functional, security and device checks
+BASE=http://localhost:3000 node tests/e2e.mjs          # 114 functional, security and device checks
 node tests/screens.mjs http://localhost:3000            # full-page screenshots → tests/screens
 ```
 
@@ -65,6 +65,9 @@ node tests/screens.mjs http://localhost:3000            # full-page screenshots 
 | Project features | Paired cards slide in from the right over each other (where every feature has its own render) |
 | Gallery | Focus image with Ken Burns, next-image preview, counter, swipe, keyboard and lightbox |
 | Header | Hides on scroll down and returns on scroll up; colour follows whatever is under it |
+| Step control | One control everywhere a sequence moves: ‹ 01 02 03 ›. Numbers jump, arrows step (exploration, features, signature details, opening images, projects row, delivered row) |
+| Autoplay | After 6 s without scroll, click, touch, key or mouse movement, the sequence on screen moves to its next step; a yellow ring fills around the next arrow while it counts down. Pinned sequences stop at their last step; carousels loop. Off for reduced motion, open menus/viewers and background tabs |
+| Project hover | Frosted "View project" label with a yellow dot follows the pointer; cards lift, outline in yellow and zoom their image |
 
 Pinned sequences run only for fine pointers at 1024px and wider (`html.pin`). Phones, tablets and iPads keep native scrolling, and each sequence falls back to a deliberate static layout (swipe rows, stacked cards, tap-to-switch exploration). Reduced-motion visitors get the static layouts with no reveals.
 

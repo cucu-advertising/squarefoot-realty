@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Motion from "@/components/Motion";
 import Cursor from "@/components/Cursor";
+import AutoAdvance from "@/components/AutoAdvance";
 import Preloader from "@/components/Preloader";
 import { site } from "@/lib/site";
 
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <Motion />
         <Cursor />
+        <AutoAdvance />
       </body>
     </html>
   );

@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { onAutoNext } from "./useSeqIndex";
 import type { Img } from "@/lib/projects";
 
 const Lightbox = dynamic(() => import("./Lightbox"), { ssr: false });
@@ -15,12 +16,15 @@ export default function FocusGallery({ images, credit }: { images: Img[]; credit
   const n = images.length;
   const go = (k: number) => setI(((k % n) + n) % n);
   const next = images[(i + 1) % n];
+  const root = useRef<HTMLDivElement>(null);
+  // Autoplay: the next image after a few seconds of inactivity (AutoAdvance).
+  useEffect(() => onAutoNext(root.current, () => (open ? false : (setI((x) => (x + 1) % n), true))), [n, open]);
   return (
-    <div className="focus" onKeyDown={(e) => { if (e.key === "ArrowRight") go(i + 1); if (e.key === "ArrowLeft") go(i - 1); }}>
+    <div ref={root} className="focus" data-autoplay onKeyDown={(e) => { if (e.key === "ArrowRight") go(i + 1); if (e.key === "ArrowLeft") go(i - 1); }}>
       <div
         className="focus__main"
         data-reveal="mask"
-        data-cursor="View"
+        data-cursor="Expand"
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (touchX.current === null) return;
@@ -58,7 +62,7 @@ export default function FocusGallery({ images, credit }: { images: Img[]; credit
           <button type="button" className="circle-btn" aria-label="Previous image" onClick={() => go(i - 1)}>
             <svg viewBox="0 0 16 16" aria-hidden><path d="M11 2L5 8l6 6" fill="none" stroke="currentColor" strokeWidth="1.4" /></svg>
           </button>
-          <button type="button" className="circle-btn" aria-label="Next image" onClick={() => go(i + 1)}>
+          <button type="button" className="circle-btn js-autonext" aria-label="Next image" onClick={() => go(i + 1)}>
             <svg viewBox="0 0 16 16" aria-hidden><path d="M5 2l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.4" /></svg>
           </button>
         </div>

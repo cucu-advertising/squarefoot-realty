@@ -137,6 +137,7 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
 // Desktop
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctx.addInitScript(() => (window.__sfNoAutoplay = true)); // autoplay has its own test below
   const page = await ctx.newPage();
   page.on("pageerror", (e) => consoleErrors.push(e.message));
   await page.goto(`${BASE}/projects/the-square`, { waitUntil: "networkidle" });
@@ -319,6 +320,7 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
 // Mobile: menu + touch
 for (const dev of ["iPhone 13", "Pixel 7", "iPad Mini", "iPad Pro 11 landscape"]) {
   const ctx = await browser.newContext({ ...devices[dev] });
+  await ctx.addInitScript(() => (window.__sfNoAutoplay = true));
   const page = await ctx.newPage();
   page.on("pageerror", (e) => consoleErrors.push(`${dev}: ${e.message}`));
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
@@ -351,6 +353,52 @@ for (const dev of ["iPhone 13", "Pixel 7", "iPad Mini", "iPad Pro 11 landscape"]
   check(`${dev}: enquiry form fits viewport`, Boolean(box) && box.x >= 0 && box.x + box.width <= vp.width + 1, `${box?.x}+${box?.width}/${vp.width}`);
   await ctx.close();
 }
+// Step controls, autoplay and project hover (desktop)
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 810 } });
+  const page = await ctx.newPage();
+  page.on("pageerror", (e) => consoleErrors.push(e.message));
+  await page.goto(`${BASE}/projects/squarefoot-origin`, { waitUntil: "networkidle" });
+  await ready(page);
+  await page.mouse.move(700, 300);
+  const toSection = async (sel, f) => {
+    const y = await page.evaluate(([sel, f]) => { const el = document.querySelector(sel); return el.getBoundingClientRect().top + scrollY + f * (el.offsetHeight - innerHeight); }, [sel, f]);
+    await page.evaluate((y) => window.__lenis.scrollTo(y, { immediate: true, force: true }), y);
+    await sleep(1600);
+  };
+  await toSection(".slides", 0.02);
+  await page.locator(".slides__item").first().locator(".seqnav__n").nth(2).click();
+  await sleep(2400);
+  const third = await page.locator(".slides__item").nth(2).boundingBox();
+  check("Feature numbers 01 / 02 / 03 are clickable", Boolean(third) && third.x < 200, String(third?.x));
+  await toSection(".explore", 0.27);
+  const t0 = (await page.locator(".exp__title").innerText()).trim();
+  await page.locator(".exp__row .seqnav__arrow[aria-label='Next']").click();
+  await sleep(2400);
+  const t1 = (await page.locator(".exp__title").innerText()).trim();
+  check("Exploration has working arrows", t0 !== t1, `${t0} → ${t1}`);
+  await page.locator(".exp__rail .seqnav__n").nth(0).click();
+  await sleep(2400);
+  check("Exploration numbers jump to a view", (await page.locator(".exp__title").innerText()).trim() === "The community");
+  // Autoplay: no input for a few seconds → ring appears, then the next view
+  await sleep(2000);
+  check("Autoplay ring shows while idle", (await page.locator(".explore[data-autoplay-armed]").count()) === 1);
+  await sleep(5200);
+  const t2 = (await page.locator(".exp__title").innerText()).trim();
+  check("Autoplay moves to the next view after ~6 s idle", t2 === "The entrance", t2);
+  await page.mouse.move(650, 320);
+  await sleep(300);
+  check("Moving the mouse cancels the countdown", (await page.locator("[data-autoplay-armed]").count()) === 0);
+  // Project hover: label pill over the card
+  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  await ready(page);
+  await toSection(".prail", 0.02);
+  await page.mouse.move(560, 420);
+  await sleep(900);
+  check("Hovering a project shows the 'View project' label", (await page.locator(".cursor.is-on").innerText()).toUpperCase().includes("VIEW PROJECT"));
+  await ctx.close();
+}
+
 await browser.close();
 check("No uncaught page errors", consoleErrors.length === 0, consoleErrors.slice(0, 3).join(" | "));
 

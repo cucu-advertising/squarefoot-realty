@@ -16,10 +16,12 @@ export interface ReelCard {
 /** Horizontal reel. Desktop: pinned and driven by vertical scroll. Touch: native swipe with snap. */
 export default function Reel({ intro, cards, id }: { intro: React.ReactNode; cards: ReelCard[]; id?: string }) {
   return (
-    <section id={id} className="reel pin" data-seq="reel" data-head="dark" aria-label="Delivered projects">
+    <section id={id} className="reel pin" data-seq="reel" data-autoplay data-head="dark" aria-label="Delivered projects">
       <div className="pin__stage">
         <div className="reel__track" data-track>
-          <div className="reel__intro">{intro}</div>
+          <div className="reel__intro" data-track-skip>
+            {intro}
+          </div>
           {cards.map((c, i) => {
             const body =
               c.size === "x" ? (
@@ -28,6 +30,13 @@ export default function Reel({ intro, cards, id }: { intro: React.ReactNode; car
                     <b>{String(i + 1).padStart(2, "0")}</b>
                     {c.project.statusLabel}
                   </span>
+                  {c.project.hasPage && (
+                    <span className="reel__go" aria-hidden>
+                      <svg viewBox="0 0 16 16">
+                        <path d="M4 12L12 4M6 4h6v6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                      </svg>
+                    </span>
+                  )}
                   <div>
                     <h3>{c.project.name}</h3>
                     <p>{c.caption}</p>
@@ -52,7 +61,7 @@ export default function Reel({ intro, cards, id }: { intro: React.ReactNode; car
                 </>
               );
             return c.project.hasPage ? (
-              <Link key={i} href={`/projects/${c.project.slug}`} className={`reel__card reel__card--${c.size}`} data-cursor="View">
+              <Link key={i} href={`/projects/${c.project.slug}`} className={`reel__card reel__card--${c.size}`} data-cursor="View project">
                 {body}
               </Link>
             ) : (
@@ -62,7 +71,7 @@ export default function Reel({ intro, cards, id }: { intro: React.ReactNode; car
             );
           })}
         </div>
-        <HArrows tone="dark" />
+        <HArrows tone="dark" numbers />
         <div className="reel__progress" aria-hidden>
           <i />
         </div>
