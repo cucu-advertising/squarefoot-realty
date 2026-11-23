@@ -200,29 +200,31 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
   await page.waitForURL("**/challa-elite");
   check("Browser back/forward works", page.url().endsWith("/challa-elite"));
 
-  // Projects overview: every verified project is presented
+  // Projects page: same layout as home (hero → projects row → delivered reel → closing)
   await page.goto(`${BASE}/projects`, { waitUntil: "networkidle" });
-  const active = (await page.locator(".stackc__card h3").allTextContents()).map((t) => t.trim());
-  const delivered = (await page.locator(".reel__card .reel__cap b").allTextContents()).map((t) => t.trim());
-  check("Projects page lists the 3 active projects", active.join("|") === "Squarefoot Origin|The Square|The Urban Ranch", active.join(", "));
-  check("Projects page lists the 4 delivered projects", ["Trans Elite", "Challa Elite", "Trans Arcade", "Lokeshwari Residency"].every((n) => delivered.includes(n)), delivered.join(", "));
-  check("Projects page: Origin card uses a supplied render", (await page.locator(".stackc__card").first().locator("img").getAttribute("src"))?.includes("squarefoot-origin"));
+  await ready(page);
+  const active = (await page.locator(".prail__card h3").allTextContents()).map((t) => t.trim());
+  const delivered = (await page.locator(".reel__info h3").allTextContents()).map((t) => t.trim());
+  check("Projects page lists the 3 current projects in one row", active.join("|") === "The Urban Ranch|The Square|Squarefoot Origin", active.join(", "));
+  check("Projects page lists the 4 delivered projects as text cards", ["Trans Elite", "Challa Elite", "Trans Arcade", "Lokeshwari Residency"].every((n) => delivered.includes(n)) && (await page.locator(".reel__card img").count()) === 0, delivered.join(", "));
+  check("Projects page: Origin card uses a supplied render", (await page.locator(".prail__card").nth(2).locator("img").getAttribute("src"))?.includes("squarefoot-origin"));
+  check("Projects page ends with an Enquire now closing", (await page.locator(".closing").getByRole("link", { name: /Enquire now/ }).count()) === 1);
   {
-    const btn = page.locator(".stackc__card .pill--light").last(); // earlier cards sit under later ones
-    await btn.scrollIntoViewIfNeeded();
-    await sleep(900);
+    const top = await page.evaluate(() => document.querySelector(".prail").getBoundingClientRect().top + window.scrollY);
+    await toY(page, top + 2);
+    await sleep(1500);
+    const btn = page.locator(".prail__card .pill--light").first();
     const before = await btn.evaluate((el) => getComputedStyle(el).backgroundColor);
     await btn.hover();
     await sleep(600);
     const after = await btn.evaluate((el) => getComputedStyle(el).backgroundColor);
     check("Light buttons turn black on hover", after === "rgb(26, 26, 24)" && before !== after, `${before} → ${after}`);
+    await page.mouse.move(5, 5);
+    await page.locator(".prail__card").first().locator(".rail-pager button").nth(2).click();
+    await sleep(2600);
+    const third = await page.locator(".prail__card").nth(2).boundingBox();
+    check("Card numbers 01 / 02 / 03 bring that project into view", Boolean(third) && third.x >= 0 && third.x + third.width <= 1442, `${third?.x} + ${third?.width}`);
   }
-  await toY(page, 0);
-  await sleep(600);
-  await page.locator(".stackc__card").first().locator(".stackc__pager button").nth(2).click();
-  await sleep(2200);
-  const third = await page.locator(".stackc__card").nth(2).boundingBox();
-  check("Card numbers 01 / 02 / 03 jump to that project", Boolean(third) && Math.abs(third.y - 100) < 60, String(third?.y));
 
   // The Urban Ranch: renders, plans and RERA from the supplied material
   await page.goto(`${BASE}/projects/the-urban-ranch`, { waitUntil: "networkidle" });

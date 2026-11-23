@@ -8,6 +8,28 @@ import { isPinned } from "./useSeqIndex";
  * [data-track]: on desktop the track is moved by vertical scroll (pinned), so the arrows scroll the
  * page to the next card; on touch the track scrolls natively, so the arrows scroll the track.
  */
+/** Bring item j of a horizontal [data-track] into place (pinned: scroll the page; touch: scroll the track). */
+export function scrollToTrackItem(from: HTMLElement, j: number) {
+  const section = from.closest<HTMLElement>("section");
+  const track = section?.querySelector<HTMLElement>("[data-track]");
+  if (!section || !track) return;
+  const items = [...track.children] as HTMLElement[];
+  const item = items[j];
+  if (!item) return;
+  const pad = parseFloat(getComputedStyle(track).paddingLeft || "0");
+  if (isPinned()) {
+    const dist = Math.max(1, track.scrollWidth - window.innerWidth);
+    const span = section.offsetHeight - window.innerHeight;
+    const top = section.getBoundingClientRect().top + window.scrollY;
+    const x = Math.max(0, Math.min(dist, item.offsetLeft - pad));
+    const y = top + (x / dist) * span + 1;
+    if (window.__lenis) window.__lenis.scrollTo(y, { duration: 1.1 });
+    else window.scrollTo({ top: y, behavior: "smooth" });
+  } else {
+    track.scrollTo({ left: item.offsetLeft - pad - track.offsetLeft, behavior: "smooth" });
+  }
+}
+
 export default function HArrows({ tone = "dark" }: { tone?: "dark" | "light" }) {
   const ref = useRef<HTMLDivElement>(null);
   const [edge, setEdge] = useState({ start: true, end: false });

@@ -20,7 +20,7 @@ BROCHURE_TOKEN_SECRET=$(openssl rand -hex 32) npm start
 Tests (against a running server):
 
 ```bash
-BASE=http://localhost:3000 node tests/e2e.mjs          # 105 functional, security and device checks
+BASE=http://localhost:3000 node tests/e2e.mjs          # 106 functional, security and device checks
 node tests/screens.mjs http://localhost:3000            # full-page screenshots → tests/screens
 ```
 
@@ -96,7 +96,7 @@ All three were verified locally against a test webhook receiver and a local SMTP
 | Company copy | Website copy .docx | Used, condensed |
 | The Square: facts, RERA P02400005775, highlights, amenities, plans, distances | The Square brochure | Used. Brochure gated |
 | The Square renders | **Google Drive folder: all 13 files** (12 renders at 4000px + master-plan PDF) | Used. Originals in `source-assets/drive/`, web exports in `public/images/the-square/` |
-| Squarefoot Origin: 27 villas, 2.8 acres, G+2, 8,500 sft clubhouse | Website copy | Used |
+| Squarefoot Origin: 27 villas, 2.8 acres, G+2, 10,500 sft clubhouse | Website copy (clubhouse area updated by the client from 8,500 to 10,500 sft) | Used |
 | Squarefoot Origin renders and plans | **Google Drive folder: all 15 files** (site aerial, entrance, clubhouse, 9 villa renders, East facing ground/first/second floor plans) | Used: hero, highlights, 5-view exploration, gallery, amenities, floor plans, closing, plus the cards on the home and projects pages and the menus. Originals in `source-assets/origin/`, web exports in `public/images/squarefoot-origin/`. The white margins on the entrance and clubhouse sheets were trimmed; nothing else was altered. Room names on the plan tabs are read directly off the plans |
 | The Urban Ranch: 163 villas, 19.5 acres, RCC Mivan G+2, 292/301/351 sq. yd plots, 3,807–4,927 sft, 11.5 ft ceilings, ~30,000 sft clubhouse, amenities, plans (Types 1–3, East & West), distances, TG RERA P02400009631 | Urban Ranch brochure PDF (from the earlier GitHub history) | Used |
 | The Urban Ranch renders | Google Drive folder "Lifaang Renders" (7 JPGs; PSDs not used) | Used. Identified as Urban Ranch because the aerial is the same render as brochure p.3. Web exports in `public/images/the-urban-ranch/`, originals in `source-assets/lifaang/` |

@@ -6,9 +6,9 @@ import { Mark } from "@/components/Logo";
 import { TLink } from "@/components/ui";
 import Hero from "@/components/Hero";
 import Collage from "@/components/Collage";
-import ProjectRail from "@/components/ProjectRail";
+import OurProjects from "@/components/OurProjects";
+import DeliveredReel from "@/components/DeliveredReel";
 import HighlightSeq from "@/components/HighlightSeq";
-import Reel, { type ReelCard } from "@/components/Reel";
 import Closing from "@/components/Closing";
 import { getProject, type Img } from "@/lib/projects";
 
@@ -23,13 +23,7 @@ const SQ = "/images/the-square";
 const img = (name: string, width: number, height: number, alt: string, caption?: string): Img => ({ src: `${SQ}/${name}.jpg`, width, height, alt, caption });
 
 export default function Home() {
-  const origin = getProject("squarefoot-origin")!;
   const square = getProject("the-square")!;
-  const ranch = getProject("the-urban-ranch")!;
-  const transElite = getProject("trans-elite")!;
-  const challa = getProject("challa-elite")!;
-  const arcade = getProject("trans-arcade")!;
-  const lokeshwari = getProject("lokeshwari-residency")!;
 
   // Collage: one image from each of four projects. The last sits on top and is revealed first.
   const collage: Img[] = [
@@ -39,13 +33,6 @@ export default function Home() {
     { src: "/images/the-urban-ranch/lake-street.jpg", width: 3840, height: 2580, alt: "Villas beside a landscaped water feature at The Urban Ranch", caption: "The Urban Ranch · Kongara Kalan" },
   ];
 
-  // Delivered work, as information cards (text in place of images).
-  const reel: ReelCard[] = [
-    { project: transElite, size: "x", caption: "Apartments · Adibatla, ORR Exit-12", info: ["2 & 3 BHK", "1,245 – 1,830 sft", "HMDA approved", "Beside the TCS campus"] },
-    { project: challa, size: "x", caption: "Apartments · Tukkuguda, ORR Exit-14", info: ["2 & 3 BHK", "1,150 – 1,895 sft", "HMDA approved"] },
-    { project: arcade, size: "x", caption: "Commercial · Adibatla, ORR Exit-12", info: ["Commercial spaces"] },
-    { project: lokeshwari, size: "x", caption: "Residential · Habsiguda, Hyderabad", info: ["Residential"] },
-  ];
 
   return (
     <>
@@ -101,15 +88,7 @@ export default function Home() {
       </section>
 
       {/* 03 — Our projects, side by side */}
-      <ProjectRail
-        label="Our projects"
-        title="Spaces we are building."
-        items={[
-          { project: ranch, image: ranch.cover! },
-          { project: square, image: { src: `${SQ}/west-villa-aerial.jpg`, width: 3840, height: 2160, alt: "West facing villa with terrace garden at The Square" } },
-          { project: origin, image: { src: "/images/squarefoot-origin/east-row.jpg", width: 3840, height: 2160, alt: "Row of East facing villas at Squarefoot Origin" } },
-        ]}
-      />
+      <OurProjects label="Our projects" title="Spaces we are building." />
 
       {/* 05 — Signature highlights */}
       <HighlightSeq label="The Square · Signature details" statement="Where every square foot exudes luxury." overline="The Square · 01" items={square.highlights!}>
@@ -119,7 +98,7 @@ export default function Home() {
       </HighlightSeq>
 
       {/* 06 — Architectural reel: delivered work */}
-      <Reel
+      <DeliveredReel
         intro={
           <>
             <span className="label label--dot">Track record</span>
@@ -130,7 +109,6 @@ export default function Home() {
             <TLink href="/projects">All projects</TLink>
           </>
         }
-        cards={reel}
       />
 
       {/* 07 — The developer */}
@@ -176,12 +154,12 @@ export default function Home() {
             </p>
           </div>
           <div className="btn-row">
-            <Link href="/projects" className="pill pill--light">
-              Explore projects <span className="arr" aria-hidden>↗</span>
-            </Link>
-            <EnquireButton className="pill pill--ghost" source="home-closing">
+            <EnquireButton className="pill pill--red" source="home-closing">
               Enquire now
             </EnquireButton>
+            <Link href="/projects" className="pill pill--ghost">
+              Explore projects <span className="arr" aria-hidden>↗</span>
+            </Link>
           </div>
         </div>
       </Closing>

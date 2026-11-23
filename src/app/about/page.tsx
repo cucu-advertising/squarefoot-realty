@@ -5,6 +5,7 @@ import Closing from "@/components/Closing";
 import Link from "next/link";
 import { EnquireButton } from "@/components/Enquiry";
 import { Mark } from "@/components/Logo";
+import { TLink } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "About Squarefoot Realty | Three Decades of Building",
@@ -35,8 +36,19 @@ export default function About() {
         position="50% 45%"
         mobilePosition="45% 50%"
         label="About Squarefoot Realty"
-        title="A square. A sun. A bigger idea of home."
-        meta={["Formerly Sai Teja Developers", "Three decades", "Hyderabad", <a key="s" href="#who">Scroll ↓</a>]}
+        title="The people behind the places."
+        links={
+          <>
+            <TLink href="/projects">Our projects</TLink>
+            <EnquireButton className="tlink" source="about-hero" icon="">
+              <span className="tlink__t">Enquire now</span>
+              <span className="tlink__a" aria-hidden>
+                →
+              </span>
+            </EnquireButton>
+          </>
+        }
+        meta={["Formerly Sai Teja Developers", "Three decades · Hyderabad", <a key="s" href="#who">Scroll ↓</a>]}
         caption="Everything a space should be, and then some."
       />
 
@@ -152,12 +164,15 @@ export default function About() {
       <Closing image={{ src: "/images/the-square/avenue.jpg", width: 3840, height: 2160, alt: "Tree-lined avenue at The Square" }}>
         <span className="label">Talk to us</span>
         <div className="closing__row" style={{ marginTop: "var(--sp-2)" }}>
-          <h2 className="t-hero" style={{ maxWidth: "14ch" }}>
-            Whatever you are building, we will help you build it well.
-          </h2>
+          <div>
+            <h2 className="t-hero">We will help you build it well.</h2>
+            <p className="t-lead" style={{ marginTop: "var(--sp-2)", maxWidth: "40ch", opacity: 0.88 }}>
+              Whatever you are building, our team is a conversation away.
+            </p>
+          </div>
           <div className="btn-row">
-            <EnquireButton className="pill pill--light" source="about-closing">
-              Talk to us
+            <EnquireButton className="pill pill--red" source="about-closing">
+              Enquire now
             </EnquireButton>
             <Link href="/projects" className="pill pill--ghost">
               Explore projects <span className="arr" aria-hidden>↗</span>

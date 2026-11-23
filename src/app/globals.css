@@ -146,7 +146,7 @@ em.hl { font-style: normal; color: var(--brick); }
 }
 .pill:active { transform: scale(0.98); }
 /* On photography: frosted dark chips and outline buttons so they read on bright renders. */
-.on-media .pill--ghost, .stackc__card .pill--ghost, .closing__frame .pill--ghost {
+.on-media .pill--ghost, .closing__frame .pill--ghost {
   --p-bg: rgba(14, 13, 12, 0.38); --p-fg: var(--paper); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.55);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }
@@ -328,7 +328,6 @@ html.pin .collage:has(.collage__desk.is-on) .collage__item::after { opacity: 1; 
 
 .facts { margin-top: var(--sp-3); display: flex; flex-wrap: wrap; gap: 8px; }
 .facts li { padding: 6px 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px currentColor; font-size: 0.75rem; opacity: 0.92; }
-.stackc__card:not(.stackc__card--red) .facts li { background: rgba(14, 13, 12, 0.36); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.4); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); opacity: 1; }
 
 /* Architectural exploration */
 .explore { color: var(--paper); background: var(--ink); }
@@ -418,8 +417,14 @@ html:not(.pin) .prail__card { width: min(86vw, 640px); height: min(80svh, 700px)
 @media (max-width: 1023px) { .prail__body { grid-template-columns: 1fr; } }
 @media (max-width: 767px) { .prail__shade { background: linear-gradient(0deg, rgba(14, 13, 12, 0.9), rgba(14, 13, 12, 0.72) 50%, rgba(14, 13, 12, 0.42) 78%, rgba(14, 13, 12, 0.32)); } }
 
+.rail-pager { display: flex; gap: 6px; }
+.rail-pager button { min-width: 44px; min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: var(--f-label); font-weight: 600; letter-spacing: 0.14em; color: var(--paper); background: rgba(14, 13, 12, 0.34); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.45); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: background var(--t-ui), color var(--t-ui); }
+.rail-pager button[aria-current="true"] { background: var(--paper); color: var(--ink); box-shadow: none; }
+@media (hover: hover) { .rail-pager button:not([aria-current="true"]):hover { background: var(--ink); } }
+
 /* Arrows + hint for anything that slides sideways */
 .harrows { display: flex; align-items: center; gap: 8px; }
+.prail__head .t-display { font-size: clamp(2.4rem, 1rem + 4vw, 5.6rem); }
 .harrows__hint { display: inline-flex; align-items: center; gap: 10px; margin-right: 10px; font-size: var(--f-label); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; }
 .harrows__hint i { font-style: normal; font-size: 1.1rem; display: inline-block; animation: nudge 1.6s var(--ease) infinite; }
 @keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(7px); } }
@@ -646,23 +651,7 @@ html.pin .slides__item:nth-child(even) .slides__text { order: 2; }
 .nextp--red { background: var(--red); color: var(--ink); }
 
 /* ---- Projects page: stacking cards ---- */
-.stackc { padding-inline: var(--gutter); }
-.stackc__card { position: sticky; top: calc(var(--header-h) + var(--i, 0) * 14px); height: calc(100svh - var(--header-h) - 60px); min-height: 520px; border-radius: var(--radius); overflow: hidden; color: var(--paper); margin-bottom: 6vh; background: var(--ink-2); box-shadow: 0 -24px 60px -30px rgba(26, 26, 24, 0.45); display: block; }
-.stackc__card img { object-fit: cover; transition: transform 1.6s var(--ease); }
-.stackc__card:hover img { transform: scale(1.03); }
-.stackc__shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(14, 13, 12, 0.84), rgba(14, 13, 12, 0.5) 34%, rgba(14, 13, 12, 0.06) 62%), linear-gradient(90deg, rgba(14, 13, 12, 0.3), rgba(14, 13, 12, 0) 55%); pointer-events: none; }
-@media (max-width: 767px) { .stackc__shade { background: linear-gradient(0deg, rgba(14, 13, 12, 0.9), rgba(14, 13, 12, 0.72) 50%, rgba(14, 13, 12, 0.45) 80%, rgba(14, 13, 12, 0.32)); } }
-.stackc__card--red { background: var(--red); color: var(--ink); }
-.stackc__body { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: clamp(20px, 3vw, 44px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-3); align-items: end; }
-.stackc__top { position: absolute; left: clamp(20px, 3vw, 44px); right: clamp(20px, 3vw, 44px); top: clamp(20px, 3vw, 36px); z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .tag { display: inline-flex; align-items: center; padding: 7px 14px; border-radius: 999px; background: var(--paper); color: var(--ink); font-size: var(--f-label); font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; }
-.stackc__card--red .tag { background: var(--ink); color: var(--paper); }
-.stackc__big { position: absolute; right: clamp(20px, 3vw, 44px); top: 24%; }
-.stackc__mark { width: clamp(44px, 4.4vw, 72px); }
-.stackc__pager { display: flex; gap: 6px; }
-.stackc__pager button { min-width: 44px; min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: var(--f-label); font-weight: 600; letter-spacing: 0.14em; color: var(--paper); background: rgba(14, 13, 12, 0.34); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.45); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: background var(--t-ui), color var(--t-ui); }
-.stackc__pager button[aria-current="true"] { background: var(--paper); color: var(--ink); box-shadow: none; }
-@media (hover: hover) { .stackc__pager button:not([aria-current="true"]):hover { background: var(--ink); } }
 /* Feature cards: standout features for projects without per-feature renders */
 .fcards { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 10px; }
 .fcard { border-radius: var(--radius); padding: clamp(22px, 2.6vw, 40px); min-height: clamp(280px, 34vw, 440px); display: flex; flex-direction: column; justify-content: space-between; gap: var(--sp-4); background: var(--ink-2); color: var(--paper); }
@@ -671,7 +660,6 @@ html.pin .slides__item:nth-child(even) .slides__text { order: 2; }
 .fcard__n { font-size: var(--f-label); letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7; }
 .fcard p { opacity: 0.82; max-width: 32ch; margin-top: var(--sp-2); }
 @media (max-width: 899px) { .fcards { grid-template-columns: 1fr; } .fcard { min-height: 0; } }
-@media (max-width: 1023px) { .stackc__body { grid-template-columns: 1fr; } }
 
 /* ---- About page ---- */
 .builds { border-top: 1px solid var(--line); }
@@ -702,7 +690,7 @@ html.pin .slides__item:nth-child(even) .slides__text { order: 2; }
 .contact__aside dt { font-size: var(--f-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
 .contact__aside dd { font-size: 1.1rem; }
 .contact__aside dd a:hover { color: var(--brick); }
-.contact-page { padding-top: calc(var(--header-h) + clamp(40px, 6vw, 88px)); }
+.contact-page { padding-top: calc(var(--header-h) + var(--section-y)); }
 .contact__head { margin-bottom: var(--sp-5); }
 .contact__img { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); overflow: hidden; }
 .contact__img img { object-fit: cover; }

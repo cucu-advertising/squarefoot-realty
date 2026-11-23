@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Project, Img } from "@/lib/projects";
 import { EnquireButton } from "./Enquiry";
 import HArrows from "./HArrows";
+import RailPager from "./RailPager";
 
 export interface RailItem {
   project: Project;
@@ -13,10 +14,9 @@ export interface RailItem {
  * Our projects, side by side. Desktop: pinned, and scrolling down moves the row sideways
  * (Motion.tsx › hscroll). Touch: a native swipe row with snap. Arrows and a hint on both.
  */
-export default function ProjectRail({ label, title, items }: { label: string; title: string; items: RailItem[] }) {
-  const n = items.length;
+export default function ProjectRail({ label, title, items, id, curtain }: { label: string; title: string; items: RailItem[]; id?: string; curtain?: boolean }) {
   return (
-    <section className="prail pin" data-seq="hscroll" data-head="light" aria-labelledby="prail-title">
+    <section id={id} className={`prail pin ${curtain ? "curtain" : ""}`} data-seq="hscroll" data-head="light" aria-labelledby="prail-title">
       <div className="pin__stage prail__stage">
         <div className="container prail__head">
           <div>
@@ -34,9 +34,7 @@ export default function ProjectRail({ label, title, items }: { label: string; ti
               <span className="prail__shade" aria-hidden />
               <div className="prail__top">
                 <span className="tag">{p.statusLabel}</span>
-                <span className="label">
-                  {String(i + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
-                </span>
+                <RailPager names={items.map((it) => it.project.name)} current={i} />
               </div>
               <div className="prail__body">
                 <div>

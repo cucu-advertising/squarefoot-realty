@@ -205,7 +205,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   Amenities
                 </span>
                 <h2 id="amen-title" className="t-display" data-split>
-                  {p.slug === "squarefoot-origin" ? "An 8,500 sft clubhouse." : "Room to play, rest and gather."}
+                  {p.slug === "squarefoot-origin" ? "A 10,500 sft clubhouse." : "Room to play, rest and gather."}
                 </h2>
               </div>
             </div>

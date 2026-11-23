@@ -140,7 +140,7 @@ export const projects: Project[] = [
         image: og("west-corner", 3840, 2160, "West facing villas at Squarefoot Origin"),
       },
       {
-        title: "8,500 sft clubhouse",
+        title: "10,500 sft clubhouse",
         line: "Pool, gym, badminton court, banquet hall and guest rooms for the community.",
         image: og("entrance", 3840, 2160, "Squarefoot Origin entrance with the clubhouse behind"),
       },
@@ -154,14 +154,14 @@ export const projects: Project[] = [
       { value: "27", label: "Villas in a boutique community" },
       { value: "2.8", unit: "acres", label: "Of land, near ORR Exit-12" },
       { value: "G+2", label: "Four-bedroom villas, East or West facing" },
-      { value: "8,500", unit: "sft", label: "Clubhouse for the community" },
+      { value: "10,500", unit: "sft", label: "Clubhouse for the community" },
     ],
     explore: [
       { title: "The community", caption: "27 villas · 2.8 acres", image: og("site-aerial", 3840, 2160, "Aerial view of the Squarefoot Origin layout") },
       { title: "The entrance", caption: "Gated entrance · Clubhouse beyond", image: og("entrance", 3840, 2160, "Entrance gate at Squarefoot Origin with the clubhouse behind") },
       { title: "East facing villas", caption: "G+2 · Four bedrooms · Two-car porch", image: og("east-row", 3840, 2160, "Row of East facing villas") },
       { title: "West facing villas", caption: "G+2 · Four bedrooms · Vaastu compliant", image: og("west-row", 3840, 2160, "Row of West facing villas") },
-      { title: "The clubhouse", caption: "8,500 sft · Pool, gym, banquet hall", image: og("clubhouse", 3840, 2160, "Squarefoot Origin clubhouse") },
+      { title: "The clubhouse", caption: "10,500 sft · Pool, gym, banquet hall", image: og("clubhouse", 3840, 2160, "Squarefoot Origin clubhouse") },
     ],
     gallery: [
       og("east-street", 3840, 2160, "East facing villas along the street", "East facing villas"),
@@ -210,7 +210,7 @@ export const projects: Project[] = [
     seo: {
       title: "Squarefoot Origin | 27 Villas near ORR Exit-12, Hyderabad",
       description:
-        "A boutique community of 27 G+2 villas on 2.8 acres with an 8,500 sft clubhouse, 5 minutes from ORR Exit-12. Book a site visit.",
+        "A boutique community of 27 G+2 villas on 2.8 acres with a 10,500 sft clubhouse, 5 minutes from ORR Exit-12. Book a site visit.",
     },
   },
   {
