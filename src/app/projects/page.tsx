@@ -5,6 +5,7 @@ import Hero from "@/components/Hero";
 import Reel, { type ReelCard } from "@/components/Reel";
 import { EnquireButton } from "@/components/Enquiry";
 import { Mark } from "@/components/Logo";
+import StackPager from "@/components/StackPager";
 import { TLink } from "@/components/ui";
 import { projects, getProject } from "@/lib/projects";
 
@@ -51,7 +52,7 @@ export default function ProjectsPage() {
             const src = covers[p.slug] ?? p.cover?.src ?? p.hero?.src;
             const red = !src && p.status !== "upcoming";
             return (
-              <article key={p.slug} className={`stackc__card ${red ? "stackc__card--red" : ""}`} style={{ ["--i" as string]: i }} data-head={red ? "red" : "dark"} aria-labelledby={`sc-${p.slug}`}>
+              <article key={p.slug} id={`p-${p.slug}`} className={`stackc__card ${red ? "stackc__card--red" : ""}`} style={{ ["--i" as string]: i }} data-head={red ? "red" : "dark"} aria-labelledby={`sc-${p.slug}`}>
                 {src ? (
                   <>
                     <Image src={src} alt={`${p.name}, ${p.location}`} fill sizes="100vw" quality={80} />
@@ -66,7 +67,7 @@ export default function ProjectsPage() {
                 )}
                 <div className="stackc__top">
                   <span className="tag">{p.statusLabel}</span>
-                  {red ? <Mark onRed className="stackc__mark" /> : <span className="label">0{i + 1} / 0{active.length}</span>}
+                  {red ? <Mark onRed className="stackc__mark" /> : <StackPager names={active.map((q) => q.name)} current={i} />}
                 </div>
                 <div className="stackc__body">
                   <div>
@@ -89,15 +90,9 @@ export default function ProjectsPage() {
                     <Link href={`/projects/${p.slug}`} className={`pill ${red ? "" : "pill--light"}`}>
                       Explore project <span className="arr" aria-hidden>↗</span>
                     </Link>
-                    {p.brochure ? (
-                      <EnquireButton className="pill pill--ghost" mode="brochure" project={p.slug} source="projects-card">
-                        Brochure
-                      </EnquireButton>
-                    ) : (
-                      <EnquireButton className="pill pill--ghost" project={p.slug} source="projects-card">
-                        {p.status === "upcoming" ? "Register interest" : "Enquire"}
-                      </EnquireButton>
-                    )}
+                    <EnquireButton className="pill pill--ghost" project={p.slug} source="projects-card">
+                      {p.status === "upcoming" ? "Register interest" : "Enquire now"}
+                    </EnquireButton>
                   </div>
                 </div>
               </article>
@@ -107,6 +102,7 @@ export default function ProjectsPage() {
       </section>
 
       <Reel
+        id="delivered"
         intro={
           <>
             <span className="label label--dot">Delivered · OC received</span>

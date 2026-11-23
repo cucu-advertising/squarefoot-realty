@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import type { Img } from "@/lib/projects";
 import { useSeqIndex, scrollToStep } from "./useSeqIndex";
+import HArrows from "./HArrows";
 
 const Arrow = ({ dir }: { dir: 1 | -1 }) => (
   <svg viewBox="0 0 16 16" aria-hidden>
@@ -42,13 +43,16 @@ export default function Collage({ label, title, line, images }: { label: string;
             </p>
           )}
         </div>
-        <div className="collage__items">
+        <div className="collage__items" data-track>
           {images.map((img) => (
             <figure key={img.src} className="collage__item">
               <Image src={img.src} alt={img.alt} fill sizes="(min-width: 1024px) 88vw, 80vw" quality={78} />
               <figcaption>{img.caption}</figcaption>
             </figure>
           ))}
+        </div>
+        <div className="collage__swipe">
+          <HArrows tone="light" />
         </div>
         <div className="collage__desk on-image" aria-live="polite">
           <div className="container">

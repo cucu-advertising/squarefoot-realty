@@ -20,7 +20,7 @@ BROCHURE_TOKEN_SECRET=$(openssl rand -hex 32) npm start
 Tests (against a running server):
 
 ```bash
-BASE=http://localhost:3000 node tests/e2e.mjs          # 91 functional, security and device checks
+BASE=http://localhost:3000 node tests/e2e.mjs          # 105 functional, security and device checks
 node tests/screens.mjs http://localhost:3000            # full-page screenshots → tests/screens
 ```
 
@@ -57,10 +57,10 @@ node tests/screens.mjs http://localhost:3000            # full-page screenshots 
 | Statements | Words brighten in sync with scroll (reversible) |
 | Images | Wipe-up reveal with scale settle; parallax on selected media |
 | Philosophy collage | Scattered images converge, grow to near full screen, then peel away one by one. Caption, counter and prev/next buttons included |
-| Project discovery | Giant brand marquee; the first project grows from a card to full screen; later projects wipe up over it; index rail jumps between them |
-| Explore The Square | Pinned 6-view exploration of real renders: directional wipes, push-in, dot rail, big number and progress bar |
+| Our projects (home) | The Urban Ranch, The Square and Squarefoot Origin side by side: scrolling down moves the row sideways, with arrows, a "Scroll →" hint and a progress line (swipe row on touch) |
+| Project exploration | Pinned exploration of real renders on each project page: directional wipes, push-in, dot rail, big number and progress bar |
 | Signature details | Statement → image rises → full-bleed with overlay → split composition, with each detail taking its turn |
-| Delivered reel | Horizontal reel driven by vertical scroll, with a progress line |
+| Delivered reel | Horizontal reel of information cards driven by vertical scroll, with arrows and a progress line |
 | Closing | Frame grows from a card to full screen, then the invitation appears |
 | Project features | Paired cards slide up over each other (where every feature has its own render) |
 | Gallery | Focus image with Ken Burns, next-image preview, counter, swipe, keyboard and lightbox |
@@ -68,7 +68,11 @@ node tests/screens.mjs http://localhost:3000            # full-page screenshots 
 
 Pinned sequences run only for fine pointers at 1024px and wider (`html.pin`). Phones, tablets and iPads keep native scrolling, and each sequence falls back to a deliberate static layout (swipe rows, stacked cards, tap-to-switch exploration). Reduced-motion visitors get the static layouts with no reveals.
 
-## How the brochure gating works
+## Brochure gating (back end only)
+
+The client asked for every brochure button to become **Enquire now**, which links to `/contact?project=<slug>` with the project pre-selected. The gated download API below still exists and is tested, but nothing on the site links to it any more.
+
+### How it works
 
 1. **Download brochure** opens the enquiry drawer: name, email, mobile and consent. The project is pre-selected, or a picker appears for general CTAs.
 2. The form is validated in the browser **and** on the server (`/api/enquiry`). Spam protection is a honeypot, a minimum fill time, a per-IP rate limit and a same-origin check. Duplicate submissions are idempotent.
@@ -94,11 +98,14 @@ All three were verified locally against a test webhook receiver and a local SMTP
 | The Square renders | **Google Drive folder: all 13 files** (12 renders at 4000px + master-plan PDF) | Used. Originals in `source-assets/drive/`, web exports in `public/images/the-square/` |
 | Squarefoot Origin: 27 villas, 2.8 acres, G+2, 8,500 sft clubhouse | Website copy | Used |
 | Squarefoot Origin renders and plans | **Google Drive folder: all 15 files** (site aerial, entrance, clubhouse, 9 villa renders, East facing ground/first/second floor plans) | Used: hero, highlights, 5-view exploration, gallery, amenities, floor plans, closing, plus the cards on the home and projects pages and the menus. Originals in `source-assets/origin/`, web exports in `public/images/squarefoot-origin/`. The white margins on the entrance and clubhouse sheets were trimmed; nothing else was altered. Room names on the plan tabs are read directly off the plans |
-| The Urban Ranch | Copy + The Square location map | Name, location and "upcoming" only |
+| The Urban Ranch: 163 villas, 19.5 acres, RCC Mivan G+2, 292/301/351 sq. yd plots, 3,807–4,927 sft, 11.5 ft ceilings, ~30,000 sft clubhouse, amenities, plans (Types 1–3, East & West), distances, TG RERA P02400009631 | Urban Ranch brochure PDF (from the earlier GitHub history) | Used |
+| The Urban Ranch renders | Google Drive folder "Lifaang Renders" (7 JPGs; PSDs not used) | Used. Identified as Urban Ranch because the aerial is the same render as brochure p.3. Web exports in `public/images/the-urban-ranch/`, originals in `source-assets/lifaang/` |
 | Trans Elite, Challa Elite | Brochures (Challa Elite PDF; Trans Elite spreads supplied as images) | Used. Brochures gated |
 | Trans Arcade, Lokeshwari Residency | Copy | Listed as delivered; no detail pages |
 
 ## Needs client confirmation
+
+0. **"Lifaang Renders" are used as The Urban Ranch** (the aerial matches the Urban Ranch brochure). The Urban Ranch is still labelled *Upcoming*, although its brochure carries TG RERA P02400009631.
 
 1. **Signature highlights** (automation, aluminium windows, 25,000 sft+ clubhouse) are from **The Square** brochure, not Urban Ranch; nothing has been supplied for Urban Ranch.
 2. The brochure says "**provision** for home automation (optional)", so the site says "Automation-ready homes".
@@ -110,6 +117,7 @@ All three were verified locally against a test webhook receiver and a local SMTP
 
 - **Verified contact details** (office address, phone, email, WhatsApp, hours). The blocks stay hidden until these are set in env vars.
 - **Real lead destination** (CRM webhook or SMTP credentials).
-- Squarefoot Origin West facing floor plans, RERA number and brochure; Urban Ranch details.
+- Squarefoot Origin West facing floor plans and RERA number.
+- Information for the delivered-projects cards on the home page (currently: type, location and facts from the brochures).
 - Exact site map pins (maps currently search by locality).
 - Gotham webfont licence.

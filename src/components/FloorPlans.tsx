@@ -12,7 +12,7 @@ export default function FloorPlans({ plans }: { plans: FloorPlan[] }) {
   const [open, setOpen] = useState(false);
   const plan = plans[active];
   // Portrait sheets (one floor per sheet) sit beside their room list instead of filling the width.
-  const tall = plan.image.height > plan.image.width;
+  const tall = plan.image.height >= plan.image.width;
   return (
     <div>
       {plans.length > 1 && (

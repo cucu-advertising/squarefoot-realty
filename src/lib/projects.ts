@@ -8,6 +8,8 @@
  *  - TE-BR  = Trans Elite brochure spreads (supplied as images)
  *  - DRIVE  = Google Drive render folder "Jpeg" (The Square renders)
  *  - OR-DRIVE = Google Drive folder of Squarefoot Origin renders and East facing floor plans
+ *  - UR-BR  = "Urban Ranch Brochure" PDF (10 pp., revised with the Squarefoot Realty logo)
+ *  - UR-DRIVE = Google Drive folder "Lifaang Renders" (The Urban Ranch: same aerial as UR-BR p.3)
  *
  * Do not add figures, approvals, prices or distances that are not in a source.
  */
@@ -79,6 +81,8 @@ export interface Project {
   locationNotes?: string[];
   mapQuery?: string;
   rera?: string;
+  /** "TS RERA" (default) or "TG RERA", as printed on the project's own material. */
+  reraLabel?: string;
   partner?: string;
   /** Key into the private brochure map (src/lib/brochures.ts). Undefined = no brochure supplied. */
   brochure?: string;
@@ -87,6 +91,14 @@ export interface Project {
 
 const og = (name: string, width: number, height: number, alt: string, caption?: string): Img => ({
   src: `/images/squarefoot-origin/${name}.jpg`,
+  width,
+  height,
+  alt,
+  caption,
+});
+
+const ur = (name: string, width: number, height: number, alt: string, caption?: string): Img => ({
+  src: `/images/the-urban-ranch/${name}.jpg`,
   width,
   height,
   alt,
@@ -170,19 +182,24 @@ export const projects: Project[] = [
     ],
     plans: [
       {
-        label: "Ground floor",
+        label: "East · Ground floor",
         facts: ["Living & drawing", "Kitchen / dining", "Parent's room", "Two-car porch"],
         image: og("plan-east-ground", 2480, 3507, "Ground floor plan of the East facing villa at Squarefoot Origin"),
       },
       {
-        label: "First floor",
+        label: "East · First floor",
         facts: ["Master bedroom with walk-in wardrobe", "Children's bedroom", "Family lounge", "Puja"],
         image: og("plan-east-first", 2480, 3507, "First floor plan of the East facing villa at Squarefoot Origin"),
       },
       {
-        label: "Second floor",
+        label: "East · Second floor",
         facts: ["Bedroom with walk-in wardrobe", "Home theatre provision", "Pantry", "Terrace"],
         image: og("plan-east-second", 2480, 3507, "Second floor plan of the East facing villa at Squarefoot Origin"),
+      },
+      {
+        label: "West facing villa",
+        facts: ["G+2", "Four bedrooms", "Vaastu compliant", "West facing floor plans on request"],
+        image: og("west-villa", 3000, 3000, "Front elevation of the West facing villa at Squarefoot Origin"),
       },
     ],
     locationNotes: [
@@ -326,17 +343,106 @@ export const projects: Project[] = [
     hasPage: true,
     status: "upcoming",
     statusLabel: "Upcoming",
-    type: "Upcoming community",
-    location: "Kongara Kalan, near ORR Exit-13, Hyderabad",
+    type: "Villa community",
+    location: "Kongara Kalan, Adibatla, near ORR Exit-13, Hyderabad",
     locationShort: "Kongara Kalan · ORR Exit-13",
-    pitch: "The next chapter on the ORR corridor.",
-    facts: ["Kongara Kalan", "ORR Exit-13"],
-    heroTreatment: "type",
+    pitch: "Vibe of the rural. Vivacity of the urban.",
+    facts: ["163 villas", "19.5 acres", "G+2", "292 – 351 sq. yd plots"],
+    overview: [
+      "A villa community across 19.5 acres at Kongara Kalan, a short drive from ORR Exit-13: plenty of nature around, with the city's conveniences close at hand.",
+    ],
+    highlights: [
+      {
+        title: "30,000 sft clubhouse",
+        line: "Infinity pool with deck, indoor badminton, a private home theatre and guest suites.",
+        image: ur("clubhouse", 3840, 2715, "The Urban Ranch clubhouse at dusk"),
+      },
+      {
+        title: "A lift in every villa",
+        line: "G+2 villas with 11.5 ft ceilings, on plots of 292 to 351 sq. yd.",
+        image: ur("villa-front", 3840, 2496, "Villa at The Urban Ranch with covered parking"),
+      },
+      {
+        title: "Green where you want it",
+        line: "Cycling tracks, walking paths and landscaped green buffers.",
+        image: ur("lake-street", 3840, 2580, "Villas along a landscaped water feature at The Urban Ranch"),
+      },
+    ],
+    hero: ur("aerial-entrance", 3840, 2143, "Aerial view of The Urban Ranch entrance, clubhouse and villas"),
+    cover: ur("villas-street", 3840, 2327, "Villas along a tree-lined street at The Urban Ranch"),
+    overviewImage: ur("villas-corner", 3840, 2684, "G+2 villas at The Urban Ranch"),
+    ctaImage: ur("aerial-dusk", 3840, 2143, "The Urban Ranch at dusk"),
+    heroTreatment: "full",
+    stats: [
+      { value: "163", label: "Villas in a gated community" },
+      { value: "19.5", unit: "acres", label: "At Kongara Kalan, near ORR Exit-13" },
+      { value: "30,000", unit: "sft", label: "Clubhouse, approximately" },
+      { value: "11.5", unit: "ft", label: "Ceiling height in every villa" },
+    ],
+    explore: [
+      { title: "The community", caption: "163 villas · 19.5 acres", image: ur("aerial-dusk", 3840, 2143, "Aerial view of The Urban Ranch at dusk") },
+      { title: "The entrance", caption: "Entry and exit with boom barrier security", image: ur("aerial-entrance", 3840, 2143, "The Urban Ranch entrance and clubhouse from above") },
+      { title: "The streets", caption: "Cycling tracks · Walking paths", image: ur("lake-street", 3840, 2580, "Street beside a landscaped water feature") },
+      { title: "The villas", caption: "RCC Mivan · G+2 · 3,807 – 4,927 sft", image: ur("villas-corner", 3840, 2684, "Villas at The Urban Ranch") },
+      { title: "The clubhouse", caption: "About 30,000 sft", image: ur("clubhouse", 3840, 2715, "The Urban Ranch clubhouse") },
+    ],
+    gallery: [
+      ur("villas-street", 3840, 2327, "Villas along a tree-lined street", "Along the street"),
+      ur("villas-corner", 3840, 2684, "Corner villas with palms", "The villas"),
+      ur("villa-front", 3840, 2496, "Villa with covered parking for two cars", "Covered parking"),
+      ur("lake-street", 3840, 2580, "Villas beside a landscaped water feature", "Green where you want it"),
+      ur("clubhouse", 3840, 2715, "The clubhouse at dusk", "The clubhouse"),
+      ur("aerial-dusk", 3840, 2143, "The community from above at dusk", "163 villas · 19.5 acres"),
+      ur("aerial-entrance", 3840, 2143, "The entrance and clubhouse from above", "The entrance"),
+    ],
+    amenities: [
+      {
+        title: "The clubhouse",
+        items: [
+          "Infinity pool with deck",
+          "Indoor badminton court",
+          "Private home theatre",
+          "Reception, lounge & party hall",
+          "Guest suites",
+          "Yoga & meditation zones",
+          "Creche & daycare",
+          "Covered cafeteria",
+        ],
+        image: ur("clubhouse", 3840, 2715, "The Urban Ranch clubhouse"),
+      },
+      {
+        title: "Outdoors",
+        items: [
+          "Cycling tracks & walking paths",
+          "Skating rink & play lawns",
+          "Landscaped green buffers",
+          "Shade structures & seating",
+          "Covered parking for 2–3 cars per villa",
+          "Boom barrier security at entry & exit",
+        ],
+        image: ur("lake-street", 3840, 2580, "Landscaped street at The Urban Ranch"),
+      },
+    ],
+    plans: [
+      { label: "Master plan", facts: ["163 villas", "19.5 acres"], image: ur("plan-master", 3200, 2189, "Master plan of The Urban Ranch") },
+      { label: "Type 1 · 292 sq. yd", facts: ["East facing 3,931.12 sft", "West facing 3,807.55 sft", "4 bedrooms + home theatre"], image: ur("plan-type-1", 3200, 2189, "Type 1 villa floor plans, East and West facing") },
+      { label: "Type 2 · 301 sq. yd", facts: ["East facing 4,121.54 sft", "West facing 4,110.93 sft", "Servant room + covered terraces"], image: ur("plan-type-2", 3200, 2189, "Type 2 villa floor plans, East and West facing") },
+      { label: "Type 3 · 351 sq. yd", facts: ["East facing 4,927.97 sft", "West facing 4,903.16 sft", "Dry & wet kitchens"], image: ur("plan-type-3", 3200, 2189, "Type 3 villa floor plans, East and West facing") },
+    ],
+    locationNotes: [
+      "Narayana High School · 2 mins",
+      "Wonderla Amusement Park · 8 mins",
+      "Proposed World Trade Centre · 8 mins",
+      "GMR Aerocity, Airport · 15 mins",
+      "A short drive from ORR Exit-13",
+    ],
     mapQuery: "Kongara Kalan, Telangana",
+    rera: "P02400009631",
+    reraLabel: "TG RERA",
     seo: {
-      title: "The Urban Ranch | Upcoming at Kongara Kalan | Squarefoot Realty",
+      title: "The Urban Ranch | 163 Villas at Kongara Kalan, near ORR Exit-13",
       description:
-        "The Urban Ranch is an upcoming Squarefoot Realty community at Kongara Kalan, near ORR Exit-13. Register your interest to hear first.",
+        "163 G+2 villas on 19.5 acres at Kongara Kalan with a 30,000 sft clubhouse, near ORR Exit-13, Hyderabad. TG RERA P02400009631.",
     },
   },
   {

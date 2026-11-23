@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const builds: { t: string; d: string; img?: string }[] = [
-  { t: "Apartments", d: "Planned for light, ventilation and everyday ease.", img: "/images/challa-elite/elevation-corner.jpg" },
+  { t: "Apartments", d: "Thoughtfully planned homes close to where Hyderabad works and grows.", img: "/images/challa-elite/elevation-corner.jpg" },
   { t: "Villas & gated communities", d: "Boutique communities planned around how a modern family lives.", img: "/images/the-square/east-villa.jpg" },
   { t: "Commercial addresses", d: "Functional, well-located spaces for businesses.", img: "/images/trans-arcade/exterior.jpg" },
   { t: "Layouts & plotting", d: "Master-planned layouts with clear planning and good access.", img: "/images/the-square/masterplan-aerial.jpg" },
@@ -105,7 +105,7 @@ export default function About() {
               </h2>
             </div>
             <p className="head-row__side muted" data-reveal="fade">
-              One team looks after every stage, so buyers and landowners deal with people they can trust.
+              Our team looks after every stage, so buyers and landowners deal with people they can trust.
             </p>
           </div>
           <ol role="list" className="builds">

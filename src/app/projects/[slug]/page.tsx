@@ -11,7 +11,7 @@ import FocusGallery from "@/components/FocusGallery";
 import FloorPlans from "@/components/FloorPlans";
 import MapEmbed from "@/components/MapEmbed";
 import Closing from "@/components/Closing";
-import { getProject, pageProjects, type Project } from "@/lib/projects";
+import { getProject, pageProjects } from "@/lib/projects";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -55,8 +55,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const p = getProject(slug);
   if (!p || !p.hasPage) notFound();
 
-  const idx = pageProjects.findIndex((x) => x.slug === p.slug);
-  const next = pageProjects[(idx + 1) % pageProjects.length];
   const isUpcoming = p.status === "upcoming";
   const loc = splitLocation(p.locationNotes);
   const tone = p.hero ? "image" : isUpcoming ? "ink" : "red";
@@ -72,16 +70,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     ...(p.hero ? { image: `${site.url}${p.hero.src}` } : {}),
   };
 
-  const brochureCta = (cls: string) =>
-    p.brochure ? (
-      <EnquireButton className={cls} mode="brochure" project={p.slug} source="project-cta">
-        Download brochure
-      </EnquireButton>
-    ) : (
-      <EnquireButton className={cls} project={p.slug} source="project-cta">
-        {isUpcoming ? "Register interest" : "Book a site visit"}
-      </EnquireButton>
-    );
+  const reraLabel = p.reraLabel ?? "TS RERA";
+  const enquireCta = (cls: string) => (
+    <EnquireButton className={cls} project={p.slug} source="project-cta">
+      {isUpcoming ? "Register interest" : "Enquire now"}
+    </EnquireButton>
+  );
 
   return (
     <>
@@ -100,23 +94,15 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         title={p.name}
         links={
           <>
-            {p.brochure ? (
-              <EnquireButton className="tlink" mode="brochure" project={p.slug} source="project-hero" icon="">
-                <span className="tlink__t">Download brochure</span>
-                <span className="tlink__a" aria-hidden>
-                  ↓
-                </span>
-              </EnquireButton>
-            ) : null}
             <EnquireButton className="tlink" project={p.slug} source="project-hero" icon="">
-              <span className="tlink__t">{isUpcoming ? "Register interest" : p.brochure ? "Enquire" : "Book a site visit"}</span>
+              <span className="tlink__t">{isUpcoming ? "Register interest" : "Enquire now"}</span>
               <span className="tlink__a" aria-hidden>
                 →
               </span>
             </EnquireButton>
           </>
         }
-        meta={[p.type, p.locationShort, p.rera ? `TS RERA ${p.rera}` : p.statusLabel, <a key="s" href="#intro">Scroll ↓</a>]}
+        meta={[p.type, p.locationShort, p.rera ? `${reraLabel} ${p.rera}` : p.statusLabel, <a key="s" href="#intro">Scroll ↓</a>]}
         caption={p.pitch}
       />
 
@@ -147,7 +133,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <p className="meta-line" data-reveal="fade">
               {p.rera && (
                 <span>
-                  TS RERA No. <strong>{p.rera}</strong>
+                  {reraLabel} No. <strong>{p.rera}</strong>
                 </span>
               )}
               {p.partner && <span>{p.partner}</span>}
@@ -155,7 +141,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           )}
           {isUpcoming && (
             <div className="btn-row" style={{ justifyContent: "center", marginTop: "var(--sp-5)" }}>
-              {brochureCta("pill")}
+              {enquireCta("pill")}
             </div>
           )}
         </div>
@@ -256,11 +242,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   Residences
                 </span>
                 <h2 id="plans-title" className="t-display" data-split>
-                  {p.slug === "the-square" ? "Planned to the square foot." : p.slug === "squarefoot-origin" ? "Three floors, four bedrooms." : "Typical floor plan."}
+                  {p.slug === "the-square" ? "Planned to the square foot." : p.slug === "squarefoot-origin" ? "Three floors, four bedrooms." : p.slug === "the-urban-ranch" ? "Three villa types, East or West facing." : "Typical floor plan."}
                 </h2>
               </div>
               <p className="head-row__side muted t-small" data-reveal="fade">
-                {p.slug === "squarefoot-origin" ? "East facing villa shown. Tap a plan to expand and zoom." : "Tap a plan to expand and zoom."}
+                {p.slug === "squarefoot-origin" ? "East facing floor plans and the West facing villa. Tap to expand and zoom." : "Tap a plan to expand and zoom."}
               </p>
             </div>
             <FloorPlans plans={p.plans} />
@@ -310,30 +296,23 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </section>
       )}
 
-      {/* 09 — Enquiry & brochure */}
+      {/* 09 — Enquire */}
       {closingImage ? (
         <Closing image={closingImage}>
-          <span className="label">{p.brochure ? "Brochure" : isUpcoming ? "Register interest" : "Visit"}</span>
+          <span className="label">{isUpcoming ? "Register interest" : "Visit"}</span>
           <div className="closing__row" style={{ marginTop: "var(--sp-2)" }}>
             <div>
-              <h2 className="t-hero">{p.brochure ? "Everything else is in the brochure." : "See it for yourself."}</h2>
+              <h2 className="t-hero">{isUpcoming ? "Be the first to know." : "See it for yourself."}</h2>
               <p className="t-lead" style={{ marginTop: "var(--sp-2)", maxWidth: "40ch", opacity: 0.88 }}>
-                {p.brochure ? "Complete specifications, plans and amenities. Share your details and the download unlocks instantly." : "Picture calling it home. Book a visit and our team will take it from there."}
+                {isUpcoming ? "Leave your details and our team will share plans, pricing and launch news first." : "Picture calling it home. Book a visit and our team will take it from there."}
               </p>
               {p.rera && (
                 <p className="t-small" style={{ marginTop: "var(--sp-2)", opacity: 0.7 }}>
-                  TS RERA No. {p.rera}
+                  {reraLabel} No. {p.rera}
                 </p>
               )}
             </div>
-            <div className="btn-row">
-              {brochureCta("pill pill--red")}
-              {p.brochure && (
-                <EnquireButton className="pill pill--ghost" project={p.slug} source="project-closing">
-                  Enquire now
-                </EnquireButton>
-              )}
-            </div>
+            <div className="btn-row">{enquireCta("pill pill--red")}</div>
           </div>
         </Closing>
       ) : (
@@ -346,44 +325,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   {isUpcoming ? "Be the first to know." : "See it for yourself."}
                 </h2>
                 <p className="t-lead muted" style={{ marginTop: "var(--sp-2)", maxWidth: "40ch" }}>
-                  {isUpcoming ? "Details are being finalised. Leave your details and we will tell you first." : "Picture calling it home. Book a visit and our team will take it from there."}
+                  {isUpcoming ? "Leave your details and our team will share plans, pricing and launch news first." : "Picture calling it home. Book a visit and our team will take it from there."}
                 </p>
               </div>
-              <div className="btn-row">
-                {brochureCta("pill pill--red")}
-                {!isUpcoming && (
-                  <EnquireButton className="pill pill--ghost" mode="brochure" project={p.slug} source="project-closing">
-                    Brochure
-                  </EnquireButton>
-                )}
-              </div>
+              <div className="btn-row">{enquireCta("pill pill--red")}</div>
             </div>
           </div>
         </section>
       )}
-
-      <NextProject p={next} />
     </>
-  );
-}
-
-function NextProject({ p }: { p: Project }) {
-  const img = p.cover ?? p.hero;
-  const red = !img && p.status !== "upcoming";
-  return (
-    <section className="s-sand" data-head="light" style={{ padding: "var(--sp-5) var(--gutter) 0" }} aria-label="Next project">
-      <Link href={`/projects/${p.slug}`} className={`nextp ${red ? "nextp--red" : ""}`} data-cursor="Next" data-head={red ? "red" : "dark"}>
-        {img && <Image src={img.src} alt="" fill sizes="100vw" quality={70} />}
-        <div className="nextp__body">
-          <span className="label">Next project</span>
-          <p className="t-hero" style={{ marginTop: "var(--sp-2)" }}>
-            {p.name} →
-          </p>
-          <p className="t-small" style={{ opacity: 0.8, marginTop: "var(--sp-1)" }}>
-            {p.locationShort} · {p.statusLabel}
-          </p>
-        </div>
-      </Link>
-    </section>
   );
 }

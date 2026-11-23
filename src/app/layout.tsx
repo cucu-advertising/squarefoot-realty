@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import Motion from "@/components/Motion";
 import Cursor from "@/components/Cursor";
 import Preloader from "@/components/Preloader";
-import { EnquiryProvider } from "@/components/Enquiry";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -63,11 +62,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <Preloader />
-        <EnquiryProvider>
-          <Header />
-          <main id="main">{children}</main>
-          <Footer />
-        </EnquiryProvider>
+        <Header />
+        <main id="main">{children}</main>
+        <Footer />
         <Motion />
         <Cursor />
       </body>

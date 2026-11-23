@@ -1,23 +1,25 @@
 import Link from "next/link";
 import { LogoHorizontal } from "./Logo";
 import { site, telHref } from "@/lib/site";
-import { projects, pageProjects } from "@/lib/projects";
+import { pageProjects, getProject } from "@/lib/projects";
 
 /** Footer as a bordered card on sand (reference pattern), with Squarefoot's own content and legal lines. */
 export default function Footer() {
   const c = site.contact;
-  const rera = projects.filter((p) => p.rera);
+  const arcade = getProject("trans-arcade");
   const hasContact = c.phone || c.email || c.office;
   return (
     <footer className="footer" data-head="light">
       <div className="footer__card">
         <div className="footer__top">
           <LogoHorizontal />
-          <span className="label">Everything and beyond</span>
+          <Link href="/contact" className="label">
+            Enquire now ↗
+          </Link>
         </div>
         <div className="footer__mid">
           <div>
-            <p className="t-display footer__tag">Everything and beyond.</p>
+            <p className="t-display footer__tag">Come home to more.</p>
             <p className="muted t-small" style={{ marginTop: "var(--sp-2)", maxWidth: "36ch" }}>
               Squarefoot Realty, formerly Sai Teja Developers. Three decades of building in Hyderabad.
             </p>
@@ -40,6 +42,11 @@ export default function Footer() {
                   <Link href={`/projects/${p.slug}`}>{p.name}</Link>
                 </li>
               ))}
+              {arcade && (
+                <li>
+                  <Link href="/projects#delivered">{arcade.name}</Link>
+                </li>
+              )}
             </ul>
           </div>
           <div>
@@ -71,16 +78,17 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer__legal">
-          {rera.length > 0 && <p>{rera.map((p) => `${p.name}: TS RERA No. ${p.rera}.`).join(" ")}</p>}
           <p>
-            Images are artist&apos;s impressions and brochures are conceptual presentations, not a legal offering. Specifications, plans and
-            elevations may change at the promoters&apos; discretion. Please verify details with our team and the relevant RERA registration.
+            Images are artist&apos;s impressions, not a legal offering. Specifications, plans and elevations may change at the promoters&apos;
+            discretion. Please verify details with our team and the relevant RERA registration.
           </p>
           <div className="footer__legal-row">
             <span>© {new Date().getFullYear()} Squarefoot Realty. All rights reserved.</span>
-            <span style={{ display: "flex", gap: 20 }}>
+            <span style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
               <Link href="/privacy">Privacy Policy</Link>
-              <a href="#main">Back to top ↑</a>
+              <a href="#main" className="footer__totop">
+                Back to top <span aria-hidden>↑</span>
+              </a>
             </span>
           </div>
         </div>

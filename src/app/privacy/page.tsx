@@ -28,7 +28,7 @@ export default function Privacy() {
           </ul>
           <h2>How we use it</h2>
           <ul>
-            <li>To respond to your enquiry, share the brochure you requested and arrange site visits.</li>
+            <li>To respond to your enquiry, share project details and arrange site visits.</li>
             <li>To contact you by phone, WhatsApp or email about the project you enquired about.</li>
           </ul>
           <p>We do not sell your details. We share them only with staff and service providers who help us respond to you.</p>
@@ -46,8 +46,7 @@ export default function Privacy() {
           </p>
           <h2>Cookies</h2>
           <p>
-            We set one essential cookie after you request a brochure, so you can download it again during the same visit without re-entering
-            your details. Maps load from Google only when you choose to load them.
+            We do not use tracking or advertising cookies. Maps load from Google only when you choose to load them.
           </p>
         </div>
       </div>

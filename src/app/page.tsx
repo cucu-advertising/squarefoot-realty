@@ -6,8 +6,7 @@ import { Mark } from "@/components/Logo";
 import { TLink } from "@/components/ui";
 import Hero from "@/components/Hero";
 import Collage from "@/components/Collage";
-import Discover, { type DiscoverItem } from "@/components/Discover";
-import Explore from "@/components/Explore";
+import ProjectRail from "@/components/ProjectRail";
 import HighlightSeq from "@/components/HighlightSeq";
 import Reel, { type ReelCard } from "@/components/Reel";
 import Closing from "@/components/Closing";
@@ -32,26 +31,20 @@ export default function Home() {
   const arcade = getProject("trans-arcade")!;
   const lokeshwari = getProject("lokeshwari-residency")!;
 
-  // Collage: the last image sits on top of the stack and is revealed first.
+  // Collage: one image from each of four projects. The last sits on top and is revealed first.
   const collage: Img[] = [
-    img("orr-corridor", 1960, 880, "Aerial view along the Outer Ring Road in Hyderabad's south", "Hyderabad's South"),
-    img("villas-dusk", 2178, 1099, "Duplex villas at The Square at dusk", "Villas at dusk"),
-    img("skating-rink", 4000, 2250, "Skating rink and cricket net in the park at The Square", "Room to play"),
-    img("terrace-view", 3840, 2160, "Landscaped gardens seen from a villa terrace at The Square", "Open to the green"),
+    { src: "/images/trans-elite/exterior.jpg", width: 2000, height: 1440, alt: "Trans Elite apartments beside the TCS campus, Adibatla", caption: "Trans Elite · Adibatla" },
+    { src: "/images/squarefoot-origin/west-garden.jpg", width: 3840, height: 2160, alt: "West facing villas framed by trees at Squarefoot Origin", caption: "Squarefoot Origin · Manneguda" },
+    img("terrace-view", 3840, 2160, "Landscaped gardens seen from a villa terrace at The Square", "The Square · Kongara Kalan"),
+    { src: "/images/the-urban-ranch/lake-street.jpg", width: 3840, height: 2580, alt: "Villas beside a landscaped water feature at The Urban Ranch", caption: "The Urban Ranch · Kongara Kalan" },
   ];
 
-  const discover: DiscoverItem[] = [
-    { project: origin, tone: "image", image: { src: "/images/squarefoot-origin/east-row.jpg", alt: "Row of East facing villas at Squarefoot Origin" } },
-    { project: square, tone: "image", image: { src: `${SQ}/west-villa-aerial.jpg`, alt: "West facing villa with terrace garden at The Square" } },
-    { project: ranch, tone: "ink" },
-  ];
-
+  // Delivered work, as information cards (text in place of images).
   const reel: ReelCard[] = [
-    { project: transElite, size: "a", image: { src: "/images/trans-elite/exterior.jpg", alt: "Trans Elite apartments, Adibatla" }, caption: "Adibatla · Apartments" },
-    { project: challa, size: "b", image: { src: "/images/challa-elite/elevation-corner.jpg", alt: "Challa Elite apartments, Tukkuguda" }, caption: "Tukkuguda · Apartments" },
-    { project: arcade, size: "c", image: { src: "/images/trans-arcade/exterior.jpg", alt: "Commercial building at Adibatla" }, caption: "Adibatla · Commercial" },
-    { project: challa, size: "c", image: { src: "/images/challa-elite/elevation-front.jpg", alt: "Challa Elite front elevation" }, caption: "Front elevation" },
-    { project: lokeshwari, size: "t", caption: "Habsiguda · Residential" },
+    { project: transElite, size: "x", caption: "Apartments · Adibatla, ORR Exit-12", info: ["2 & 3 BHK", "1,245 – 1,830 sft", "HMDA approved", "Beside the TCS campus"] },
+    { project: challa, size: "x", caption: "Apartments · Tukkuguda, ORR Exit-14", info: ["2 & 3 BHK", "1,150 – 1,895 sft", "HMDA approved"] },
+    { project: arcade, size: "x", caption: "Commercial · Adibatla, ORR Exit-12", info: ["Commercial spaces"] },
+    { project: lokeshwari, size: "x", caption: "Residential · Habsiguda, Hyderabad", info: ["Residential"] },
   ];
 
   return (
@@ -73,7 +66,7 @@ export default function Home() {
             </EnquireButton>
           </>
         }
-        meta={["Squarefoot Realty", "Formerly Sai Teja Developers", "Three decades · Hyderabad", <a key="s" href="#philosophy">Scroll ↓</a>]}
+        meta={["Villas · Apartments · Commercial", "Hyderabad's ORR corridor", <a key="s" href="#philosophy">Scroll ↓</a>]}
         caption="Living environments that hold everything you need within your walls, and open out to the sky and the green beyond."
       />
 
@@ -82,7 +75,7 @@ export default function Home() {
         <Collage
           label="Our philosophy"
           title="A great home looks beyond its walls."
-          line="Open skies, green landscapes and the possibilities of each new morning. That is Everything and Beyond."
+          line="Open skies, green landscapes and the possibilities of each new morning, in every community we build."
           images={collage}
         />
       </div>
@@ -107,16 +100,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 03 — Project discovery */}
-      <Discover items={discover} marquee="Squarefoot Realty — Everything and beyond —" />
-
-      {/* 04 — Architectural exploration (real renders, no invented 3D) */}
-      <Explore title="Explore The Square" views={square.explore!} />
+      {/* 03 — Our projects, side by side */}
+      <ProjectRail
+        label="Our projects"
+        title="Spaces we are building."
+        items={[
+          { project: ranch, image: ranch.cover! },
+          { project: square, image: { src: `${SQ}/west-villa-aerial.jpg`, width: 3840, height: 2160, alt: "West facing villa with terrace garden at The Square" } },
+          { project: origin, image: { src: "/images/squarefoot-origin/east-row.jpg", width: 3840, height: 2160, alt: "Row of East facing villas at Squarefoot Origin" } },
+        ]}
+      />
 
       {/* 05 — Signature highlights */}
       <HighlightSeq label="The Square · Signature details" statement="Where every square foot exudes luxury." overline="The Square · 01" items={square.highlights!}>
-        <EnquireButton className="pill" mode="brochure" project="the-square" source="home-highlights">
-          Download complete brochure
+        <EnquireButton className="pill" project="the-square" source="home-highlights">
+          Enquire now
         </EnquireButton>
       </HighlightSeq>
 
@@ -128,7 +126,7 @@ export default function Home() {
             <h2 className="t-display" data-split>
               Delivered. Occupied. Trusted.
             </h2>
-            <p className="t-lead muted measure">Projects that have received their occupancy certificates, and a series of layout and plotting ventures.</p>
+            <p className="t-lead muted measure">Homes and workplaces with occupancy certificates, plus a series of layout and plotting ventures.</p>
             <TLink href="/projects">All projects</TLink>
           </>
         }
@@ -160,12 +158,6 @@ export default function Home() {
                 <small>Today we are</small>Squarefoot Realty
               </span>
             </div>
-            <ul role="list" className="chips" data-reveal="fade">
-              <li>IIT</li>
-              <li>ISB</li>
-              <li>CBIT</li>
-              <li>OC-certified delivery</li>
-            </ul>
             <span data-reveal="fade">
               <TLink href="/about">Our story</TLink>
             </span>
@@ -187,8 +179,8 @@ export default function Home() {
             <Link href="/projects" className="pill pill--light">
               Explore projects <span className="arr" aria-hidden>↗</span>
             </Link>
-            <EnquireButton className="pill pill--ghost" mode="brochure" source="home-closing">
-              Download brochure
+            <EnquireButton className="pill pill--ghost" source="home-closing">
+              Enquire now
             </EnquireButton>
           </div>
         </div>

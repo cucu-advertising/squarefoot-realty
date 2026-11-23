@@ -4,7 +4,7 @@ import { useState } from "react";
 import EnquiryForm from "./EnquiryForm";
 import { Mark } from "./Logo";
 
-export default function ContactForm() {
+export default function ContactForm({ project = "" }: { project?: string }) {
   const [done, setDone] = useState(false);
   if (done) {
     return (
@@ -23,7 +23,7 @@ export default function ContactForm() {
       <h2 className="modal__title" style={{ marginBottom: "var(--sp-4)" }}>
         Send an enquiry
       </h2>
-      <EnquiryForm kind="contact" showMessage showVisitTime source="contact-page" submitLabel="Send enquiry" onSuccess={() => setDone(true)} />
+      <EnquiryForm kind="contact" project={project} showMessage showVisitTime source="contact-page" submitLabel="Send enquiry" onSuccess={() => setDone(true)} />
     </>
   );
 }

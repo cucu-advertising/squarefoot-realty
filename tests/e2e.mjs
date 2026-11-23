@@ -132,39 +132,28 @@ const ready = async (page) => {
   await page.waitForFunction(() => window.__sfReady === true, null, { timeout: 15000 });
   await sleep(1800);
 };
-const heroBrochure = (page) => page.locator(".hero").getByRole("button", { name: /Download brochure/ });
+const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.scrollTo(y, { immediate: true, force: true }) : window.scrollTo(0, y)), y);
 
-// Desktop: gated brochure via modal
+// Desktop
 {
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await ctx.newPage();
   page.on("pageerror", (e) => consoleErrors.push(e.message));
   await page.goto(`${BASE}/projects/the-square`, { waitUntil: "networkidle" });
   await ready(page);
-  await heroBrochure(page).click();
-  const dialog = page.getByRole("dialog");
-  await dialog.getByLabel(/Full name/).waitFor();
-  check("Brochure modal opens with form", await dialog.getByText("Download The Square brochure").isVisible());
-  await dialog.getByRole("button", { name: /Unlock brochure/ }).click();
-  check("Client-side validation shows errors", (await dialog.locator(".field__error").count()) >= 3);
-  await sleep(2600);
-  await dialog.getByLabel(/Full name/).fill("Browser Tester");
-  await dialog.getByLabel(/Mobile number/).fill("+91 98765 43210");
-  await dialog.getByLabel(/^Email/).fill("browser@example.com");
-  await dialog.locator("label.check").click();
-  await dialog.getByRole("button", { name: /Unlock brochure/ }).click();
-  await dialog.getByText("Thank you for your interest.").waitFor({ timeout: 10000 });
-  check("Success state shows after server confirms", true);
-  const [download] = await Promise.all([page.waitForEvent("download"), dialog.getByRole("link", { name: /Download brochure/ }).click()]);
-  const path = await download.path();
-  check("Browser downloads the correct brochure", download.suggestedFilename().startsWith("The-Square") && sha(fs.readFileSync(path)) === sha(fs.readFileSync("private/brochures/the-square.pdf")), download.suggestedFilename());
-  await page.keyboard.press("Escape");
-  await sleep(500);
-  // Re-open: should skip the form in the same session
-  await heroBrochure(page).click();
-  await dialog.getByText("Thank you for your interest.").waitFor({ timeout: 5000 });
-  check("Same session: brochure available without re-entering details", true);
-  await page.keyboard.press("Escape");
+  check("No brochure download buttons on project pages", (await page.getByText(/download brochure/i).count()) === 0);
+  const heroEnquire = page.locator(".hero").getByRole("link", { name: /Enquire now/ });
+  check("Hero 'Enquire now' leads to the contact page for this project", (await heroEnquire.getAttribute("href")) === "/contact?project=the-square", String(await heroEnquire.getAttribute("href")));
+  check("No 'next project' section at the end of a project", (await page.locator(".nextp").count()) === 0);
+  await heroEnquire.click();
+  await page.waitForURL("**/contact?project=the-square");
+  await sleep(1200);
+  check("Contact page arrives with the project selected", (await page.locator("select[name=project]").inputValue()) === "the-square");
+  check("Contact page has no hero banner", (await page.locator("[data-hero]").count()) === 0);
+  await page.locator("main").getByRole("button", { name: /Send enquiry/ }).click();
+  check("Client-side validation shows errors", (await page.locator(".field__error").count()) >= 3);
+  await page.goto(`${BASE}/projects/the-square`, { waitUntil: "networkidle" });
+  await ready(page);
 
   // Floor plan tabs + lightbox
   await page.getByRole("tab", { name: /Type 02/ }).click();
@@ -190,6 +179,13 @@ const heroBrochure = (page) => page.locator(".hero").getByRole("button", { name:
   // Map click-to-load
   await page.getByRole("button", { name: "Load map" }).click();
   check("Map loads on request", (await page.locator(".map iframe").count()) === 1);
+
+  // Pinned exploration on a project page: the rail jumps to a view
+  await page.locator(".explore").scrollIntoViewIfNeeded();
+  await sleep(800);
+  await page.locator(".exp__rail button").nth(2).click();
+  await sleep(2600);
+  check("Exploration rail scrolls to the chosen view", (await page.locator(".exp__title").innerText()).trim() === "East facing villa", await page.locator(".exp__title").innerText());
 
   // Desktop nav + dropdown + active state + back/forward
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
@@ -221,15 +217,30 @@ const heroBrochure = (page) => page.locator(".hero").getByRole("button", { name:
     const after = await btn.evaluate((el) => getComputedStyle(el).backgroundColor);
     check("Light buttons turn black on hover", after === "rgb(26, 26, 24)" && before !== after, `${before} → ${after}`);
   }
+  await toY(page, 0);
+  await sleep(600);
+  await page.locator(".stackc__card").first().locator(".stackc__pager button").nth(2).click();
+  await sleep(2200);
+  const third = await page.locator(".stackc__card").nth(2).boundingBox();
+  check("Card numbers 01 / 02 / 03 jump to that project", Boolean(third) && Math.abs(third.y - 100) < 60, String(third?.y));
+
+  // The Urban Ranch: renders, plans and RERA from the supplied material
+  await page.goto(`${BASE}/projects/the-urban-ranch`, { waitUntil: "networkidle" });
+  await ready(page);
+  check("Urban Ranch hero uses a supplied render", (await page.locator(".hero img").first().getAttribute("src"))?.includes("the-urban-ranch"));
+  check("Urban Ranch shows master plan and three villa types", (await page.locator(".plans__tabs [role='tab']").count()) === 4);
+  check("Urban Ranch shows its TG RERA number", (await page.locator(".meta-line").innerText()).includes("TG RERA No. P02400009631"));
 
   // Squarefoot Origin: supplied renders and plans are wired in, and every image on the page serves
   await page.goto(`${BASE}/projects/squarefoot-origin`, { waitUntil: "networkidle" });
   await ready(page);
   check("Origin hero uses a supplied render", (await page.locator(".hero img").first().getAttribute("src"))?.includes("squarefoot-origin"));
   const planTabs = (await page.locator(".plans__tabs [role='tab']").allTextContents()).map((t) => t.trim());
-  check("Origin shows ground, first and second floor plans", planTabs.join("|") === "Ground floor|First floor|Second floor", planTabs.join(", "));
+  check("Origin shows East floor plans and the West facing villa", planTabs.join("|") === "East · Ground floor|East · First floor|East · Second floor|West facing villa", planTabs.join(", "));
   await page.locator(".plans__tabs [role='tab']").nth(2).click();
   check("Origin plan tab switches", (await page.locator("#plan-panel img").getAttribute("alt"))?.includes("Second floor"));
+  await page.locator(".plans__tabs [role='tab']").nth(3).click();
+  check("Origin West facing tab shows the West facing villa", (await page.locator("#plan-panel img").getAttribute("alt"))?.includes("West facing"));
   check("Origin exploration has 5 real views", (await page.locator(".exp__layer").count()) === 5);
   const srcs = [...new Set(await page.locator("img").evaluateAll((els) => els.map((e) => e.getAttribute("src")).filter(Boolean)))];
   const bad = [];
@@ -245,45 +256,33 @@ const heroBrochure = (page) => page.locator(".hero").getByRole("button", { name:
   check("Nav dropdown: every project has a thumbnail", (await page.locator("#nav-projects .nav__thumb").evaluateAll((els) => els.every((e) => e.querySelector("img, svg")))) === true);
   await page.keyboard.press("Escape");
 
-  // Pinned exploration: rail jumps to a view (desktop)
+  // Home
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
   await ready(page);
   check("Desktop uses pinned sequences", await page.evaluate(() => document.documentElement.classList.contains("pin")));
-
-  // Project discovery: the first card grows evenly from the centre, and the header stays light over the sand stage.
-  const discTop = await page.evaluate(() => document.querySelector(".discover").getBoundingClientRect().top + window.scrollY);
-  await page.evaluate((y) => (window.__lenis ? window.__lenis.scrollTo(y, { immediate: true, force: true }) : window.scrollTo(0, y)), discTop + 4);
-  await sleep(1600);
-  check("Discovery stage at rest: header is not dark", !(await page.locator(".header").getAttribute("class")).includes("on-dark"));
-  await page.evaluate((y) => (window.__lenis ? window.__lenis.scrollTo(y, { immediate: true, force: true }) : window.scrollTo(0, y)), discTop + 0.35 * 900);
-  await sleep(2200);
-  const clip = await page.locator(".disc__panel").first().evaluate((el) => getComputedStyle(el).clipPath);
-  const edges = (clip.match(/inset\(([^)]*?)(?: round|\))/)?.[1] ?? "").trim().split(/\s+/).map(parseFloat);
-  const [t = 0, r = t, b = t, l = r] = edges;
-  check("Discovery card grows evenly from the centre", edges.length > 0 && Math.abs(l - r) < 1.5 && t > 0 && b > 0 && Math.abs(t - b) < 6, clip);
-
-  const rail = page.locator(".exp__rail button");
-  await page.locator(".explore").scrollIntoViewIfNeeded();
-  await sleep(800);
-  await rail.nth(2).click();
+  check("Header links sit in a readable capsule over the hero", (await page.locator(".nav").evaluate((el) => getComputedStyle(el).backgroundColor)) !== "rgba(0, 0, 0, 0)");
+  const collageCaps = await page.locator(".collage__item figcaption").allTextContents();
+  check("Opening images come from four different projects", new Set(collageCaps.map((c) => c.split(" · ")[0])).size === 4, collageCaps.join(", "));
+  const railNames = (await page.locator(".prail__card h3").allTextContents()).map((t) => t.trim());
+  check("Home shows our three projects side by side", railNames.join("|") === "The Urban Ranch|The Square|Squarefoot Origin", railNames.join(", "));
+  check("Old banner and master-plan sections are gone", (await page.locator(".discover, .explore").count()) === 0);
+  const railTop = await page.evaluate(() => document.querySelector(".prail").getBoundingClientRect().top + window.scrollY);
+  await toY(page, railTop + 2);
+  await sleep(1500);
+  const trackX = () => page.locator(".prail__track").evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41);
+  const x0 = await trackX();
+  await page.locator(".prail .harrows").getByRole("button", { name: "Next" }).click();
   await sleep(2600);
-  check("Exploration rail scrolls to the chosen view", (await page.locator(".exp__title").innerText()).trim() === "East facing villa", await page.locator(".exp__title").innerText());
-
-  // Brochure picker from a general CTA (no project preselected)
-  await page.evaluate(() => {
-    const c = document.querySelector(".closing");
-    window.scrollTo(0, c.getBoundingClientRect().top + window.scrollY + c.offsetHeight - window.innerHeight - 4);
-  });
-  await sleep(2200);
-  await page.locator(".closing").getByRole("button", { name: /Download brochure/ }).click();
-  const pick = page.getByRole("dialog");
-  await pick.getByText("Which brochure?").waitFor();
-  const choices = (await pick.locator(".pick button strong").allTextContents()).map((t) => t.trim());
-  check("Brochure picker lists only projects with brochures", choices.length === 3 && choices.includes("Challa Elite") && !choices.includes("Squarefoot Origin"), choices.join(", "));
-  await pick.locator(".pick button", { hasText: "Challa Elite" }).click();
-  await pick.getByLabel(/Full name/).waitFor();
-  check("Picker leads to the gated form for the chosen project", await pick.getByText("Download the Challa Elite brochure").isVisible());
-  await page.keyboard.press("Escape");
+  const x1 = await trackX();
+  check("Projects move sideways as you scroll; the arrow steps to the next one", x1 < x0 - 200, `${x0} → ${x1}`);
+  check("Sliding rows show a scroll hint", (await page.locator(".prail .harrows__hint").innerText()).toUpperCase().includes("SCROLL"));
+  check("Delivered projects are text cards, not images", (await page.locator(".reel__card img").count()) === 0 && (await page.locator(".reel__info").count()) === 4);
+  check("No brochure download buttons on the home page", (await page.getByText(/download brochure/i).count()) === 0);
+  check("Home closing offers Enquire now (contact page)", (await page.locator(".closing").getByRole("link", { name: /Enquire now/ }).getAttribute("href")) === "/contact");
+  const footer = page.locator("footer");
+  check("Footer lists Trans Arcade", (await footer.getByRole("link", { name: "Trans Arcade" }).count()) === 1);
+  check("Footer has no RERA number", !/RERA No/.test(await footer.innerText()));
+  check("Back to top is a bold button", (await footer.locator(".footer__totop").evaluate((el) => +getComputedStyle(el).fontWeight)) >= 600);
 
   // Contact form
   await page.goto(`${BASE}/contact`, { waitUntil: "networkidle" });
@@ -301,7 +300,7 @@ const heroBrochure = (page) => page.locator(".hero").getByRole("button", { name:
 
   // Every internal link on every page resolves
   const seen = new Set();
-  for (const p of ["/", "/about", "/projects", "/contact", "/projects/the-square", "/projects/trans-elite"]) {
+  for (const p of ["/", "/about", "/projects", "/contact", "/projects/the-square", "/projects/the-urban-ranch", "/projects/squarefoot-origin", "/projects/trans-elite"]) {
     await page.goto(BASE + p, { waitUntil: "domcontentloaded" });
     for (const href of await page.$$eval("a[href^='/']", (as) => as.map((a) => a.getAttribute("href")))) seen.add(href.split("#")[0].split("?")[0]);
   }
@@ -324,11 +323,14 @@ for (const dev of ["iPhone 13", "Pixel 7", "iPad Mini", "iPad Pro 11 landscape"]
   check(`${dev}: no horizontal overflow`, overflow <= 0, `${overflow}px`);
   await ready(page);
   check(`${dev}: no pinned scroll sequences on touch`, !(await page.evaluate(() => document.documentElement.classList.contains("pin"))));
-  // Exploration works by tapping the rail on touch devices.
-  await page.locator(".explore").scrollIntoViewIfNeeded();
-  await page.locator(".exp__rail button").nth(4).tap().catch(async () => page.locator(".exp__rail button").nth(4).click());
-  await sleep(600);
-  check(`${dev}: exploration rail switches view`, (await page.locator(".exp__title").innerText()).trim() === "Club The Square");
+  // The projects row swipes natively on touch; the arrows step through it too.
+  await page.locator(".prail").scrollIntoViewIfNeeded();
+  await sleep(500);
+  const sl0 = await page.locator(".prail__track").evaluate((el) => el.scrollLeft);
+  await page.locator(".prail .harrows").getByRole("button", { name: "Next" }).click();
+  await sleep(1200);
+  const sl1 = await page.locator(".prail__track").evaluate((el) => el.scrollLeft);
+  check(`${dev}: projects row arrows scroll sideways`, sl1 > sl0 + 100, `${sl0} → ${sl1}`);
   await page.evaluate(() => window.scrollTo(0, 0));
   await sleep(400);
   const burger = page.getByRole("button", { name: /^Menu$/ });
@@ -340,13 +342,10 @@ for (const dev of ["iPhone 13", "Pixel 7", "iPad Mini", "iPad Pro 11 landscape"]
   } else {
     check(`${dev}: desktop nav visible`, await page.locator(".nav").isVisible());
   }
-  await page.goto(`${BASE}/projects/challa-elite`, { waitUntil: "networkidle" });
-  await ready(page);
-  await heroBrochure(page).click();
-  await page.getByRole("dialog").getByLabel(/Full name/).waitFor();
-  const box = await page.getByRole("dialog").boundingBox();
+  await page.goto(`${BASE}/contact?project=challa-elite`, { waitUntil: "networkidle" });
+  const box = await page.locator(".contact__form").boundingBox();
   const vp = page.viewportSize();
-  check(`${dev}: enquiry form fits viewport`, Boolean(box) && box.width <= vp.width + 1, `${box?.width}/${vp.width}`);
+  check(`${dev}: enquiry form fits viewport`, Boolean(box) && box.x >= 0 && box.x + box.width <= vp.width + 1, `${box?.x}+${box?.width}/${vp.width}`);
   await ctx.close();
 }
 await browser.close();

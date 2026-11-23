@@ -10,3 +10,4 @@ next-env.d.ts
 tests/screens
 preview-v3
 *.zip
+*.patch

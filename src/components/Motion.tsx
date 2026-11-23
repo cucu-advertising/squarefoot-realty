@@ -6,7 +6,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import Lenis from "lenis";
-import { DISCOVER } from "./useSeqIndex";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -109,43 +108,6 @@ function collage(root: HTMLElement) {
   tl.to({}, { duration: 0.4 });
 }
 
-function discover(root: HTMLElement) {
-  const panels = gsap.utils.toArray<HTMLElement>(".disc__panel", root);
-  const row = root.querySelector(".mq__row");
-  const ui = root.querySelector(".disc__ui");
-  const intro = root.querySelector(".discover__intro");
-  if (!panels.length) return;
-  const n = panels.length;
-  // Clip-paths always tween fromTo with all four edges spelled out: browsers serialise
-  // "inset(31% 37% 31% 37%)" as "inset(31% 37%)", which would pair the wrong edges.
-  gsap.set(panels[0].querySelector(".disc__content"), { opacity: 0, y: 30 });
-  const tl = gsap.timeline({
-    defaults: { ease: "none" },
-    scrollTrigger: {
-      trigger: root, start: "top top", end: "bottom bottom", scrub: 0.9,
-      onUpdate(self) {
-        emitIndex(root, DISCOVER.index(self.progress * tl.duration(), n));
-      },
-    },
-  });
-  if (row) tl.fromTo(row, { xPercent: 0 }, { xPercent: -22, duration: 1.2 }, 0);
-  if (intro) tl.to(intro, { opacity: 0, y: -40, duration: 0.45 }, 0.15);
-  // The marquee steps back as the card grows, so the transition never reads as clutter.
-  tl.to(root.querySelector(".mq"), { opacity: 0, y: 30, duration: 0.45 }, 0.3);
-  tl.fromTo(panels[0], { clipPath: "inset(34% 33% 31% 33% round 18px)" }, { clipPath: "inset(0% 0% 0% 0% round 0px)", duration: 1 }, 0)
-    .fromTo(panels[0].querySelector(".disc__media img, .disc__brand"), { scale: 1.3 }, { scale: 1, duration: 1 }, 0)
-    .to(panels[0].querySelector(".disc__content"), { opacity: 1, y: 0, duration: 0.3 }, 0.8)
-    .to(ui, { opacity: 1, duration: 0.3 }, 0.8);
-  // Each project wipes up over the last one (which stays put underneath) and then holds.
-  panels.slice(1).forEach((p, j) => {
-    const at = DISCOVER.at(j + 1);
-    tl.fromTo(p, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8, ease: "power2.inOut" }, at)
-      .fromTo(p.querySelector(".disc__media img, .disc__brand"), { scale: 1.2 }, { scale: 1, duration: 0.9 }, at)
-      .fromTo(p.querySelector(".disc__content"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.3 }, at + 0.5);
-  });
-  tl.to({}, { duration: Math.max(0, DISCOVER.duration(n) - tl.duration()) });
-}
-
 function explore(root: HTMLElement) {
   const layers = gsap.utils.toArray<HTMLElement>(".exp__layer", root);
   const bar = root.querySelector<HTMLElement>(".exp__bar");
@@ -232,6 +194,34 @@ function reel(root: HTMLElement) {
       onRefreshInit: setLen,
       onUpdate: (self) => prog?.style.setProperty("--p", String(self.progress)),
     },
+  });
+}
+
+/** Generic horizontal row driven by vertical scroll: [data-track] moves left, [data-progress] fills. */
+function hscroll(root: HTMLElement) {
+  const track = root.querySelector<HTMLElement>("[data-track]");
+  const prog = root.querySelector<HTMLElement>("[data-progress]");
+  if (!track) return;
+  const dist = () => Math.max(0, track.scrollWidth - window.innerWidth);
+  const setLen = () => root.style.setProperty("--len", `${dist() + window.innerHeight}px`);
+  setLen();
+  const cards = gsap.utils.toArray<HTMLElement>("[data-track] > *", root);
+  const tl = gsap.timeline({
+    defaults: { ease: "none" },
+    scrollTrigger: {
+      trigger: root, start: "top top", end: "bottom bottom", scrub: 0.8, invalidateOnRefresh: true,
+      onRefreshInit: setLen,
+      onUpdate: (self) => {
+        prog?.style.setProperty("--p", String(self.progress));
+        emitIndex(root, Math.round(self.progress * Math.max(0, cards.length - 1)));
+      },
+    },
+  });
+  tl.to(track, { x: () => -dist(), duration: 1 }, 0);
+  // Each image drifts a little against the movement, so the row reads as depth, not a conveyor.
+  cards.forEach((c) => {
+    const img = c.querySelector("img");
+    if (img) tl.fromTo(img, { xPercent: -6, scale: 1.12 }, { xPercent: 6, scale: 1.12, duration: 1 }, 0);
   });
 }
 
@@ -401,10 +391,10 @@ export default function Motion() {
 
       if (pin) {
         gsap.utils.toArray<HTMLElement>("[data-seq='collage']").forEach(collage);
-        gsap.utils.toArray<HTMLElement>("[data-seq='discover']").forEach(discover);
         gsap.utils.toArray<HTMLElement>("[data-seq='explore']").forEach(explore);
         gsap.utils.toArray<HTMLElement>("[data-seq='hseq']").forEach(hseq);
         gsap.utils.toArray<HTMLElement>("[data-seq='reel']").forEach(reel);
+        gsap.utils.toArray<HTMLElement>("[data-seq='hscroll']").forEach(hscroll);
         gsap.utils.toArray<HTMLElement>("[data-seq='closing']").forEach(closing);
         gsap.utils.toArray<HTMLElement>("[data-seq='slides']").forEach(slides);
       }
@@ -419,7 +409,7 @@ export default function Motion() {
           el.innerHTML = html;
           el.classList.remove("scrub");
         });
-        gsap.utils.toArray<HTMLElement>("[data-seq='reel']").forEach((r) => r.style.removeProperty("--len"));
+        gsap.utils.toArray<HTMLElement>("[data-seq='reel'], [data-seq='hscroll']").forEach((r) => r.style.removeProperty("--len"));
       };
     });
 
