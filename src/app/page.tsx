@@ -25,9 +25,9 @@ const img = (name: string, width: number, height: number, alt: string, caption?:
 export default function Home() {
   const square = getProject("the-square")!;
 
-  // Collage: one image from each of four projects. The last sits on top and is revealed first.
+  // Collage: images from our current communities. The last sits on top and is revealed first.
   const collage: Img[] = [
-    { src: "/images/trans-elite/exterior.jpg", width: 2000, height: 1440, alt: "Trans Elite apartments beside the TCS campus, Adibatla", caption: "Trans Elite · Adibatla" },
+    { src: "/images/the-urban-ranch/aerial-dusk.jpg", width: 3840, height: 2143, alt: "The Urban Ranch from above at dusk", caption: "The Urban Ranch · At dusk" },
     { src: "/images/squarefoot-origin/west-garden.jpg", width: 3840, height: 2160, alt: "West facing villas framed by trees at Squarefoot Origin", caption: "Squarefoot Origin · Manneguda" },
     img("terrace-view", 3840, 2160, "Landscaped gardens seen from a villa terrace at The Square", "The Square · Kongara Kalan"),
     { src: "/images/the-urban-ranch/lake-street.jpg", width: 3840, height: 2580, alt: "Villas beside a landscaped water feature at The Urban Ranch", caption: "The Urban Ranch · Kongara Kalan" },

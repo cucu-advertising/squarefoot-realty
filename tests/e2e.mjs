@@ -266,7 +266,7 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
   check("Desktop uses pinned sequences", await page.evaluate(() => document.documentElement.classList.contains("pin")));
   check("Header links sit in a readable capsule over the hero", (await page.locator(".nav").evaluate((el) => getComputedStyle(el).backgroundColor)) !== "rgba(0, 0, 0, 0)");
   const collageCaps = await page.locator(".collage__item figcaption").allTextContents();
-  check("Opening images come from four different projects", new Set(collageCaps.map((c) => c.split(" · ")[0])).size === 4, collageCaps.join(", "));
+  check("Opening images come from our current projects", new Set(collageCaps.map((c) => c.split(" · ")[0])).size === 3 && !collageCaps.some((c) => c.includes("Trans Elite")), collageCaps.join(", "));
   const railNames = (await page.locator(".prail__card h3").allTextContents()).map((t) => t.trim());
   check("Home shows our three projects side by side", railNames.join("|") === "The Urban Ranch|The Square|Squarefoot Origin", railNames.join(", "));
   check("Old banner and master-plan sections are gone", (await page.locator(".discover, .explore").count()) === 0);
