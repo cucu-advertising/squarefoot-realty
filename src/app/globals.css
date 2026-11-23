@@ -294,7 +294,7 @@ html.pin .pin__stage { position: sticky; top: 0; height: 100vh; overflow: hidden
 .collage__item img { object-fit: cover; }
 .collage__item figcaption { position: absolute; left: 12px; bottom: 10px; font-size: var(--f-label); letter-spacing: 0.2em; text-transform: uppercase; color: var(--paper); text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5); }
 html:not(.pin) .collage { padding-bottom: var(--section-y); }
-html:not(.pin) .collage__items { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: var(--sp-5) var(--gutter) 0; scrollbar-width: none; }
+html:not(.pin) .collage__items { display: flex; gap: 10px; overflow-x: auto; scroll-padding-inline: var(--gutter); scroll-snap-type: x mandatory; padding: var(--sp-5) var(--gutter) 0; scrollbar-width: none; }
 html:not(.pin) .collage__items::-webkit-scrollbar { display: none; }
 html:not(.pin) .collage__item { flex: 0 0 min(80vw, 620px); aspect-ratio: 4 / 3; scroll-snap-align: center; }
 html:not(.pin) .collage__desk { display: none; }
@@ -411,9 +411,9 @@ html.pin .prail__track { flex: 1; min-height: 0; will-change: transform; }
 html.pin .prail__card { height: 100%; }
 html.pin .prail__progress { display: block; }
 html:not(.pin) .prail { padding-block: var(--section-y); }
-html:not(.pin) .prail__track { margin-top: var(--sp-4); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+html:not(.pin) .prail__track { margin-top: var(--sp-4); overflow-x: auto; scroll-padding-inline: var(--gutter); scroll-snap-type: x mandatory; scrollbar-width: none; }
 html:not(.pin) .prail__track::-webkit-scrollbar { display: none; }
-html:not(.pin) .prail__card { width: min(86vw, 640px); height: min(80svh, 700px); min-height: 540px; scroll-snap-align: start; scroll-margin-left: var(--gutter); }
+html:not(.pin) .prail__card { width: min(86vw, 640px); height: min(80svh, 700px); min-height: 540px; scroll-snap-align: start; }
 @media (max-width: 1023px) { .prail__body { grid-template-columns: 1fr; } }
 @media (max-width: 767px) { .prail__shade { background: linear-gradient(0deg, rgba(14, 13, 12, 0.9), rgba(14, 13, 12, 0.72) 50%, rgba(14, 13, 12, 0.42) 78%, rgba(14, 13, 12, 0.32)); } }
 
@@ -451,7 +451,7 @@ html:not(.pin) .prail__card { width: min(86vw, 640px); height: min(80svh, 700px)
 .reel__card--t .reel__img { width: clamp(240px, 24vw, 380px); aspect-ratio: 3 / 4; display: flex; align-items: flex-end; padding: 20px; background: var(--ink-3); }
 .reel__card--t .reel__img span { font-size: clamp(1.6rem, 1rem + 1.6vw, 2.6rem); font-weight: 300; letter-spacing: -0.04em; line-height: 1; color: rgba(247, 243, 237, 0.5); }
 html:not(.pin) .reel { padding-block: var(--section-y); }
-html:not(.pin) .reel__track { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 8px; }
+html:not(.pin) .reel__track { overflow-x: auto; scroll-padding-inline: var(--gutter); scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 8px; }
 html:not(.pin) .reel__track::-webkit-scrollbar { display: none; }
 html:not(.pin) .reel__card, html:not(.pin) .reel__intro { scroll-snap-align: start; }
 html.pin .reel .pin__stage { display: flex; align-items: center; }
@@ -513,7 +513,14 @@ html.pin .closing__frame { position: absolute; left: 50%; top: 50%; width: 100vw
 .footer__totop { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 20px; border-radius: 999px; background: var(--ink); color: var(--paper) !important; font-size: var(--f-link); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; transition: background var(--t-ui); }
 .footer__totop span { display: inline-block; transition: transform var(--t-med) var(--ease); }
 @media (hover: hover) { .footer__totop:hover { background: var(--brick); } .footer__totop:hover span { transform: translateY(-3px); } }
-@media (max-width: 899px) { .footer__mid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .footer__mid > :first-child { grid-column: 1 / -1; } }
+@media (max-width: 899px) { .footer__mid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } .footer__mid > :first-child { grid-column: 1 / -1; } }
+@media (max-width: 767px) {
+  .footer__card { gap: var(--sp-4); }
+  .footer__tag { font-size: clamp(2rem, 9vw, 2.6rem); max-width: none; }
+  .footer__mid { gap: var(--sp-4) var(--sp-3); }
+  .footer__mid > :last-child { grid-column: 1 / -1; }
+  .footer__legal-row { align-items: center; }
+}
 
 /* ---- Project page: split card slides ---- */
 .slides { background: var(--sand); }
@@ -589,6 +596,15 @@ html.pin .slides__item:nth-child(even) .slides__text { order: 2; }
 .amen__list li { padding: 8px 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); font-size: 0.85rem; }
 .amen__block--text .amen__body { grid-column: 1 / span 8; }
 @media (max-width: 899px) { .amen__media, .amen__body, .amen__block:nth-child(even) .amen__media, .amen__block:nth-child(even) .amen__body, .amen__block--text .amen__body { grid-column: 1 / -1; order: 0; } }
+
+/* ---- East / West facing ---- */
+.facings { margin-top: var(--sp-5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
+.facing { display: grid; grid-template-rows: auto 1fr; border-radius: var(--radius); overflow: hidden; background: var(--paper); }
+.facing__img { position: relative; aspect-ratio: 4 / 3; background: var(--sand-2); }
+.facing__img img { object-fit: cover; }
+.facing__body { padding: clamp(20px, 2.6vw, 40px); display: grid; align-content: start; justify-items: start; gap: var(--sp-2); }
+.facing__facts { margin-top: 0; }
+@media (max-width: 767px) { .facings { grid-template-columns: 1fr; } }
 
 /* ---- Floor plans ---- */
 .plans__tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: var(--sp-3); }

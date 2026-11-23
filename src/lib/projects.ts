@@ -50,6 +50,16 @@ export interface ExploreView {
   image: Img;
 }
 
+/** A villa orientation with its own render and facts (shown side by side on the project page). */
+export interface Facing {
+  title: string;
+  line: string;
+  facts: string[];
+  image: Img;
+  /** True when this orientation's floor plans are on the page. */
+  plans?: boolean;
+}
+
 export interface Project {
   slug: string;
   name: string;
@@ -78,6 +88,7 @@ export interface Project {
   explore?: ExploreView[];
   amenities?: { title: string; items: string[]; image?: Img }[];
   plans?: FloorPlan[];
+  facings?: Facing[];
   locationNotes?: string[];
   mapQuery?: string;
   rera?: string;
@@ -182,24 +193,34 @@ export const projects: Project[] = [
     ],
     plans: [
       {
-        label: "East · Ground floor",
+        label: "Ground floor",
         facts: ["Living & drawing", "Kitchen / dining", "Parent's room", "Two-car porch"],
         image: og("plan-east-ground", 2480, 3507, "Ground floor plan of the East facing villa at Squarefoot Origin"),
       },
       {
-        label: "East · First floor",
+        label: "First floor",
         facts: ["Master bedroom with walk-in wardrobe", "Children's bedroom", "Family lounge", "Puja"],
         image: og("plan-east-first", 2480, 3507, "First floor plan of the East facing villa at Squarefoot Origin"),
       },
       {
-        label: "East · Second floor",
+        label: "Second floor",
         facts: ["Bedroom with walk-in wardrobe", "Home theatre provision", "Pantry", "Terrace"],
         image: og("plan-east-second", 2480, 3507, "Second floor plan of the East facing villa at Squarefoot Origin"),
       },
+    ],
+    facings: [
       {
-        label: "West facing villa",
-        facts: ["G+2", "Four bedrooms", "Vaastu compliant", "West facing floor plans on request"],
-        image: og("west-villa", 3000, 3000, "Front elevation of the West facing villa at Squarefoot Origin"),
+        title: "East facing",
+        line: "Floor plans for all three floors are below.",
+        facts: ["G+2", "Four bedrooms", "Two-car porch", "Home theatre provision"],
+        image: og("east-villa", 3000, 3000, "East facing villa at Squarefoot Origin"),
+        plans: true,
+      },
+      {
+        title: "West facing",
+        line: "West facing floor plans are shared on request.",
+        facts: ["G+2", "Four bedrooms", "Vaastu compliant"],
+        image: og("west-villa", 3000, 3000, "West facing villa at Squarefoot Origin"),
       },
     ],
     locationNotes: [

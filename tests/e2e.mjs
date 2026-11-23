@@ -238,11 +238,12 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
   await ready(page);
   check("Origin hero uses a supplied render", (await page.locator(".hero img").first().getAttribute("src"))?.includes("squarefoot-origin"));
   const planTabs = (await page.locator(".plans__tabs [role='tab']").allTextContents()).map((t) => t.trim());
-  check("Origin shows East floor plans and the West facing villa", planTabs.join("|") === "East · Ground floor|East · First floor|East · Second floor|West facing villa", planTabs.join(", "));
+  check("Origin shows ground, first and second floor plans", planTabs.join("|") === "Ground floor|First floor|Second floor", planTabs.join(", "));
   await page.locator(".plans__tabs [role='tab']").nth(2).click();
   check("Origin plan tab switches", (await page.locator("#plan-panel img").getAttribute("alt"))?.includes("Second floor"));
-  await page.locator(".plans__tabs [role='tab']").nth(3).click();
-  check("Origin West facing tab shows the West facing villa", (await page.locator("#plan-panel img").getAttribute("alt"))?.includes("West facing"));
+  const facings = (await page.locator(".facing h3").allTextContents()).map((t) => t.trim());
+  check("Origin shows East and West facing villas side by side", facings.join("|") === "East facing|West facing", facings.join(", "));
+  check("West facing card asks for its plans (contact page, Origin selected)", (await page.locator(".facing").nth(1).getByRole("link", { name: /Ask for West facing plans/ }).getAttribute("href")) === "/contact?project=squarefoot-origin");
   check("Origin exploration has 5 real views", (await page.locator(".exp__layer").count()) === 5);
   const srcs = [...new Set(await page.locator("img").evaluateAll((els) => els.map((e) => e.getAttribute("src")).filter(Boolean)))];
   const bad = [];

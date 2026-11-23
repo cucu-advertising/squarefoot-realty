@@ -18,7 +18,7 @@ const builds: { t: string; d: string; img?: string }[] = [
   { t: "Apartments", d: "Thoughtfully planned homes close to where Hyderabad works and grows.", img: "/images/challa-elite/elevation-corner.jpg" },
   { t: "Villas & gated communities", d: "Boutique communities planned around how a modern family lives.", img: "/images/the-square/east-villa.jpg" },
   { t: "Commercial addresses", d: "Functional, well-located spaces for businesses.", img: "/images/trans-arcade/exterior.jpg" },
-  { t: "Layouts & plotting", d: "Master-planned layouts with clear planning and good access.", img: "/images/the-square/masterplan-aerial.jpg" },
+  { t: "Layouts & plotting", d: "Master-planned layouts with clear planning and good access." },
   { t: "Customer care", d: "Clear communication, transparent paperwork and support after move-in." },
 ];
 const steps = [

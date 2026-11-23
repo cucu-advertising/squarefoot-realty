@@ -232,9 +232,59 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </section>
       )}
 
-      {/* 07 — Floor plans */}
+      {/* 07 — East or West facing (where a project offers both) */}
+      {p.facings && p.facings.length > 0 && (
+        <section className="section s-sand" data-head="light" aria-labelledby="facing-title">
+          <div className="container">
+            <div className="head-row">
+              <div className="stack">
+                <span className="label label--dot" data-reveal="fade">
+                  Villa types
+                </span>
+                <h2 id="facing-title" className="t-display" data-split>
+                  East or West facing.
+                </h2>
+              </div>
+              <p className="head-row__side muted t-small" data-reveal="fade">
+                Both are G+2, four-bedroom villas. Choose the orientation that suits you.
+              </p>
+            </div>
+            <div className="facings">
+              {p.facings.map((f) => (
+                <article key={f.title} className="facing" data-reveal="fade" aria-labelledby={`facing-${f.title}`}>
+                  <div className="facing__img">
+                    <Image src={f.image.src} alt={f.image.alt} fill sizes="(max-width: 767px) 100vw, 46vw" quality={80} />
+                  </div>
+                  <div className="facing__body">
+                    <h3 id={`facing-${f.title}`} className="t-h2">
+                      {f.title}
+                    </h3>
+                    <ul role="list" className="facts facing__facts">
+                      {f.facts.map((x) => (
+                        <li key={x}>{x}</li>
+                      ))}
+                    </ul>
+                    <p className="muted">{f.line}</p>
+                    {f.plans ? (
+                      <a href="#plans" className="pill pill--ghost pill--down">
+                        See floor plans <span className="arr" aria-hidden>↓</span>
+                      </a>
+                    ) : (
+                      <EnquireButton className="pill" project={p.slug} source="project-facing">
+                        Ask for {f.title} plans
+                      </EnquireButton>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 08 — Floor plans */}
       {p.plans && p.plans.length > 0 && (
-        <section className="section s-sand" data-head="light" aria-labelledby="plans-title">
+        <section id="plans" className="section s-sand" data-head="light" aria-labelledby="plans-title" style={p.facings ? { paddingTop: 0 } : undefined}>
           <div className="container">
             <div className="head-row">
               <div className="stack">
@@ -246,7 +296,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                 </h2>
               </div>
               <p className="head-row__side muted t-small" data-reveal="fade">
-                {p.slug === "squarefoot-origin" ? "East facing floor plans and the West facing villa. Tap to expand and zoom." : "Tap a plan to expand and zoom."}
+                {p.slug === "squarefoot-origin" ? "East facing villa plans. Tap a plan to expand and zoom." : "Tap a plan to expand and zoom."}
               </p>
             </div>
             <FloorPlans plans={p.plans} />

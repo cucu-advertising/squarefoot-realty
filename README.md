@@ -20,7 +20,7 @@ BROCHURE_TOKEN_SECRET=$(openssl rand -hex 32) npm start
 Tests (against a running server):
 
 ```bash
-BASE=http://localhost:3000 node tests/e2e.mjs          # 106 functional, security and device checks
+BASE=http://localhost:3000 node tests/e2e.mjs          # 107 functional, security and device checks
 node tests/screens.mjs http://localhost:3000            # full-page screenshots → tests/screens
 ```
 
