@@ -7,7 +7,7 @@ import { Mark } from "./Logo";
 
 /**
  * Standout features as paired cards (text card + image card). Desktop: pinned, each new pair
- * slides up over the previous one, which recedes. Touch: stacked pairs.
+ * slides in from the right over the previous one, which recedes. Touch: stacked pairs.
  */
 export default function Slides({ items, fallbackImage, brandRed }: { items: Highlight[]; fallbackImage?: { src: string; alt: string }; brandRed?: boolean }) {
   const ref = useRef<HTMLElement>(null);

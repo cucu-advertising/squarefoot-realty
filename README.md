@@ -56,13 +56,13 @@ node tests/screens.mjs http://localhost:3000            # full-page screenshots 
 | Headlines | Masked line-by-line reveal (SplitText), staggered |
 | Statements | Words brighten in sync with scroll (reversible) |
 | Images | Wipe-up reveal with scale settle; parallax on selected media |
-| Philosophy collage | Scattered images converge, grow to near full screen, then peel away one by one. Caption, counter and prev/next buttons included |
+| Philosophy collage | Scattered images converge, grow to near full screen, then change sideways (wipe left, next pushes in from the right). Caption, counter, "Scroll →" hint and prev/next buttons |
 | Our projects (home) | The Urban Ranch, The Square and Squarefoot Origin side by side: scrolling down moves the row sideways, with arrows, a "Scroll →" hint and a progress line (swipe row on touch) |
 | Project exploration | Pinned exploration of real renders on each project page: directional wipes, push-in, dot rail, big number and progress bar |
-| Signature details | Statement → image rises → full-bleed with overlay → split composition, with each detail taking its turn |
+| Signature details | Statement → image rises → full-bleed with overlay → split composition; each later detail enters from the right |
 | Delivered reel | Horizontal reel of information cards driven by vertical scroll, with arrows and a progress line |
 | Closing | Frame grows from a card to full screen, then the invitation appears |
-| Project features | Paired cards slide up over each other (where every feature has its own render) |
+| Project features | Paired cards slide in from the right over each other (where every feature has its own render) |
 | Gallery | Focus image with Ken Burns, next-image preview, counter, swipe, keyboard and lightbox |
 | Header | Hides on scroll down and returns on scroll up; colour follows whatever is under it |
 

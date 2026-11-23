@@ -60,6 +60,9 @@ export default function Collage({ label, title, line, images }: { label: string;
               {String(n - shown).padStart(2, "0")} / {String(n).padStart(2, "0")} · {images[shown]?.caption}
             </span>
             <span className="collage__btns">
+              <span className="harrows__hint" aria-hidden>
+                Scroll <i>→</i>
+              </span>
               <button type="button" className="circle-btn" aria-label="Previous image" onClick={() => go(-1)}>
                 <Arrow dir={-1} />
               </button>

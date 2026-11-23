@@ -100,10 +100,12 @@ function collage(root: HTMLElement) {
     .to(head, { opacity: 0, y: -40, duration: 0.4 }, 0.1)
     .to(items, { width: () => 88 * vw(), height: () => 80 * vh(), marginLeft: () => -44 * vw(), marginTop: () => -40 * vh(), duration: 0.6 }, 1)
     .to(desk, { opacity: 1, duration: 0.2 }, 1.45);
-  // Peel the stack from the top: each wipe reveals the image beneath.
+  // Change images sideways: the top one wipes off to the left while the next pushes in from the right.
   for (let i = n - 1, k = 0; i > 0; i--, k++) {
-    tl.fromTo(items[i], { clipPath: "inset(0% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 100% 0%)", duration: 0.5 }, 1.6 + k * 0.6);
-    tl.fromTo(items[i - 1].querySelector("img"), { scale: 1.12 }, { scale: 1, duration: 0.6 }, 1.6 + k * 0.6);
+    const at = 1.6 + k * 0.6;
+    tl.fromTo(items[i], { clipPath: "inset(0% 0% 0% 0%)" }, { clipPath: "inset(0% 100% 0% 0%)", duration: 0.5, ease: "power2.inOut" }, at)
+      .fromTo(items[i].querySelector("img"), { xPercent: 0 }, { xPercent: -16, duration: 0.5, ease: "power2.inOut" }, at)
+      .fromTo(items[i - 1].querySelector("img"), { scale: 1.12, xPercent: 5 }, { scale: 1, xPercent: 0, duration: 0.6 }, at);
   }
   tl.to({}, { duration: 0.4 });
 }
@@ -171,8 +173,9 @@ function hseq(root: HTMLElement) {
     .to(count, { opacity: 1, duration: 0.2 }, 2.9);
   for (let i = 1; i < n; i++) {
     const at = 3.2 + (i - 1);
-    tl.fromTo(medias[i], { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7 }, at)
-      .fromTo(medias[i].querySelector("img"), { scale: 1.15 }, { scale: 1, duration: 0.8 }, at)
+    tl.fromTo(medias[i], { clipPath: "inset(0% 0% 0% 100%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "power2.inOut" }, at)
+      .fromTo(medias[i].querySelector("img"), { scale: 1.15, xPercent: 6 }, { scale: 1, xPercent: 0, duration: 0.8 }, at)
+      .to(medias[i - 1].querySelector("img"), { xPercent: -6, duration: 0.7, ease: "power2.inOut" }, at)
       .to(texts[i - 1], { opacity: 0, y: -30, duration: 0.25 }, at)
       .to(texts[i], { opacity: 1, y: 0, duration: 0.3 }, at + 0.4);
   }
@@ -241,7 +244,7 @@ function slides(root: HTMLElement) {
   const items = gsap.utils.toArray<HTMLElement>(".slides__item", root);
   const n = items.length;
   if (n < 2) return;
-  items.slice(1).forEach((it) => gsap.set(it, { yPercent: 105 }));
+  items.slice(1).forEach((it) => gsap.set(it, { xPercent: 105 }));
   const tl = gsap.timeline({
     defaults: { ease: "none" },
     scrollTrigger: {
@@ -252,7 +255,7 @@ function slides(root: HTMLElement) {
     },
   });
   for (let i = 1; i < n; i++) {
-    tl.to(items[i], { yPercent: 0, duration: 1 }, i - 1)
+    tl.to(items[i], { xPercent: 0, duration: 1, ease: "power2.inOut" }, i - 1)
       .to(items[i - 1], { scale: 0.93, opacity: 0.35, duration: 1 }, i - 1);
   }
   tl.to({}, { duration: 0.3 });

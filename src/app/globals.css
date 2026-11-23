@@ -312,7 +312,8 @@ html.pin .collage:has(.collage__desk.is-on) .collage__item::after { opacity: 1; 
 .collage__desk .circle-btn { background: rgba(14, 13, 12, 0.32); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.55); }
 .collage__desk.is-on { pointer-events: auto; }
 .collage__cap { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45); }
-.collage__btns { display: flex; gap: 8px; }
+.collage__btns { display: flex; align-items: center; gap: 8px; }
+.collage__btns .harrows__hint { text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45); }
 
 /* Statement with inline image */
 .statement { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); }
