@@ -4,6 +4,10 @@ Next.js 16 (App Router, TypeScript) · GSAP + ScrollTrigger + SplitText · Lenis
 
 ## Run it
 
+**Windows, quickest:** double-click `START-WEBSITE.bat`. It installs the first time, starts the site and opens http://localhost:3000. Keep its window open while you use the site. Needs Node.js 20 or newer (nodejs.org).
+
+Or by hand:
+
 ```bash
 npm install
 cp .env.example .env.local      # then fill in values
@@ -20,7 +24,7 @@ BROCHURE_TOKEN_SECRET=$(openssl rand -hex 32) npm start
 Tests (against a running server):
 
 ```bash
-BASE=http://localhost:3000 node tests/e2e.mjs          # 115 functional, security and device checks
+BASE=http://localhost:3000 node tests/e2e.mjs          # 119 functional, security and device checks
 node tests/screens.mjs http://localhost:3000            # full-page screenshots → tests/screens
 ```
 

@@ -240,7 +240,7 @@ html.motion:not(.no-preload) .preloader { display: flex; position: fixed; inset:
 .mobile-menu__foot { margin-top: auto; padding-top: 24px; }
 
 /* ---- Sticky hero (home + project + inner pages) ---- */
-.hero { position: sticky; top: 0; z-index: 0; height: 100svh; min-height: 560px; overflow: hidden; background: var(--ink); color: var(--paper); }
+.hero { position: sticky; top: 0; z-index: 0; height: 100svh; min-height: 560px; overflow: hidden; background: var(--ink); color: var(--paper); display: flex; flex-direction: column; justify-content: space-between; gap: var(--sp-4); padding-top: calc(var(--header-h) + clamp(8px, 3vh, 40px)); }
 .hero--red { background: var(--red); color: var(--ink); }
 .hero--ink { background: var(--ink-2); }
 .hero__media { position: absolute; inset: 0; }
@@ -250,8 +250,8 @@ html.motion:not(.no-preload) .preloader { display: flex; position: fixed; inset:
 .hero__shade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 62% 58% at 0% 18%, rgba(14, 13, 12, 0.42), rgba(14, 13, 12, 0) 72%), linear-gradient(180deg, rgba(14, 13, 12, 0.55) 0%, rgba(14, 13, 12, 0.08) 40%, rgba(14, 13, 12, 0.12) 60%, rgba(14, 13, 12, 0.62) 100%); }
 .hero--red .hero__shade, .hero--ink .hero__shade { display: none; }
 @media (max-width: 767px) { .hero__shade { background: linear-gradient(180deg, rgba(14, 13, 12, 0.62) 0%, rgba(14, 13, 12, 0.4) 42%, rgba(14, 13, 12, 0.12) 64%, rgba(14, 13, 12, 0.66) 100%); } }
-.hero__top { position: absolute; left: 0; right: 0; top: calc(var(--header-h) + clamp(8px, 3vh, 40px)); z-index: 2; }
-.hero__title { max-width: 12ch; text-shadow: 0 2px 36px rgba(14, 13, 12, 0.35); }
+.hero__top { position: relative; z-index: 2; }
+.hero__title { max-width: 12ch; font-size: min(var(--f-hero), 13vh); text-shadow: 0 2px 36px rgba(14, 13, 12, 0.35); }
 .hero__links { margin-top: var(--sp-4); display: flex; flex-wrap: wrap; gap: 10px; }
 /* Hero links are solid buttons, so they read over any photograph. */
 .hero__links .tlink { min-height: 50px; padding: 0 24px; border-radius: 999px; font-weight: 600; color: var(--paper); background: rgba(14, 13, 12, 0.5); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.5); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); transition: background var(--t-ui), color var(--t-ui), box-shadow var(--t-ui); }
@@ -259,8 +259,9 @@ html.motion:not(.no-preload) .preloader { display: flex; position: fixed; inset:
 .hero__links .tlink__t { padding-bottom: 0; }
 .hero__links .tlink__t::after { display: none; }
 @media (hover: hover) { .hero__links .tlink:hover { background: var(--ink); color: var(--paper); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.5); } }
-.hero__bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: clamp(80px, 14vh, 140px) 0 clamp(18px, 3vh, 32px); background: linear-gradient(0deg, rgba(14, 13, 12, 0.78) 0%, rgba(14, 13, 12, 0.5) 50%, rgba(14, 13, 12, 0) 100%); }
-.hero--red .hero__bottom, .hero--ink .hero__bottom { background: none; }
+.hero__bottom { position: relative; z-index: 2; padding-bottom: clamp(18px, 3vh, 32px); }
+.hero__bottom::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: 0; height: calc(100% + clamp(60px, 10vh, 120px)); background: linear-gradient(0deg, rgba(14, 13, 12, 0.72) 0%, rgba(14, 13, 12, 0.4) 55%, rgba(14, 13, 12, 0) 100%); pointer-events: none; }
+.hero--red .hero__bottom::before, .hero--ink .hero__bottom::before { display: none; }
 .hero__meta { display: flex; justify-content: space-between; gap: 16px; padding-top: 14px; border-top: 1px solid currentColor; border-color: rgba(247, 243, 237, 0.5); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45); }
 .hero--red .hero__meta { border-color: rgba(26, 26, 24, 0.3); }
 .hero__caption { margin-top: 14px; text-align: center; font-size: var(--f-body); font-weight: 500; max-width: 56ch; margin-inline: auto; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5); }
@@ -361,7 +362,7 @@ html.pin .exp__swipe { display: none; }
 .prail { background: var(--sand); }
 .prail__head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: var(--sp-3) var(--sp-5); }
 .prail__track { display: flex; gap: clamp(12px, 1.6vw, 24px); padding-inline: var(--gutter); }
-.prail__card { position: relative; flex: 0 0 auto; width: min(76vw, 1320px); border-radius: var(--radius); overflow: hidden; color: var(--paper); background: var(--ink-2); }
+.prail__card { position: relative; flex: 0 0 auto; width: min(76vw, 1320px); border-radius: var(--radius); overflow: hidden; color: var(--paper); background: var(--ink-2); display: flex; flex-direction: column; justify-content: space-between; gap: var(--sp-3); padding: clamp(20px, 3vw, 40px); }
 .prail__card img { object-fit: cover; }
 .prail__media { position: absolute; inset: 0; transition: transform 1.4s var(--ease); }
 .prail__hit { position: absolute; inset: 0; z-index: 1; }
@@ -375,9 +376,9 @@ html.pin .exp__swipe { display: none; }
 }
 .prail__name { transition: color 0.4s var(--ease); }
 .prail__shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(0deg, rgba(14, 13, 12, 0.84), rgba(14, 13, 12, 0.5) 36%, rgba(14, 13, 12, 0.06) 64%), linear-gradient(90deg, rgba(14, 13, 12, 0.32), rgba(14, 13, 12, 0) 55%); }
-.prail__top { position: absolute; left: clamp(20px, 3vw, 44px); right: clamp(20px, 3vw, 44px); top: clamp(20px, 3vw, 36px); z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.prail__body { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: clamp(20px, 3vw, 44px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-3) var(--sp-5); align-items: end; }
-.prail__name { margin-top: var(--sp-2); font-size: clamp(2.4rem, 1rem + 4.4vw, 6rem); line-height: 0.95; }
+.prail__top { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.prail__body { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-3) var(--sp-5); align-items: end; }
+.prail__name { margin-top: var(--sp-2); font-size: min(clamp(2.2rem, 1rem + 3.6vw, 5.4rem), 8.5vh); line-height: 0.95; }
 .prail__name a { color: inherit; }
 .prail__pitch { margin-top: var(--sp-2); max-width: 38ch; opacity: 0.92; }
 .prail__card .facts li { background: rgba(14, 13, 12, 0.36); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.4); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); opacity: 1; }
@@ -391,7 +392,8 @@ html.pin .prail__progress { display: block; }
 html:not(.pin) .prail { padding-block: var(--section-y); }
 html:not(.pin) .prail__track { margin-top: var(--sp-4); overflow-x: auto; scroll-padding-inline: var(--gutter); scroll-snap-type: x mandatory; scrollbar-width: none; }
 html:not(.pin) .prail__track::-webkit-scrollbar { display: none; }
-html:not(.pin) .prail__card { width: min(86vw, 640px); height: min(80svh, 700px); min-height: 540px; scroll-snap-align: start; }
+html:not(.pin) .prail__card { width: min(86vw, 640px); min-height: min(80svh, 640px); scroll-snap-align: start; }
+@media (max-width: 767px) { .prail__name { font-size: clamp(2.1rem, 9vw, 2.8rem); } .prail__card .facts li { font-size: 0.72rem; } }
 @media (max-width: 1023px) { .prail__body { grid-template-columns: 1fr; } }
 @media (max-width: 767px) { .prail__shade { background: linear-gradient(0deg, rgba(14, 13, 12, 0.9), rgba(14, 13, 12, 0.72) 50%, rgba(14, 13, 12, 0.42) 78%, rgba(14, 13, 12, 0.32)); } }
 
@@ -399,6 +401,7 @@ html:not(.pin) .prail__card { width: min(86vw, 640px); height: min(80svh, 700px)
 .rail-pager button { min-width: 44px; min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: var(--f-label); font-weight: 600; letter-spacing: 0.14em; color: var(--paper); background: rgba(14, 13, 12, 0.34); box-shadow: inset 0 0 0 1px rgba(247, 243, 237, 0.45); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: background var(--t-ui), color var(--t-ui); }
 .rail-pager button[aria-current="true"] { background: var(--paper); color: var(--ink); box-shadow: none; }
 @media (hover: hover) { .rail-pager button:not([aria-current="true"]):hover { background: var(--ink); } }
+@media (max-width: 479px) { .rail-pager { gap: 4px; } .rail-pager button { min-width: 36px; min-height: 32px; padding: 0 8px; } .prail__top .tag { padding: 6px 11px; letter-spacing: 0.14em; } }
 
 /* Shared step control: ‹ 01 02 03 › */
 .seqnav { display: flex; align-items: center; gap: 8px; }

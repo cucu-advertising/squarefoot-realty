@@ -224,7 +224,12 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
     await page.locator(".prail__card").first().locator(".rail-pager button").nth(2).click();
     await sleep(2600);
     const third = await page.locator(".prail__card").nth(2).boundingBox();
-    check("Card numbers 01 / 02 / 03 bring that project into view", Boolean(third) && third.x >= 0 && third.x + third.width <= 1442, `${third?.x} + ${third?.width}`);
+    {
+    const tag = await page.locator(".prail__card").first().locator(".prail__top").boundingBox();
+    const label = await page.locator(".prail__card").first().locator(".prail__body").boundingBox();
+    check("Project card status tag sits clear of the text", Boolean(tag && label) && tag.y + tag.height <= label.y, `${tag?.y}+${tag?.height} vs ${label?.y}`);
+  }
+  check("Card numbers 01 / 02 / 03 bring that project into view", Boolean(third) && third.x >= 0 && third.x + third.width <= 1442, `${third?.x} + ${third?.width}`);
   }
 
   // The Urban Ranch: renders, plans and RERA from the supplied material
@@ -270,6 +275,13 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
   const railNames = (await page.locator(".prail__card h3").allTextContents()).map((t) => t.trim());
   check("Home shows our three projects side by side", railNames.join("|") === "The Square|The Urban Ranch|Squarefoot Origin", railNames.join(", "));
   check("Old banner, master-plan and single-project sections are gone", (await page.locator(".discover, .explore, .hseq").count()) === 0);
+  check("Header has no separate Contact link (Enquire now covers it)", (await page.locator(".nav .nav__link", { hasText: /^Contact$/ }).count()) === 0 && (await page.locator(".header__cta").getAttribute("href")) === "/contact");
+  check("Hero bottom row is trimmed (no scroll link or caption)", (await page.locator(".hero__meta a, .hero__caption").count()) === 0);
+  {
+    const links = await page.locator(".hero__links").boundingBox();
+    const bottom = await page.locator(".hero__bottom").boundingBox();
+    check("Hero buttons never overlap the bottom row", Boolean(links && bottom) && links.y + links.height <= bottom.y, `${links?.y}+${links?.height} vs ${bottom?.y}`);
+  }
   const navOrder = (await page.locator("#nav-projects strong").allTextContents()).slice(0, 3).join("|");
   check("Menu lists projects as The Square, The Urban Ranch, Squarefoot Origin", navOrder === "The Square|The Urban Ranch|Squarefoot Origin", navOrder);
   const railTop = await page.evaluate(() => document.querySelector(".prail").getBoundingClientRect().top + window.scrollY);

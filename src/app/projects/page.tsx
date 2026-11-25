@@ -33,8 +33,7 @@ export default function ProjectsPage() {
             </EnquireButton>
           </>
         }
-        meta={["03 now unfolding", "04 delivered with OC", <a key="s" href="#list">Scroll ↓</a>]}
-        caption="Each project begins with one question: how will people live here?"
+        meta={["03 now unfolding", "04 delivered with OC"]}
       />
 
       {/* 02 — Now unfolding, side by side */}

@@ -51,8 +51,7 @@ export default function Home() {
             </EnquireButton>
           </>
         }
-        meta={["Villas · Apartments · Commercial", "Hyderabad's ORR corridor", <a key="s" href="#philosophy">Scroll ↓</a>]}
-        caption="Living environments that hold everything you need within your walls, and open out to the sky and the green beyond."
+        meta={["Villas · Apartments · Commercial"]}
       />
 
       {/* 02 — Brand philosophy */}

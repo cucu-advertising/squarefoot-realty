@@ -48,8 +48,7 @@ export default function About() {
             </EnquireButton>
           </>
         }
-        meta={["Formerly Sai Teja Developers", "Three decades · Hyderabad", <a key="s" href="#who">Scroll ↓</a>]}
-        caption="Everything a space should be, and then some."
+        meta={["Formerly Sai Teja Developers", "Three decades · Hyderabad"]}
       />
 
       <section id="who" className="section s-sand curtain" data-head="light" aria-labelledby="who-title">

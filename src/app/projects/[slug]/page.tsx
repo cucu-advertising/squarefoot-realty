@@ -102,8 +102,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             </EnquireButton>
           </>
         }
-        meta={[p.type, p.locationShort, p.rera ? `${reraLabel} ${p.rera}` : p.statusLabel, <a key="s" href="#intro">Scroll ↓</a>]}
-        caption={p.pitch}
+        meta={[p.type, p.locationShort, p.rera ? `${reraLabel} ${p.rera}` : p.statusLabel]}
       />
 
       {/* 02 — Short introduction + key figures */}
