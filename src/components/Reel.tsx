@@ -16,7 +16,7 @@ export interface ReelCard {
 /** Horizontal reel. Desktop: pinned and driven by vertical scroll. Touch: native swipe with snap. */
 export default function Reel({ intro, cards, id }: { intro: React.ReactNode; cards: ReelCard[]; id?: string }) {
   return (
-    <section id={id} className="reel pin" data-seq="reel" data-autoplay data-head="dark" aria-label="Delivered projects">
+    <section id={id} className="reel pin" data-seq="reel" data-autoplay data-head="light" aria-label="Delivered projects">
       <div className="pin__stage">
         <div className="reel__track" data-track>
           <div className="reel__intro" data-track-skip>
@@ -26,27 +26,18 @@ export default function Reel({ intro, cards, id }: { intro: React.ReactNode; car
             const body =
               c.size === "x" ? (
                 <div className="reel__info">
-                  <span className="reel__num">
-                    <b>{String(i + 1).padStart(2, "0")}</b>
-                    {c.project.statusLabel}
-                  </span>
-                  {c.project.hasPage && (
-                    <span className="reel__go" aria-hidden>
-                      <svg viewBox="0 0 16 16">
-                        <path d="M4 12L12 4M6 4h6v6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                  <div className="reel__meta">
+                    <span className="reel__idx">{String(i + 1).padStart(2, "0")}</span>
+                    {c.project.hasPage && (
+                      <svg className="reel__go" viewBox="0 0 16 16" aria-hidden>
+                        <path d="M4 12L12 4M6 4h6v6" fill="none" stroke="currentColor" strokeWidth="1.4" />
                       </svg>
-                    </span>
-                  )}
-                  <div>
-                    <h3>{c.project.name}</h3>
-                    <p>{c.caption}</p>
-                    {c.info && c.info.length > 0 && (
-                      <ul role="list">
-                        {c.info.map((line) => (
-                          <li key={line}>{line}</li>
-                        ))}
-                      </ul>
                     )}
+                  </div>
+                  <div className="reel__body">
+                    <h3>{c.project.name}</h3>
+                    <p className="reel__loc">{c.caption}</p>
+                    {c.info && c.info.length > 0 && <p className="reel__facts">{c.info.join("  ·  ")}</p>}
                   </div>
                 </div>
               ) : (
@@ -61,7 +52,7 @@ export default function Reel({ intro, cards, id }: { intro: React.ReactNode; car
                 </>
               );
             return c.project.hasPage ? (
-              <Link key={i} href={`/projects/${c.project.slug}`} className={`reel__card reel__card--${c.size}`} data-cursor="View project">
+              <Link key={i} href={`/projects/${c.project.slug}`} className={`reel__card reel__card--${c.size}`} data-cursor={c.size === "x" ? undefined : "View project"}>
                 {body}
               </Link>
             ) : (
@@ -71,7 +62,7 @@ export default function Reel({ intro, cards, id }: { intro: React.ReactNode; car
             );
           })}
         </div>
-        <HArrows tone="dark" numbers />
+        <HArrows tone="light" numbers />
         <div className="reel__progress" aria-hidden>
           <i />
         </div>

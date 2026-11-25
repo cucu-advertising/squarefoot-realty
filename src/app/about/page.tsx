@@ -94,12 +94,6 @@ export default function About() {
             <p className="t-lead muted measure" data-reveal="fade">
               Alumni of IIT, ISB, CBIT and other leading institutions, with experience across IT, government service and consulting.
             </p>
-            <ul role="list" className="chips" data-reveal="fade">
-              <li>Stability</li>
-              <li>Warmth</li>
-              <li>Optimism</li>
-              <li>Passion</li>
-            </ul>
           </div>
         </div>
       </section>

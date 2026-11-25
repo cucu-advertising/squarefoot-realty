@@ -63,7 +63,7 @@ node tests/screens.mjs http://localhost:3000            # full-page screenshots 
 | Philosophy collage | Scattered images converge, grow to near full screen, then change sideways (wipe left, next pushes in from the right). Caption, counter, "Scroll →" hint and prev/next buttons |
 | Our projects (home) | The Square, The Urban Ranch and Squarefoot Origin side by side: scrolling down moves the row sideways, with arrows, a "Scroll →" hint and a progress line (swipe row on touch) |
 | Project exploration | Pinned exploration of real renders on each project page: directional wipes, push-in, dot rail, big number and progress bar |
-| Delivered reel | Horizontal reel of information cards driven by vertical scroll, with arrows and a progress line |
+| Delivered reel | Horizontal reel driven by vertical scroll, on sand: paper cards (same family as the About steps) with a red-dot number, the name in the display face and facts on a hairline; cards with a project page lift on hover |
 | Closing | Frame grows from a card to full screen, then the invitation appears |
 | Project features | Paired cards slide in from the right over each other (where every feature has its own render) |
 | Gallery | Focus image with Ken Burns, next-image preview, counter, swipe, keyboard and lightbox |
