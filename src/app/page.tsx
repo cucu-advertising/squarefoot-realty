@@ -8,9 +8,8 @@ import Hero from "@/components/Hero";
 import Collage from "@/components/Collage";
 import OurProjects from "@/components/OurProjects";
 import DeliveredReel from "@/components/DeliveredReel";
-import HighlightSeq from "@/components/HighlightSeq";
 import Closing from "@/components/Closing";
-import { getProject, type Img } from "@/lib/projects";
+import type { Img } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Squarefoot Realty | Everything and Beyond",
@@ -23,14 +22,13 @@ const SQ = "/images/the-square";
 const img = (name: string, width: number, height: number, alt: string, caption?: string): Img => ({ src: `${SQ}/${name}.jpg`, width, height, alt, caption });
 
 export default function Home() {
-  const square = getProject("the-square")!;
-
-  // Collage: images from our current communities. The last sits on top and is revealed first.
+  // Collage: images from our current communities, shown in project order (The Square, The Urban
+  // Ranch, Squarefoot Origin). The last item sits on top and is revealed first.
   const collage: Img[] = [
     { src: "/images/the-urban-ranch/aerial-dusk.jpg", width: 3840, height: 2143, alt: "The Urban Ranch from above at dusk", caption: "The Urban Ranch · At dusk" },
     { src: "/images/squarefoot-origin/west-garden.jpg", width: 3840, height: 2160, alt: "West facing villas framed by trees at Squarefoot Origin", caption: "Squarefoot Origin · Manneguda" },
-    img("terrace-view", 3840, 2160, "Landscaped gardens seen from a villa terrace at The Square", "The Square · Kongara Kalan"),
     { src: "/images/the-urban-ranch/lake-street.jpg", width: 3840, height: 2580, alt: "Villas beside a landscaped water feature at The Urban Ranch", caption: "The Urban Ranch · Kongara Kalan" },
+    img("terrace-view", 3840, 2160, "Landscaped gardens seen from a villa terrace at The Square", "The Square · Kongara Kalan"),
   ];
 
 
@@ -89,13 +87,6 @@ export default function Home() {
 
       {/* 03 — Our projects, side by side */}
       <OurProjects label="Our projects" title="Spaces we are building." />
-
-      {/* 05 — Signature highlights */}
-      <HighlightSeq label="The Square · Signature details" statement="Where every square foot exudes luxury." overline="The Square · 01" items={square.highlights!}>
-        <EnquireButton className="pill" project="the-square" source="home-highlights">
-          Enquire now
-        </EnquireButton>
-      </HighlightSeq>
 
       {/* 06 — Architectural reel: delivered work */}
       <DeliveredReel

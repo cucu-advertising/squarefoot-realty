@@ -8,7 +8,7 @@ import { TLink } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Projects in Hyderabad | Squarefoot Realty",
-  description: "Explore The Urban Ranch, The Square and Squarefoot Origin near the Outer Ring Road, plus our delivered projects.",
+  description: "Explore The Square, The Urban Ranch and Squarefoot Origin near the Outer Ring Road, plus our delivered projects.",
   alternates: { canonical: "/projects" },
 };
 

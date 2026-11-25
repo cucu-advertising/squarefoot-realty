@@ -206,7 +206,7 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
   await ready(page);
   const active = (await page.locator(".prail__card h3").allTextContents()).map((t) => t.trim());
   const delivered = (await page.locator(".reel__info h3").allTextContents()).map((t) => t.trim());
-  check("Projects page lists the 3 current projects in one row", active.join("|") === "The Urban Ranch|The Square|Squarefoot Origin", active.join(", "));
+  check("Projects page lists the 3 current projects in one row", active.join("|") === "The Square|The Urban Ranch|Squarefoot Origin", active.join(", "));
   check("Projects page lists the 4 delivered projects as text cards", ["Trans Elite", "Challa Elite", "Trans Arcade", "Lokeshwari Residency"].every((n) => delivered.includes(n)) && (await page.locator(".reel__card img").count()) === 0, delivered.join(", "));
   check("Projects page: Origin card uses a supplied render", (await page.locator(".prail__card").nth(2).locator("img").getAttribute("src"))?.includes("squarefoot-origin"));
   check("Projects page ends with an Enquire now closing", (await page.locator(".closing").getByRole("link", { name: /Enquire now/ }).count()) === 1);
@@ -268,8 +268,10 @@ const toY = (page, y) => page.evaluate((y) => (window.__lenis ? window.__lenis.s
   const collageCaps = await page.locator(".collage__item figcaption").allTextContents();
   check("Opening images come from our current projects", new Set(collageCaps.map((c) => c.split(" · ")[0])).size === 3 && !collageCaps.some((c) => c.includes("Trans Elite")), collageCaps.join(", "));
   const railNames = (await page.locator(".prail__card h3").allTextContents()).map((t) => t.trim());
-  check("Home shows our three projects side by side", railNames.join("|") === "The Urban Ranch|The Square|Squarefoot Origin", railNames.join(", "));
-  check("Old banner and master-plan sections are gone", (await page.locator(".discover, .explore").count()) === 0);
+  check("Home shows our three projects side by side", railNames.join("|") === "The Square|The Urban Ranch|Squarefoot Origin", railNames.join(", "));
+  check("Old banner, master-plan and single-project sections are gone", (await page.locator(".discover, .explore, .hseq").count()) === 0);
+  const navOrder = (await page.locator("#nav-projects strong").allTextContents()).slice(0, 3).join("|");
+  check("Menu lists projects as The Square, The Urban Ranch, Squarefoot Origin", navOrder === "The Square|The Urban Ranch|Squarefoot Origin", navOrder);
   const railTop = await page.evaluate(() => document.querySelector(".prail").getBoundingClientRect().top + window.scrollY);
   await toY(page, railTop + 2);
   await sleep(1500);

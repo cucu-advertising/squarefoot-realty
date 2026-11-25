@@ -126,115 +126,6 @@ const sq = (name: string, width: number, height: number, alt: string, caption?: 
 
 export const projects: Project[] = [
   {
-    slug: "squarefoot-origin",
-    name: "Squarefoot Origin",
-    hasPage: true,
-    status: "now-unfolding",
-    statusLabel: "Now unfolding",
-    type: "Boutique villa community",
-    location: "Manneguda, near ORR Exit-12, Hyderabad",
-    locationShort: "Manneguda · ORR Exit-12",
-    pitch: "Where a home becomes a community.",
-    facts: ["27 villas", "2.8 acres", "G+2", "4 bedrooms", "East or West facing"],
-    overview: [
-      "A boutique villa community of just 27 residences, small enough that neighbours become friends and friends become family.",
-    ],
-    highlights: [
-      {
-        title: "Home theatre provision",
-        line: "A dedicated space on the top floor for movie nights, with parking for two cars below.",
-        image: og("east-villa", 3000, 3000, "East facing G+2 villa at Squarefoot Origin with a two-car porch"),
-      },
-      {
-        title: "Vaastu compliant",
-        line: "East or West facing, functionally planned so tradition and everyday ease sit side by side.",
-        image: og("west-corner", 3840, 2160, "West facing villas at Squarefoot Origin"),
-      },
-      {
-        title: "10,500 sft clubhouse",
-        line: "Pool, gym, badminton court, banquet hall and guest rooms for the community.",
-        image: og("entrance", 3840, 2160, "Squarefoot Origin entrance with the clubhouse behind"),
-      },
-    ],
-    heroTreatment: "full",
-    hero: og("east-row", 3840, 2160, "Row of East facing G+2 villas at Squarefoot Origin"),
-    cover: og("west-row", 3840, 2160, "Row of West facing villas at Squarefoot Origin"),
-    overviewImage: og("west-garden", 3840, 2160, "West facing villas framed by trees at Squarefoot Origin"),
-    ctaImage: og("site-aerial", 3840, 2160, "Aerial view of the Squarefoot Origin community"),
-    stats: [
-      { value: "27", label: "Villas in a boutique community" },
-      { value: "2.8", unit: "acres", label: "Of land, near ORR Exit-12" },
-      { value: "G+2", label: "Four-bedroom villas, East or West facing" },
-      { value: "10,500", unit: "sft", label: "Clubhouse for the community" },
-    ],
-    explore: [
-      { title: "The community", caption: "27 villas · 2.8 acres", image: og("site-aerial", 3840, 2160, "Aerial view of the Squarefoot Origin layout") },
-      { title: "The entrance", caption: "Gated entrance · Clubhouse beyond", image: og("entrance", 3840, 2160, "Entrance gate at Squarefoot Origin with the clubhouse behind") },
-      { title: "East facing villas", caption: "G+2 · Four bedrooms · Two-car porch", image: og("east-row", 3840, 2160, "Row of East facing villas") },
-      { title: "West facing villas", caption: "G+2 · Four bedrooms · Vaastu compliant", image: og("west-row", 3840, 2160, "Row of West facing villas") },
-      { title: "The clubhouse", caption: "10,500 sft · Pool, gym, banquet hall", image: og("clubhouse", 3840, 2160, "Squarefoot Origin clubhouse") },
-    ],
-    gallery: [
-      og("east-street", 3840, 2160, "East facing villas along the street", "East facing villas"),
-      og("entrance", 3840, 2160, "Entrance gate with the clubhouse behind", "The entrance"),
-      og("west-villa", 3000, 3000, "Front elevation of a West facing villa", "West facing villa"),
-      og("west-garden", 3840, 2160, "West facing villas framed by trees", "West facing villas"),
-      og("east-villa-corner", 3000, 3000, "Corner view of an East facing villa", "East facing villa"),
-      og("clubhouse", 3840, 2160, "Clubhouse elevation", "The clubhouse"),
-      og("west-street", 3840, 2160, "Row of West facing villas", "Along the street"),
-      og("site-aerial", 3840, 2160, "Aerial view of the community", "27 villas · 2.8 acres"),
-    ],
-    amenities: [
-      {
-        title: "The clubhouse",
-        items: ["Swimming pool", "Gym", "Badminton court", "Banquet hall", "Indoor games", "Guest rooms"],
-        image: og("clubhouse", 3840, 2160, "Squarefoot Origin clubhouse elevation"),
-      },
-    ],
-    plans: [
-      {
-        label: "Ground floor",
-        facts: ["Living & drawing", "Kitchen / dining", "Parent's room", "Two-car porch"],
-        image: og("plan-east-ground", 2480, 3507, "Ground floor plan of the East facing villa at Squarefoot Origin"),
-      },
-      {
-        label: "First floor",
-        facts: ["Master bedroom with walk-in wardrobe", "Children's bedroom", "Family lounge", "Puja"],
-        image: og("plan-east-first", 2480, 3507, "First floor plan of the East facing villa at Squarefoot Origin"),
-      },
-      {
-        label: "Second floor",
-        facts: ["Bedroom with walk-in wardrobe", "Home theatre provision", "Pantry", "Terrace"],
-        image: og("plan-east-second", 2480, 3507, "Second floor plan of the East facing villa at Squarefoot Origin"),
-      },
-    ],
-    facings: [
-      {
-        title: "East facing",
-        line: "Floor plans for all three floors are below.",
-        facts: ["G+2", "Four bedrooms", "Two-car porch", "Home theatre provision"],
-        image: og("east-villa", 3000, 3000, "East facing villa at Squarefoot Origin"),
-        plans: true,
-      },
-      {
-        title: "West facing",
-        line: "West facing floor plans are shared on request.",
-        facts: ["G+2", "Four bedrooms", "Vaastu compliant"],
-        image: og("west-villa", 3000, 3000, "West facing villa at Squarefoot Origin"),
-      },
-    ],
-    locationNotes: [
-      "5-minute drive from ORR Exit-12 (Bonguluru)",
-      "About 20 minutes from LB Nagar",
-    ],
-    mapQuery: "Manneguda, Telangana",
-    seo: {
-      title: "Squarefoot Origin | 27 Villas near ORR Exit-12, Hyderabad",
-      description:
-        "A boutique community of 27 G+2 villas on 2.8 acres with a 10,500 sft clubhouse, 5 minutes from ORR Exit-12. Book a site visit.",
-    },
-  },
-  {
     slug: "the-square",
     name: "The Square",
     hasPage: true,
@@ -467,6 +358,115 @@ export const projects: Project[] = [
     },
   },
   {
+    slug: "squarefoot-origin",
+    name: "Squarefoot Origin",
+    hasPage: true,
+    status: "now-unfolding",
+    statusLabel: "Now unfolding",
+    type: "Boutique villa community",
+    location: "Manneguda, near ORR Exit-12, Hyderabad",
+    locationShort: "Manneguda · ORR Exit-12",
+    pitch: "Where a home becomes a community.",
+    facts: ["27 villas", "2.8 acres", "G+2", "4 bedrooms", "East or West facing"],
+    overview: [
+      "A boutique villa community of just 27 residences, small enough that neighbours become friends and friends become family.",
+    ],
+    highlights: [
+      {
+        title: "Home theatre provision",
+        line: "A dedicated space on the top floor for movie nights, with parking for two cars below.",
+        image: og("east-villa", 3000, 3000, "East facing G+2 villa at Squarefoot Origin with a two-car porch"),
+      },
+      {
+        title: "Vaastu compliant",
+        line: "East or West facing, functionally planned so tradition and everyday ease sit side by side.",
+        image: og("west-corner", 3840, 2160, "West facing villas at Squarefoot Origin"),
+      },
+      {
+        title: "10,500 sft clubhouse",
+        line: "Pool, gym, badminton court, banquet hall and guest rooms for the community.",
+        image: og("entrance", 3840, 2160, "Squarefoot Origin entrance with the clubhouse behind"),
+      },
+    ],
+    heroTreatment: "full",
+    hero: og("east-row", 3840, 2160, "Row of East facing G+2 villas at Squarefoot Origin"),
+    cover: og("west-row", 3840, 2160, "Row of West facing villas at Squarefoot Origin"),
+    overviewImage: og("west-garden", 3840, 2160, "West facing villas framed by trees at Squarefoot Origin"),
+    ctaImage: og("site-aerial", 3840, 2160, "Aerial view of the Squarefoot Origin community"),
+    stats: [
+      { value: "27", label: "Villas in a boutique community" },
+      { value: "2.8", unit: "acres", label: "Of land, near ORR Exit-12" },
+      { value: "G+2", label: "Four-bedroom villas, East or West facing" },
+      { value: "10,500", unit: "sft", label: "Clubhouse for the community" },
+    ],
+    explore: [
+      { title: "The community", caption: "27 villas · 2.8 acres", image: og("site-aerial", 3840, 2160, "Aerial view of the Squarefoot Origin layout") },
+      { title: "The entrance", caption: "Gated entrance · Clubhouse beyond", image: og("entrance", 3840, 2160, "Entrance gate at Squarefoot Origin with the clubhouse behind") },
+      { title: "East facing villas", caption: "G+2 · Four bedrooms · Two-car porch", image: og("east-row", 3840, 2160, "Row of East facing villas") },
+      { title: "West facing villas", caption: "G+2 · Four bedrooms · Vaastu compliant", image: og("west-row", 3840, 2160, "Row of West facing villas") },
+      { title: "The clubhouse", caption: "10,500 sft · Pool, gym, banquet hall", image: og("clubhouse", 3840, 2160, "Squarefoot Origin clubhouse") },
+    ],
+    gallery: [
+      og("east-street", 3840, 2160, "East facing villas along the street", "East facing villas"),
+      og("entrance", 3840, 2160, "Entrance gate with the clubhouse behind", "The entrance"),
+      og("west-villa", 3000, 3000, "Front elevation of a West facing villa", "West facing villa"),
+      og("west-garden", 3840, 2160, "West facing villas framed by trees", "West facing villas"),
+      og("east-villa-corner", 3000, 3000, "Corner view of an East facing villa", "East facing villa"),
+      og("clubhouse", 3840, 2160, "Clubhouse elevation", "The clubhouse"),
+      og("west-street", 3840, 2160, "Row of West facing villas", "Along the street"),
+      og("site-aerial", 3840, 2160, "Aerial view of the community", "27 villas · 2.8 acres"),
+    ],
+    amenities: [
+      {
+        title: "The clubhouse",
+        items: ["Swimming pool", "Gym", "Badminton court", "Banquet hall", "Indoor games", "Guest rooms"],
+        image: og("clubhouse", 3840, 2160, "Squarefoot Origin clubhouse elevation"),
+      },
+    ],
+    plans: [
+      {
+        label: "Ground floor",
+        facts: ["Living & drawing", "Kitchen / dining", "Parent's room", "Two-car porch"],
+        image: og("plan-east-ground", 2480, 3507, "Ground floor plan of the East facing villa at Squarefoot Origin"),
+      },
+      {
+        label: "First floor",
+        facts: ["Master bedroom with walk-in wardrobe", "Children's bedroom", "Family lounge", "Puja"],
+        image: og("plan-east-first", 2480, 3507, "First floor plan of the East facing villa at Squarefoot Origin"),
+      },
+      {
+        label: "Second floor",
+        facts: ["Bedroom with walk-in wardrobe", "Home theatre provision", "Pantry", "Terrace"],
+        image: og("plan-east-second", 2480, 3507, "Second floor plan of the East facing villa at Squarefoot Origin"),
+      },
+    ],
+    facings: [
+      {
+        title: "East facing",
+        line: "Floor plans for all three floors are below.",
+        facts: ["G+2", "Four bedrooms", "Two-car porch", "Home theatre provision"],
+        image: og("east-villa", 3000, 3000, "East facing villa at Squarefoot Origin"),
+        plans: true,
+      },
+      {
+        title: "West facing",
+        line: "West facing floor plans are shared on request.",
+        facts: ["G+2", "Four bedrooms", "Vaastu compliant"],
+        image: og("west-villa", 3000, 3000, "West facing villa at Squarefoot Origin"),
+      },
+    ],
+    locationNotes: [
+      "5-minute drive from ORR Exit-12 (Bonguluru)",
+      "About 20 minutes from LB Nagar",
+    ],
+    mapQuery: "Manneguda, Telangana",
+    seo: {
+      title: "Squarefoot Origin | 27 Villas near ORR Exit-12, Hyderabad",
+      description:
+        "A boutique community of 27 G+2 villas on 2.8 acres with a 10,500 sft clubhouse, 5 minutes from ORR Exit-12. Book a site visit.",
+    },
+  },
+  {
     slug: "trans-elite",
     name: "Trans Elite",
     hasPage: true,
@@ -626,9 +626,9 @@ export const deliveredProjects = projects.filter((p) => p.status === "delivered"
 
 /** Options for enquiry forms. Mirrors the dropdown in the approved copy. */
 export const enquiryOptions = [
-  { value: "squarefoot-origin", label: "Squarefoot Origin villas" },
   { value: "the-square", label: "The Square" },
   { value: "the-urban-ranch", label: "The Urban Ranch" },
+  { value: "squarefoot-origin", label: "Squarefoot Origin villas" },
   { value: "trans-elite", label: "Trans Elite" },
   { value: "challa-elite", label: "Challa Elite" },
   { value: "layouts-plots", label: "Layouts and plots" },

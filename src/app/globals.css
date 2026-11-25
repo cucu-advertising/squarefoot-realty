@@ -357,39 +357,6 @@ html:not(.pin) .exp__layer.is-on { opacity: 1; }
 html.pin .exp__swipe { display: none; }
 @media (max-width: 767px) { .exp__row { grid-template-columns: minmax(0, 1fr) auto; } .exp__row > .seqnav { grid-column: 1 / -1; grid-row: 2; flex-wrap: wrap; } }
 
-/* Highlights sequence */
-.hseq { background: var(--sand); }
-.hseq__intro { text-align: center; padding-inline: var(--gutter); }
-.hseq__intro .t-display { max-width: 13ch; margin: var(--sp-3) auto 0; }
-.hseq__media { position: relative; overflow: hidden; border-radius: var(--radius); background: var(--sand-2); }
-.hseq__media img { object-fit: cover; }
-.hseq__n { font-size: var(--f-label); letter-spacing: 0.22em; text-transform: uppercase; color: var(--brick); }
-.hseq__title { margin-top: var(--sp-2); }
-.hseq__line { margin-top: var(--sp-2); max-width: 30ch; }
-.hseq__count { display: none; }
-.hseq__over { display: none; }
-html.pin .hseq__over { display: block; position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; padding-bottom: clamp(28px, 6vh, 64px); color: var(--paper); pointer-events: none; }
-html:not(.pin) .hseq { padding-block: var(--section-y); }
-html:not(.pin) .hseq__list { margin-top: var(--sp-6); display: grid; gap: var(--sp-6); padding-inline: var(--gutter); }
-html:not(.pin) .hseq__item { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: center; }
-html:not(.pin) .hseq__media { grid-column: 1 / span 7; aspect-ratio: 4 / 3; }
-html:not(.pin) .hseq__text { grid-column: 9 / span 4; }
-html:not(.pin) .hseq__item:nth-child(even) .hseq__media { grid-column: 6 / span 7; order: 2; }
-html:not(.pin) .hseq__item:nth-child(even) .hseq__text { grid-column: 1 / span 4; }
-@media (min-width: 768px) and (max-width: 1199px) {
-  html:not(.pin) .hseq__media { grid-column: 1 / span 6; }
-  html:not(.pin) .hseq__text { grid-column: 7 / span 6; }
-  html:not(.pin) .hseq__item:nth-child(even) .hseq__media { grid-column: 7 / span 6; }
-  html:not(.pin) .hseq__item:nth-child(even) .hseq__text { grid-column: 1 / span 6; }
-}
-@media (max-width: 767px) { html:not(.pin) .hseq__media, html:not(.pin) .hseq__text, html:not(.pin) .hseq__item:nth-child(even) .hseq__media, html:not(.pin) .hseq__item:nth-child(even) .hseq__text { grid-column: 1 / -1; order: 0; } }
-html.pin .hseq__intro { position: absolute; inset: 0; display: grid; place-content: center; z-index: 1; }
-html.pin .hseq__list { position: absolute; inset: 0; z-index: 2; }
-html.pin .hseq__item { position: absolute; inset: 0; }
-html.pin .hseq__media { position: absolute; left: 38vw; top: 108vh; width: 24vw; height: 30vh; }
-html.pin .hseq__text { position: absolute; z-index: 3; left: calc(var(--gutter) + 58vw); right: var(--gutter); top: 50%; }
-html.pin .hseq__count { display: block; position: absolute; z-index: 4; left: var(--gutter); bottom: 22px; font-size: var(--f-label); letter-spacing: 0.22em; text-transform: uppercase; font-variant-numeric: tabular-nums; opacity: 0; }
-
 /* Projects rail (home): a sideways row that vertical scroll drives on desktop, a swipe row on touch */
 .prail { background: var(--sand); }
 .prail__head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: var(--sp-3) var(--sp-5); }

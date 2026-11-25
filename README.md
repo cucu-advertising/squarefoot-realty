@@ -20,7 +20,7 @@ BROCHURE_TOKEN_SECRET=$(openssl rand -hex 32) npm start
 Tests (against a running server):
 
 ```bash
-BASE=http://localhost:3000 node tests/e2e.mjs          # 114 functional, security and device checks
+BASE=http://localhost:3000 node tests/e2e.mjs          # 115 functional, security and device checks
 node tests/screens.mjs http://localhost:3000            # full-page screenshots → tests/screens
 ```
 
@@ -57,15 +57,14 @@ node tests/screens.mjs http://localhost:3000            # full-page screenshots 
 | Statements | Words brighten in sync with scroll (reversible) |
 | Images | Wipe-up reveal with scale settle; parallax on selected media |
 | Philosophy collage | Scattered images converge, grow to near full screen, then change sideways (wipe left, next pushes in from the right). Caption, counter, "Scroll →" hint and prev/next buttons |
-| Our projects (home) | The Urban Ranch, The Square and Squarefoot Origin side by side: scrolling down moves the row sideways, with arrows, a "Scroll →" hint and a progress line (swipe row on touch) |
+| Our projects (home) | The Square, The Urban Ranch and Squarefoot Origin side by side: scrolling down moves the row sideways, with arrows, a "Scroll →" hint and a progress line (swipe row on touch) |
 | Project exploration | Pinned exploration of real renders on each project page: directional wipes, push-in, dot rail, big number and progress bar |
-| Signature details | Statement → image rises → full-bleed with overlay → split composition; each later detail enters from the right |
 | Delivered reel | Horizontal reel of information cards driven by vertical scroll, with arrows and a progress line |
 | Closing | Frame grows from a card to full screen, then the invitation appears |
 | Project features | Paired cards slide in from the right over each other (where every feature has its own render) |
 | Gallery | Focus image with Ken Burns, next-image preview, counter, swipe, keyboard and lightbox |
 | Header | Hides on scroll down and returns on scroll up; colour follows whatever is under it |
-| Step control | One control everywhere a sequence moves: ‹ 01 02 03 ›. Numbers jump, arrows step (exploration, features, signature details, opening images, projects row, delivered row) |
+| Step control | One control everywhere a sequence moves: ‹ 01 02 03 ›. Numbers jump, arrows step (exploration, features, opening images, projects row, delivered row) |
 | Autoplay | After 6 s without scroll, click, touch, key or mouse movement, the sequence on screen moves to its next step; a yellow ring fills around the next arrow while it counts down. Pinned sequences stop at their last step; carousels loop. Off for reduced motion, open menus/viewers and background tabs |
 | Project hover | Frosted "View project" label with a yellow dot follows the pointer; cards lift, outline in yellow and zoom their image |
 

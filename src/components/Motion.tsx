@@ -145,54 +145,6 @@ function explore(root: HTMLElement) {
   setStops(root, layers.map((_, k) => (k === 0 ? 0 : k + 0.25)), tl.duration());
 }
 
-function hseq(root: HTMLElement) {
-  const intro = root.querySelector(".hseq__intro");
-  const items = gsap.utils.toArray<HTMLElement>(".hseq__item", root);
-  const over = root.querySelector(".hseq__over");
-  const count = root.querySelector(".hseq__count");
-  if (!items.length) return;
-  const n = items.length;
-  const medias = items.map((it) => it.querySelector<HTMLElement>(".hseq__media")!);
-  const texts = items.map((it) => it.querySelector<HTMLElement>(".hseq__text")!);
-  const split = { left: () => 3.2 * vw(), top: () => 11 * vh(), width: () => 54 * vw(), height: () => 78 * vh() };
-  // First image starts small below the statement; the others wait in the split frame.
-  gsap.set(medias[0], { left: () => 38 * vw(), top: () => 108 * vh(), width: () => 24 * vw(), height: () => 30 * vh(), xPercent: 0, yPercent: 0, x: 0, y: 0, borderRadius: 18 });
-  medias.slice(1).forEach((m) => gsap.set(m, { ...split, xPercent: 0, yPercent: 0, x: 0, y: 0, borderRadius: 18 }));
-  gsap.set(texts, { yPercent: -50, opacity: 0, y: 30 });
-  gsap.set(over, { opacity: 0 });
-  gsap.set(count, { autoAlpha: 0 });
-  const tl = gsap.timeline({
-    defaults: { ease: "none" },
-    scrollTrigger: {
-      trigger: root, start: "top top", end: "bottom bottom", scrub: 0.9, invalidateOnRefresh: true,
-      onUpdate(self) {
-        const t = self.progress * tl.duration();
-        emitIndex(root, t < 3.2 ? 0 : Math.min(n - 1, Math.floor((t - 3.2) / 1 + 1)));
-      },
-    },
-  });
-  tl.to(medias[0], { top: () => 46 * vh(), duration: 1 }, 0)
-    .to(intro, { y: () => -18 * vh(), opacity: 0, duration: 0.8 }, 0.4)
-    // Expand to full bleed.
-    .to(medias[0], { left: 0, top: 0, width: () => 100 * vw(), height: () => 100 * vh(), borderRadius: 0, duration: 1 }, 1)
-    .to(over, { opacity: 1, duration: 0.3 }, 1.7)
-    // Settle into the split composition.
-    .to(over, { opacity: 0, duration: 0.25 }, 2.3)
-    .to(medias[0], { ...split, borderRadius: 18, duration: 0.8 }, 2.4)
-    .to(texts[0], { opacity: 1, y: 0, duration: 0.3 }, 2.9)
-    .to(count, { autoAlpha: 1, duration: 0.2 }, 2.9);
-  for (let i = 1; i < n; i++) {
-    const at = 3.2 + (i - 1);
-    tl.fromTo(medias[i], { clipPath: "inset(0% 0% 0% 100%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "power2.inOut" }, at)
-      .fromTo(medias[i].querySelector("img"), { scale: 1.15, xPercent: 6 }, { scale: 1, xPercent: 0, duration: 0.8 }, at)
-      .to(medias[i - 1].querySelector("img"), { xPercent: -6, duration: 0.7, ease: "power2.inOut" }, at)
-      .to(texts[i - 1], { opacity: 0, y: -30, duration: 0.25 }, at)
-      .to(texts[i], { opacity: 1, y: 0, duration: 0.3 }, at + 0.4);
-  }
-  tl.to({}, { duration: 0.5 });
-  setStops(root, items.map((_, k) => (k === 0 ? 3.15 : 3.2 + (k - 1) + 0.85)), tl.duration());
-}
-
 function reel(root: HTMLElement) {
   const track = root.querySelector<HTMLElement>(".reel__track");
   const prog = root.querySelector<HTMLElement>(".reel__progress");
@@ -407,7 +359,6 @@ export default function Motion() {
       if (pin) {
         gsap.utils.toArray<HTMLElement>("[data-seq='collage']").forEach(collage);
         gsap.utils.toArray<HTMLElement>("[data-seq='explore']").forEach(explore);
-        gsap.utils.toArray<HTMLElement>("[data-seq='hseq']").forEach(hseq);
         gsap.utils.toArray<HTMLElement>("[data-seq='reel']").forEach(reel);
         gsap.utils.toArray<HTMLElement>("[data-seq='hscroll']").forEach(hscroll);
         gsap.utils.toArray<HTMLElement>("[data-seq='closing']").forEach(closing);
